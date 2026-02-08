@@ -1,0 +1,9 @@
+services:
+  pdf-converter:
+    build: ./services/pdf-converter
+    ports:
+      - "8081:8080"
+  ocr-service:
+    build: ./services/ocr
+    ports:
+      - "8090:8090"
