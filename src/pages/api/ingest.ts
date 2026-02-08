@@ -39,10 +39,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: "Missing file" });
   }
 
-  const title = (fields.title as string) || file.originalFilename || "Source";
+  const getField = (value: string | string[] | undefined) =>
+    Array.isArray(value) ? value[0] : value;
+  const title = getField(fields.title) || file.originalFilename || "Source";
   const originalName = file.originalFilename || "source";
-  const tenantId = (fields.tenantId as string) || authContext?.tenantId;
-  const userId = (fields.userId as string) || authContext?.userId;
+  const tenantId = getField(fields.tenantId) || authContext?.tenantId;
+  const userId = getField(fields.userId) || authContext?.userId;
 
   if (!tenantId) {
     return res.status(400).json({ error: "Missing tenantId" });
