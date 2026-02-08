@@ -537,7 +537,7 @@ export default function RagPage() {
               )}
             </div>
           ) : (
-            <p className="muted">Aucune réponse pour l'instant.</p>
+            <p className="muted">Aucune réponse pour l&apos;instant.</p>
           )}
         </div>
       </section>

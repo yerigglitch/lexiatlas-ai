@@ -101,7 +101,7 @@ export default function SignupPage() {
             {loading ? "Création..." : "Créer le cabinet"}
           </button>
         </form>
-        <button className="ghost" onClick={() => router.push("/login")}>J'ai déjà un compte</button>
+        <button className="ghost" onClick={() => router.push("/login")}>J&apos;ai déjà un compte</button>
       </section>
     </main>
   );
