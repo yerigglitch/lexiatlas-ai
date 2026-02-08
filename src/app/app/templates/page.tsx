@@ -38,8 +38,7 @@ export default function TemplatesPage() {
     loadTemplates();
   }, [loadTemplates]);
 
-  const handleUpload = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleUpload = async () => {
     setError(null);
 
     if (!file) {
