@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 
@@ -23,7 +23,7 @@ export default function EmailLogsPage() {
   const [total, setTotal] = useState(0);
   const pageSize = 20;
 
-  const loadLogs = async (statusFilter = status, q = query, nextPage = page) => {
+  const loadLogs = useCallback(async (statusFilter = status, q = query, nextPage = page) => {
     const supabase = createBrowserSupabase();
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
@@ -44,11 +44,11 @@ export default function EmailLogsPage() {
     setLogs(payload.logs || []);
     setTotal(payload.total || 0);
     setLoading(false);
-  };
+  }, [router, status, query, page]);
 
   useEffect(() => {
     loadLogs();
-  }, []);
+  }, [loadLogs]);
 
   const handleExport = () => {
     const rows = [

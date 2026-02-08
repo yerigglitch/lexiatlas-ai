@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 
@@ -84,9 +84,9 @@ export default function AppPage() {
     setTimeout(() => {
       fetchRss();
     }, 100);
-  }, []);
+  }, [fetchRss]);
 
-  const fetchRss = async () => {
+  const fetchRss = useCallback(async () => {
     if (!activeFeeds.length) {
       setRssItems([]);
       return;
@@ -120,7 +120,7 @@ export default function AppPage() {
     } finally {
       setRssLoading(false);
     }
-  };
+  }, [activeFeeds, feeds]);
 
   const enableNotifications = async () => {
     if (typeof window === "undefined") return;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 
@@ -41,7 +41,7 @@ export default function ContactsPage() {
   const [ocrError, setOcrError] = useState<string | null>(null);
   const [ocrLoading, setOcrLoading] = useState(false);
 
-  const loadContacts = async () => {
+  const loadContacts = useCallback(async () => {
     const supabase = createBrowserSupabase();
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
@@ -58,11 +58,11 @@ export default function ContactsPage() {
     const payload = await res.json();
     setContacts(payload.contacts || []);
     setLoading(false);
-  };
+  }, [router]);
 
   useEffect(() => {
     loadContacts();
-  }, []);
+  }, [loadContacts]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

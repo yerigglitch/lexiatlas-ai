@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 
@@ -18,7 +18,7 @@ export default function TemplatesPage() {
   const [error, setError] = useState<string | null>(null);
   const [showUpload, setShowUpload] = useState(false);
 
-  const loadTemplates = async () => {
+  const loadTemplates = useCallback(async () => {
     const supabase = createBrowserSupabase();
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
@@ -32,11 +32,11 @@ export default function TemplatesPage() {
     const payload = await res.json();
     setTemplates(payload.templates || []);
     setLoading(false);
-  };
+  }, [router]);
 
   useEffect(() => {
     loadTemplates();
-  }, []);
+  }, [loadTemplates]);
 
   const handleUpload = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
