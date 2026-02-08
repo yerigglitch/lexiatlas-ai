@@ -212,7 +212,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     context = grouped.join("\n\n---\n\n");
   } else {
     context = matches
-      .map((match: { content: string }, index: number) => {
+      .map((match: { content: string; source_id: string }, index: number) => {
         const title = sourceTitleMap.get(match.source_id) || `Source ${index + 1}`;
         return `${title} (id: ${match.source_id})\n${match.content}`;
       })
