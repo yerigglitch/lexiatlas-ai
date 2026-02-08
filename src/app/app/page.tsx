@@ -63,29 +63,6 @@ export default function AppPage() {
     return () => subscription.subscription.unsubscribe();
   }, [router]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const storedFeeds = window.localStorage.getItem("rss-feeds");
-    const storedEnabled = window.localStorage.getItem("rss-notify");
-    if (storedFeeds) {
-      try {
-        const parsed = JSON.parse(storedFeeds) as Array<{
-          id: string;
-          name: string;
-          url: string;
-          enabled: boolean;
-        }>;
-        if (parsed.length) setFeeds(parsed);
-      } catch {
-        // ignore
-      }
-    }
-    if (storedEnabled === "true") setNotificationsEnabled(true);
-    setTimeout(() => {
-      fetchRss();
-    }, 100);
-  }, [fetchRss]);
-
   const fetchRss = useCallback(async () => {
     if (!activeFeeds.length) {
       setRssItems([]);
@@ -121,6 +98,29 @@ export default function AppPage() {
       setRssLoading(false);
     }
   }, [activeFeeds, feeds]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storedFeeds = window.localStorage.getItem("rss-feeds");
+    const storedEnabled = window.localStorage.getItem("rss-notify");
+    if (storedFeeds) {
+      try {
+        const parsed = JSON.parse(storedFeeds) as Array<{
+          id: string;
+          name: string;
+          url: string;
+          enabled: boolean;
+        }>;
+        if (parsed.length) setFeeds(parsed);
+      } catch {
+        // ignore
+      }
+    }
+    if (storedEnabled === "true") setNotificationsEnabled(true);
+    setTimeout(() => {
+      fetchRss();
+    }, 100);
+  }, [fetchRss]);
 
   const enableNotifications = async () => {
     if (typeof window === "undefined") return;
