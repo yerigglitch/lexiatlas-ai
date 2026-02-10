@@ -3,6 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default function VerifyEmailPage() {
   const params = useSearchParams();
   const router = useRouter();
