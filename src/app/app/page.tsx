@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
@@ -14,7 +14,7 @@ export default function AppPage() {
   >([]);
   const [rssLoading, setRssLoading] = useState(false);
   const [rssError, setRssError] = useState<string | null>(null);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [rssEnabled, setRssEnabled] = useState(false);
   const [customFeed, setCustomFeed] = useState("");
   const [feeds, setFeeds] = useState<
     Array<{ id: string; name: string; url: string; enabled: boolean }>
@@ -40,7 +40,6 @@ export default function AppPage() {
   ]);
 
   const activeFeeds = useMemo(() => feeds.filter((f) => f.enabled), [feeds]);
-  const rssPollRef = useRef<number | null>(null);
 
   useEffect(() => {
     const supabase = createBrowserSupabase();
@@ -104,7 +103,6 @@ export default function AppPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const storedFeeds = window.localStorage.getItem("rss-feeds");
-    const storedEnabled = window.localStorage.getItem("rss-notify");
     if (storedFeeds) {
       try {
         const parsed = JSON.parse(storedFeeds) as Array<{
@@ -118,60 +116,7 @@ export default function AppPage() {
         // ignore
       }
     }
-    if (storedEnabled === "true") setNotificationsEnabled(true);
   }, []);
-
-  const enableNotifications = async () => {
-    if (typeof window === "undefined") return;
-    if (!("Notification" in window)) {
-      setRssError("Notifications non supportées par ce navigateur.");
-      return;
-    }
-    const permission = await Notification.requestPermission();
-    if (permission === "granted") {
-      setNotificationsEnabled(true);
-      window.localStorage.setItem("rss-notify", "true");
-      new Notification("LexiAtlas AI", {
-        body: "Alertes desktop activées pour votre flux RSS."
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!notificationsEnabled || activeFeeds.length === 0) return;
-    let lastNotified = window.localStorage.getItem("rss-last") || "";
-    const poll = async () => {
-      const res = await Promise.all(
-        activeFeeds.map(async (feed) => {
-          const r = await fetch(`/api/rss?url=${encodeURIComponent(feed.url)}`);
-          if (!r.ok) return [];
-          const payload = await r.json();
-          return (payload.items || []).map((item: any) => ({
-            ...item,
-            source: feed.name
-          }));
-        })
-      );
-      const items = res.flat();
-      if (items[0]?.link && items[0].link !== lastNotified) {
-        lastNotified = items[0].link;
-        window.localStorage.setItem("rss-last", lastNotified);
-        new Notification("Nouvelle alerte juridique", {
-          body: `${items[0].source} — ${items[0].title}`
-        });
-      }
-    };
-    if (rssPollRef.current) {
-      window.clearInterval(rssPollRef.current);
-    }
-    rssPollRef.current = window.setInterval(poll, 5 * 60 * 1000);
-    return () => {
-      if (rssPollRef.current) {
-        window.clearInterval(rssPollRef.current);
-        rssPollRef.current = null;
-      }
-    };
-  }, [notificationsEnabled, activeFeeds]);
 
   const handleLogout = async () => {
     const supabase = createBrowserSupabase();
@@ -258,11 +203,14 @@ export default function AppPage() {
                 onChange={(e) => setCustomFeed(e.target.value)}
                 placeholder="Ajouter un flux RSS..."
               />
-              <button className="ghost" type="button" onClick={fetchRss} disabled={rssLoading}>
+              <button className="ghost" type="button" onClick={fetchRss} disabled={!rssEnabled || rssLoading}>
                 {rssLoading ? "..." : "Charger"}
               </button>
-              <button className="cta" type="button" onClick={enableNotifications}>
-                Alertes desktop
+              <button className="cta" type="button" onClick={() => {
+                setRssEnabled((s) => !s);
+                setRssItems([]);
+              }}>
+                {rssEnabled ? "Désactiver" : "Activer"}
               </button>
             </div>
             {rssError && <p className="error">{rssError}</p>}
@@ -300,7 +248,8 @@ export default function AppPage() {
               </button>
             </div>
             <div className="rss-list">
-              {rssItems.length === 0 && <p className="muted">Aucun élément chargé.</p>}
+              {!rssEnabled && <p className="muted">Veille désactivée pour préserver les ressources.</p>}
+              {rssEnabled && rssItems.length === 0 && <p className="muted">Aucun élément chargé.</p>}
               {rssItems.map((item) => (
                 <a key={item.link} className="rss-item" href={item.link} target="_blank" rel="noreferrer">
                   <strong>{item.title}</strong>
