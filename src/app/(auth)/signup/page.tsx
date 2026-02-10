@@ -83,7 +83,8 @@ export default function SignupPage() {
       }
 
       setSuccess("Compte créé. Confirmez votre email puis connectez-vous.");
-      router.push("/login");
+      const emailParam = encodeURIComponent(email);
+      router.push(`/verify-email?email=${emailParam}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
