@@ -1,14 +1,11 @@
-"use client";
+import Link from "next/link";
 
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
-
-export const dynamic = "force-dynamic";
-
-export default function VerifyEmailPage() {
-  const params = useSearchParams();
-  const router = useRouter();
-  const email = params?.get("email") || "";
+export default function VerifyEmailPage({
+  searchParams
+}: {
+  searchParams?: { email?: string };
+}) {
+  const email = searchParams?.email || "";
 
   return (
     <main className="auth">
@@ -22,12 +19,12 @@ export default function VerifyEmailPage() {
         <p className="muted">
           Pensez à vérifier les spams si vous ne voyez rien sous 2 minutes.
         </p>
-        <button className="cta" onClick={() => router.push("/login")}>
+        <Link className="cta" href="/login">
           J&apos;ai confirmé, me connecter
-        </button>
-        <button className="ghost" onClick={() => router.push("/signup")}>
+        </Link>
+        <Link className="ghost" href="/signup">
           Retour à l&apos;inscription
-        </button>
+        </Link>
       </section>
     </main>
   );
