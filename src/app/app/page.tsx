@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 
@@ -184,26 +185,26 @@ export default function AppPage() {
           <p>Bienvenue {email}. Voici votre tableau de bord quotidien.</p>
         </div>
         <div className="dashboard-actions">
-          <button className="ghost" onClick={() => router.push("/app/rag")}>
+          <Link className="ghost" href="/app/rag">
             Ouvrir le RAG
-          </button>
-          <button className="cta" onClick={() => router.push("/app/settings")}>
+          </Link>
+          <Link className="cta" href="/app/settings">
             Réglages
-          </button>
+          </Link>
         </div>
       </header>
 
       <section className="dashboard-grid">
         <aside className="dash-rail">
-          <button className="rail-btn" onClick={() => router.push("/app/rag")}>Recherche RAG</button>
-          <button className="rail-btn" onClick={() => router.push("/app/templates")}>Modèles Word</button>
-          <button className="rail-btn" onClick={() => router.push("/app/documents")}>Générer un document</button>
-          <button className="rail-btn" onClick={() => router.push("/app/email")}>Emails</button>
-          <button className="rail-btn" onClick={() => router.push("/app/contacts")}>Contacts</button>
-          <button className="rail-btn" onClick={() => router.push("/app/signatures")}>Signature qualifiée</button>
-          <button className="rail-btn" onClick={() => router.push("/app/settings/email")}>SMTP</button>
-          <button className="rail-btn" onClick={() => router.push("/app/settings/yousign")}>Yousign</button>
-          <button className="rail-btn" onClick={() => router.push("/app/settings/stats")}>Statistiques</button>
+          <Link className="rail-btn" href="/app/rag">Recherche RAG</Link>
+          <Link className="rail-btn" href="/app/templates">Modèles Word</Link>
+          <Link className="rail-btn" href="/app/documents">Générer un document</Link>
+          <Link className="rail-btn" href="/app/email">Emails</Link>
+          <Link className="rail-btn" href="/app/contacts">Contacts</Link>
+          <Link className="rail-btn" href="/app/signatures">Signature qualifiée</Link>
+          <Link className="rail-btn" href="/app/settings/email">SMTP</Link>
+          <Link className="rail-btn" href="/app/settings/yousign">Yousign</Link>
+          <Link className="rail-btn" href="/app/settings/stats">Statistiques</Link>
         </aside>
 
         <div className="dash-main">
@@ -306,9 +307,9 @@ export default function AppPage() {
       </section>
 
       <div className="floating-actions">
-        <button className="icon-btn" type="button" onClick={() => router.push("/app/settings")} title="Réglages">
+        <Link className="icon-btn" href="/app/settings" title="Réglages">
           <span className="icon-glyph" aria-hidden>⚙</span>
-        </button>
+        </Link>
         <button className="icon-btn" type="button" onClick={handleLogout} title="Se déconnecter">
           <span className="icon-glyph" aria-hidden>⏻</span>
         </button>
