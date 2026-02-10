@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function VerifyEmailPage() {
   const params = useSearchParams();
   const router = useRouter();
-  const email = params.get("email");
+  const email = params?.get("email") || "";
 
   return (
     <main className="auth">
