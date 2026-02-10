@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createBrowserSupabase } from "@/lib/supabase-browser";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -51,29 +52,37 @@ export default function SignupPage() {
     setSuccess(null);
 
     try {
-      const res = await fetch("/api/auth/signup", {
+      const supabase = createBrowserSupabase();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      if (!data.user) {
+        throw new Error("Impossible de créer le compte.");
+      }
+
+      const onboard = await fetch("/api/auth/onboard-public", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          userId: data.user.id,
           tenantName,
           fullName,
           email,
-          password,
           inviteCode,
           turnstileToken
         })
       });
 
-      if (!res.ok) {
-        const message = await res.text();
-        throw new Error(message || "Création échouée");
+      if (!onboard.ok) {
+        const message = await onboard.text();
+        throw new Error(message || "Onboarding échoué");
       }
 
-      setSuccess(
-        "Compte créé. Confirmez votre email puis connectez-vous."
-      );
+      setSuccess("Compte créé. Confirmez votre email puis connectez-vous.");
       router.push("/login");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
