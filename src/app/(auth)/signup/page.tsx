@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createBrowserSupabase } from "@/lib/supabase-browser";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -10,44 +9,72 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [tenantName, setTenantName] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef<HTMLDivElement | null>(null);
+  const turnstileKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
+
+  useEffect(() => {
+    if (!turnstileKey) return;
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [turnstileKey]);
+
+  useEffect(() => {
+    if (!turnstileKey || !turnstileRef.current) return;
+    const interval = window.setInterval(() => {
+      const turnstile = (window as any).turnstile;
+      if (turnstile) {
+        turnstile.render(turnstileRef.current, {
+          sitekey: turnstileKey,
+          callback: (token: string) => setTurnstileToken(token)
+        });
+        window.clearInterval(interval);
+      }
+    }, 300);
+    return () => window.clearInterval(interval);
+  }, [turnstileKey]);
 
   const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     try {
-      const supabase = createBrowserSupabase();
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password
-      });
-
-      if (error) throw error;
-
-      if (!data.session) {
-        throw new Error(
-          "Confirmez votre email puis reconnectez-vous pour activer le cabinet."
-        );
-      }
-
-      const res = await fetch("/api/auth/onboard", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${data.session.access_token}`
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ tenantName, fullName })
+        body: JSON.stringify({
+          tenantName,
+          fullName,
+          email,
+          password,
+          inviteCode,
+          turnstileToken
+        })
       });
 
       if (!res.ok) {
         const message = await res.text();
-        throw new Error(message || "Onboarding échoué");
+        throw new Error(message || "Création échouée");
       }
 
-      router.push("/app");
+      setSuccess(
+        "Compte créé. Confirmez votre email puis connectez-vous."
+      );
+      router.push("/login");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
@@ -96,7 +123,17 @@ export default function SignupPage() {
               minLength={8}
             />
           </label>
+          <label>
+            Code d&apos;invitation
+            <input
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value)}
+              placeholder="Reçu par email"
+            />
+          </label>
+          {turnstileKey && <div ref={turnstileRef} />}
           {error && <p className="error">{error}</p>}
+          {success && <p className="success">{success}</p>}
           <button type="submit" className="cta" disabled={loading}>
             {loading ? "Création..." : "Créer le cabinet"}
           </button>
