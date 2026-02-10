@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
@@ -40,6 +40,7 @@ export default function AppPage() {
   ]);
 
   const activeFeeds = useMemo(() => feeds.filter((f) => f.enabled), [feeds]);
+  const rssPollRef = useRef<number | null>(null);
 
   useEffect(() => {
     const supabase = createBrowserSupabase();
@@ -118,10 +119,7 @@ export default function AppPage() {
       }
     }
     if (storedEnabled === "true") setNotificationsEnabled(true);
-    setTimeout(() => {
-      fetchRss();
-    }, 100);
-  }, [fetchRss]);
+  }, []);
 
   const enableNotifications = async () => {
     if (typeof window === "undefined") return;
@@ -140,7 +138,7 @@ export default function AppPage() {
   };
 
   useEffect(() => {
-    if (!notificationsEnabled) return;
+    if (!notificationsEnabled || activeFeeds.length === 0) return;
     let lastNotified = window.localStorage.getItem("rss-last") || "";
     const poll = async () => {
       const res = await Promise.all(
@@ -163,8 +161,16 @@ export default function AppPage() {
         });
       }
     };
-    const interval = window.setInterval(poll, 5 * 60 * 1000);
-    return () => window.clearInterval(interval);
+    if (rssPollRef.current) {
+      window.clearInterval(rssPollRef.current);
+    }
+    rssPollRef.current = window.setInterval(poll, 5 * 60 * 1000);
+    return () => {
+      if (rssPollRef.current) {
+        window.clearInterval(rssPollRef.current);
+        rssPollRef.current = null;
+      }
+    };
   }, [notificationsEnabled, activeFeeds]);
 
   const handleLogout = async () => {
