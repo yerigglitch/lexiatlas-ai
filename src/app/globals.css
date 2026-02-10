@@ -1292,6 +1292,8 @@ button:hover,
   display: grid;
   gap: 24px;
   background: radial-gradient(circle at top, #fff7f5, #fff 45%);
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-header {
@@ -1318,6 +1320,8 @@ button:hover,
 .dashboard-actions {
   display: inline-flex;
   gap: 10px;
+  position: relative;
+  z-index: 2;
 }
 
 .dashboard-grid {
@@ -1338,6 +1342,14 @@ button:hover,
   border-radius: 16px;
   padding: 12px;
   height: fit-content;
+  position: relative;
+  z-index: 2;
+}
+
+.dashboard a,
+.dash-rail a,
+.dashboard-actions a {
+  pointer-events: auto;
 }
 
 .rail-btn {
