@@ -19,9 +19,6 @@ function CallbackInner() {
         if (code) {
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
           if (exchangeError) throw exchangeError;
-        } else {
-          const { error: urlError } = await supabase.auth.getSessionFromUrl();
-          if (urlError) throw urlError;
         }
         setTimeout(() => router.replace("/app"), 2000);
       } catch (err) {
