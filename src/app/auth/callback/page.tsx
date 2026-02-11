@@ -15,7 +15,7 @@ function CallbackInner() {
     const supabase = createBrowserSupabase();
     const run = async () => {
       try {
-        const code = params.get("code");
+        const code = params?.get("code");
         if (code) {
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
           if (exchangeError) throw exchangeError;
