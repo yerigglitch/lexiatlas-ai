@@ -8,6 +8,7 @@ import { createBrowserSupabase } from "@/lib/supabase-browser";
 import EmptyState from "@/components/ui/empty-state";
 import InlineAlert from "@/components/ui/inline-alert";
 import PageHeader from "@/components/ui/page-header";
+import { listSearchMemory, saveKnowledge, upsertSearchMemory } from "@/lib/rag-memory";
 
 type Citation = {
   id: string;
@@ -40,15 +41,6 @@ const MODELS = [
 ];
 const OPENAI_DEFAULT_CHAT_MODEL = "gpt-4o-mini";
 const OPENAI_DEFAULT_EMBED_MODEL = "text-embedding-3-small";
-const LEGIFRANCE_FONDS = [
-  { id: "CODE_ETAT", label: "Codes en vigueur" },
-  { id: "CODE_DATE", label: "Codes à date" },
-  { id: "LODA_ETAT", label: "Lois & décrets (état)" },
-  { id: "LODA_DATE", label: "Lois & décrets (date)" },
-  { id: "KALI", label: "Conventions collectives" },
-  { id: "JURI", label: "Jurisprudence" },
-  { id: "JORF", label: "Journal officiel" }
-];
 
 export default function RagPage() {
   const router = useRouter();
@@ -72,10 +64,6 @@ export default function RagPage() {
   const [responseMode, setResponseMode] = useState<"per-source" | "synthesis">(
     "per-source"
   );
-  const [history, setHistory] = useState<AnswerEntry[]>([]);
-  const [saved, setSaved] = useState<AnswerEntry[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const [showSaved, setShowSaved] = useState(false);
   const [chatModel, setChatModel] = useState(MODELS[0]);
   const [chatProvider, setChatProvider] = useState("mistral");
   const [embeddingProvider, setEmbeddingProvider] = useState("mistral");
@@ -84,7 +72,6 @@ export default function RagPage() {
   const [chatBaseUrl, setChatBaseUrl] = useState("");
   const [embeddingBaseUrl, setEmbeddingBaseUrl] = useState("");
   const [embeddingModel, setEmbeddingModel] = useState("");
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [sourceMode, setSourceMode] = useState<"internal" | "legifrance" | "mix">(
     "internal"
   );
@@ -92,6 +79,7 @@ export default function RagPage() {
   const [legifranceMaxResults, setLegifranceMaxResults] = useState(6);
   const [legifranceCodeName, setLegifranceCodeName] = useState("");
   const [legifranceVersionDate, setLegifranceVersionDate] = useState("");
+  const [dictating, setDictating] = useState(false);
 
   useEffect(() => {
     const supabase = createBrowserSupabase();
@@ -381,11 +369,58 @@ export default function RagPage() {
       citations: payload.citations || [],
       createdAt: new Date().toISOString()
     };
-    setHistory((prev) => [entry, ...prev]);
+    upsertSearchMemory({
+      id: entry.id,
+      title: question.slice(0, 80),
+      question: entry.question,
+      answer: entry.answer,
+      citations: entry.citations,
+      createdAt: entry.createdAt
+    });
   };
 
 
   const responseMarkdown = useMemo(() => answer || "", [answer]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const entryId = new URLSearchParams(window.location.search).get("entry");
+    if (!entryId) return;
+    const entry = listSearchMemory().find((item) => item.id === entryId);
+    if (!entry) return;
+    setQuestion(entry.question);
+    setAnswer(entry.answer);
+    setCitations(entry.citations);
+  }, []);
+
+  const startVoiceInput = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setQueryError("La dictée vocale n'est pas disponible sur ce navigateur.");
+      return;
+    }
+    setQueryError(null);
+    const recognition = new SpeechRecognition();
+    recognition.lang = "fr-FR";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    setDictating(true);
+    recognition.onresult = (event: any) => {
+      const transcript = event.results?.[0]?.[0]?.transcript || "";
+      if (transcript) {
+        setQuestion((prev) => `${prev} ${transcript}`.trim());
+      }
+    };
+    recognition.onerror = () => {
+      setQueryError("Impossible de démarrer la dictée vocale.");
+      setDictating(false);
+    };
+    recognition.onend = () => {
+      setDictating(false);
+    };
+    recognition.start();
+  };
 
   if (loading) {
     return <main className="app-loading" aria-live="polite"><div className="ui-skeleton-line" /><div className="ui-skeleton-line short" /></main>;
@@ -397,314 +432,11 @@ export default function RagPage() {
         title="Recherche RAG"
         subtitle="Interrogez vos sources internes et Légifrance avec traçabilité."
         actions={
-          <>
-            <button className="ghost" type="button" onClick={() => router.push("/app/settings")}>
-              Réglages IA
-            </button>
-            <button className="cta" type="button" onClick={() => setShowUpload(true)}>
-              Ajouter une source
-            </button>
-          </>
+          <button className="cta" type="button" onClick={() => setShowUpload(true)}>
+            Ajouter des sources
+          </button>
         }
       />
-
-      <section className="rag-v2-grid">
-        <article className="rag-v2-card">
-          <div className="rag-sources-header">
-            <h2>1. Sources</h2>
-          </div>
-          <p className="muted">Sélectionnez les sources à inclure dans la réponse.</p>
-          <div className="chip-list">
-            {sources.length === 0 && (
-              <EmptyState
-                title="Aucune source interne"
-                description="Importez PDF, DOCX, texte ou URL pour commencer."
-              />
-            )}
-            {sources.map((source) => {
-              const selected = selectedSources.includes(source.id);
-              return (
-                <div key={source.id} className={`chip ${selected ? "chip-active" : ""}`}>
-                  <button
-                    type="button"
-                    className="chip-label"
-                    onClick={() => {
-                      setSelectedSources((prev) =>
-                        prev.includes(source.id)
-                          ? prev.filter((id) => id !== source.id)
-                          : [...prev, source.id]
-                      );
-                    }}
-                  >
-                    {source.title}
-                  </button>
-                  <div className="chip-actions">
-                    <button
-                      type="button"
-                      className="chip-icon"
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        const next = window.prompt("Renommer la source", source.title);
-                        if (!next) return;
-                        const supabase = createBrowserSupabase();
-                        const { data } = await supabase.auth.getSession();
-                        if (!data.session) {
-                          router.push("/login");
-                          return;
-                        }
-                        const res = await fetch("/api/sources", {
-                          method: "PATCH",
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${data.session.access_token}`
-                          },
-                          body: JSON.stringify({ id: source.id, title: next })
-                        });
-                        if (res.ok) {
-                          setSources((prev) =>
-                            prev.map((s) => (s.id === source.id ? { ...s, title: next } : s))
-                          );
-                        }
-                      }}
-                    >
-                      <span className="chip-glyph" aria-hidden>✎</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="chip-icon"
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        const ok = window.confirm(`Supprimer la source "${source.title}" ?`);
-                        if (!ok) return;
-                        const supabase = createBrowserSupabase();
-                        const { data } = await supabase.auth.getSession();
-                        if (!data.session) {
-                          router.push("/login");
-                          return;
-                        }
-                        await fetch(`/api/sources?id=${source.id}`, {
-                          method: "DELETE",
-                          headers: { Authorization: `Bearer ${data.session.access_token}` }
-                        });
-                        setSources((prev) => prev.filter((s) => s.id !== source.id));
-                        setSelectedSources((prev) => prev.filter((id) => id !== source.id));
-                      }}
-                    >
-                      <span className="chip-glyph" aria-hidden>✕</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="source-mode">
-            <span className="mode-label">Sources externes</span>
-            <div className="mode-toggle">
-              <button
-                type="button"
-                className={`mode-btn ${sourceMode === "internal" ? "active" : ""}`}
-                onClick={() => setSourceMode("internal")}
-              >
-                Internes
-              </button>
-              <button
-                type="button"
-                className={`mode-btn ${sourceMode === "mix" ? "active" : ""}`}
-                onClick={() => setSourceMode("mix")}
-              >
-                Mix
-              </button>
-              <button
-                type="button"
-                className={`mode-btn ${sourceMode === "legifrance" ? "active" : ""}`}
-                onClick={() => setSourceMode("legifrance")}
-              >
-                Légifrance
-              </button>
-            </div>
-          </div>
-
-          <div className="chip-list">
-            {LEGIFRANCE_FONDS.map((fond) => {
-              const selected = legifranceFonds.includes(fond.id);
-              return (
-                <div key={fond.id} className={`chip ${selected ? "chip-active" : ""}`}>
-                  <button
-                    type="button"
-                    className="chip-label"
-                    disabled={sourceMode === "internal"}
-                    onClick={() => {
-                      if (sourceMode === "internal") return;
-                      setLegifranceFonds((prev) =>
-                        prev.includes(fond.id)
-                          ? prev.filter((id) => id !== fond.id)
-                          : [...prev, fond.id]
-                      );
-                    }}
-                  >
-                    {fond.label}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </article>
-
-        <article className="rag-v2-card">
-          <h2>2. Question</h2>
-          <form className="rag-v2-form" onSubmit={handleQuery}>
-            <div className="query-mode">
-              <span className="mode-label">Mode de réponse</span>
-              <div className="mode-toggle">
-                <button
-                  type="button"
-                  className={`mode-btn ${responseMode === "per-source" ? "active" : ""}`}
-                  onClick={() => setResponseMode("per-source")}
-                >
-                  Par source
-                </button>
-                <button
-                  type="button"
-                  className={`mode-btn ${responseMode === "synthesis" ? "active" : ""}`}
-                  onClick={() => setResponseMode("synthesis")}
-                >
-                  Synthèse
-                </button>
-              </div>
-            </div>
-
-            <div className="query-bar">
-              <input
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Tapez votre question ici"
-              />
-              <button className="cta" type="submit" disabled={querying}>
-                {querying ? "Recherche..." : "Envoyer"}
-              </button>
-            </div>
-            {queryError && <InlineAlert tone="error">{queryError}</InlineAlert>}
-
-            <button
-              type="button"
-              className="ghost rag-advanced-toggle"
-              onClick={() => setShowAdvanced((prev) => !prev)}
-            >
-              {showAdvanced ? "Masquer les options avancées" : "Afficher les options avancées"}
-            </button>
-
-            {showAdvanced && (
-              <div className="rag-v2-advanced">
-                <div className="form-row">
-                  <label>
-                    Fournisseur chat
-                    <select value={chatProvider} onChange={(e) => setChatProvider(e.target.value)}>
-                      <option value="mistral">Mistral</option>
-                      <option value="openai">OpenAI</option>
-                      <option value="cohere">Cohere</option>
-                      <option value="groq">Groq</option>
-                      <option value="anthropic">Anthropic</option>
-                      <option value="custom">Custom</option>
-                    </select>
-                  </label>
-                  <label>
-                    Authentification chat
-                    <select value={chatAuthMode} onChange={(e) => setChatAuthMode(e.target.value)}>
-                      <option value="api_key">Clé API</option>
-                      <option value="oauth">OAuth</option>
-                      <option value="server">Clé serveur</option>
-                    </select>
-                  </label>
-                </div>
-                <div className="form-row">
-                  <label>
-                    Fournisseur embeddings
-                    <select
-                      value={embeddingProvider}
-                      onChange={(e) => setEmbeddingProvider(e.target.value)}
-                    >
-                      <option value="mistral">Mistral</option>
-                      <option value="openai">OpenAI</option>
-                      <option value="cohere">Cohere</option>
-                      <option value="custom">Custom</option>
-                    </select>
-                  </label>
-                  <label>
-                    Authentification embeddings
-                    <select
-                      value={embeddingAuthMode}
-                      onChange={(e) => setEmbeddingAuthMode(e.target.value)}
-                    >
-                      <option value="api_key">Clé API</option>
-                      <option value="oauth">OAuth</option>
-                      <option value="server">Clé serveur</option>
-                    </select>
-                  </label>
-                </div>
-                <div className="form-row">
-                  <label>
-                    Modèle chat
-                    <input value={chatModel} onChange={(e) => setChatModel(e.target.value)} />
-                  </label>
-                  <label>
-                    Modèle embeddings
-                    <input
-                      value={embeddingModel}
-                      onChange={(e) => setEmbeddingModel(e.target.value)}
-                    />
-                  </label>
-                </div>
-                <div className="form-row">
-                  <label>
-                    Base URL chat
-                    <input value={chatBaseUrl} onChange={(e) => setChatBaseUrl(e.target.value)} />
-                  </label>
-                  <label>
-                    Base URL embeddings
-                    <input
-                      value={embeddingBaseUrl}
-                      onChange={(e) => setEmbeddingBaseUrl(e.target.value)}
-                    />
-                  </label>
-                </div>
-                <div className="form-row">
-                  <label>
-                    Nom du code Légifrance (optionnel)
-                    <input
-                      value={legifranceCodeName}
-                      onChange={(e) => setLegifranceCodeName(e.target.value)}
-                      placeholder="Ex: Code du travail"
-                      disabled={sourceMode === "internal"}
-                    />
-                  </label>
-                  <label>
-                    Version à la date
-                    <input
-                      type="date"
-                      value={legifranceVersionDate}
-                      onChange={(e) => setLegifranceVersionDate(e.target.value)}
-                      disabled={sourceMode === "internal"}
-                    />
-                  </label>
-                </div>
-                <label>
-                  Résultats Légifrance par fond
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={legifranceMaxResults}
-                    onChange={(e) => setLegifranceMaxResults(Number(e.target.value || 1))}
-                    disabled={sourceMode === "internal"}
-                  />
-                </label>
-              </div>
-            )}
-          </form>
-        </article>
-      </section>
-
       <section className="rag-v2-card rag-v2-answer">
         <div className="rag-response-header">
           <h2>3. Réponse</h2>
@@ -721,16 +453,20 @@ export default function RagPage() {
                   citations,
                   createdAt: new Date().toISOString()
                 };
-                setSaved((prev) => [entry, ...prev]);
+                saveKnowledge({
+                  id: entry.id,
+                  title: question.slice(0, 80),
+                  question: entry.question,
+                  answer: entry.answer,
+                  citations: entry.citations,
+                  createdAt: entry.createdAt
+                });
               }}
             >
-              Sauvegarder
+              Sauvegarder dans Knowledge Base
             </button>
-            <button type="button" className="mini-btn" onClick={() => setShowHistory((s) => !s)}>
-              Historique
-            </button>
-            <button type="button" className="mini-btn" onClick={() => setShowSaved((s) => !s)}>
-              Sauvegardées
+            <button type="button" className="mini-btn" onClick={() => router.push("/app/documents")}>
+              Vers production documents
             </button>
           </div>
         </div>
@@ -772,69 +508,69 @@ export default function RagPage() {
         )}
       </section>
 
-      {(showSaved || showHistory) && (
-        <section className="rag-v2-grid">
-          {showSaved && (
-            <article className="rag-v2-card">
-              <div className="panel-header">
-                <strong>Réponses sauvegardées</strong>
-                <button className="ghost" onClick={() => setShowSaved(false)} type="button">
-                  Fermer
+      <form className="rag-query" onSubmit={handleQuery}>
+        <div className="query-mode">
+          <div className="mode-toggle">
+            <button
+              type="button"
+              className={`mode-btn ${sourceMode === "internal" ? "active" : ""}`}
+              onClick={() => setSourceMode("internal")}
+            >
+              Interne
+            </button>
+            <button
+              type="button"
+              className={`mode-btn ${sourceMode === "mix" ? "active" : ""}`}
+              onClick={() => setSourceMode("mix")}
+            >
+              Mix
+            </button>
+            <button
+              type="button"
+              className={`mode-btn ${sourceMode === "legifrance" ? "active" : ""}`}
+              onClick={() => setSourceMode("legifrance")}
+            >
+              Légifrance
+            </button>
+            <button type="button" className="mode-btn" onClick={() => setShowUpload(true)}>
+              + Sources
+            </button>
+            <button type="button" className="mode-btn" onClick={startVoiceInput}>
+              {dictating ? "● Dictée..." : "🎙 Dictée"}
+            </button>
+          </div>
+          <div className="chip-list">
+            {sources.slice(0, 8).map((source) => (
+              <div key={source.id} className={`chip ${selectedSources.includes(source.id) ? "chip-active" : ""}`}>
+                <button
+                  type="button"
+                  className="chip-label"
+                  onClick={() =>
+                    setSelectedSources((prev) =>
+                      prev.includes(source.id)
+                        ? prev.filter((id) => id !== source.id)
+                        : [...prev, source.id]
+                    )
+                  }
+                >
+                  {source.title}
                 </button>
               </div>
-              {saved.length === 0 && <p className="muted">Aucune réponse sauvegardée.</p>}
-              <div className="history-list">
-                {saved.map((entry) => (
-                  <article key={entry.id} className="history-card">
-                    <div className="history-card-header">
-                      <p className="muted">{entry.question}</p>
-                      <button
-                        type="button"
-                        className="mini-icon"
-                        onClick={() => navigator.clipboard.writeText(entry.answer)}
-                        title="Copier la réponse"
-                      >
-                        ⧉
-                      </button>
-                    </div>
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.answer}</ReactMarkdown>
-                  </article>
-                ))}
-              </div>
-            </article>
-          )}
-
-          {showHistory && (
-            <article className="rag-v2-card">
-              <div className="panel-header">
-                <strong>Historique</strong>
-                <button className="ghost" onClick={() => setShowHistory(false)} type="button">
-                  Fermer
-                </button>
-              </div>
-              {history.length === 0 && <p className="muted">Aucune réponse enregistrée.</p>}
-              <div className="history-list">
-                {history.map((entry) => (
-                  <article key={entry.id} className="history-card">
-                    <div className="history-card-header">
-                      <p className="muted">{entry.question}</p>
-                      <button
-                        type="button"
-                        className="mini-icon"
-                        onClick={() => navigator.clipboard.writeText(entry.answer)}
-                        title="Copier la réponse"
-                      >
-                        ⧉
-                      </button>
-                    </div>
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.answer}</ReactMarkdown>
-                  </article>
-                ))}
-              </div>
-            </article>
-          )}
-        </section>
-      )}
+            ))}
+          </div>
+        </div>
+        <div className="query-bar">
+          <input
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Posez votre question..."
+          />
+          <button className="cta" type="submit" disabled={querying}>
+            {querying ? "Recherche..." : "Envoyer"}
+          </button>
+        </div>
+        {queryError && <InlineAlert tone="error">{queryError}</InlineAlert>}
+      </form>
 
 
       {showUpload && (

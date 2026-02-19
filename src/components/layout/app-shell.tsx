@@ -1,25 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
-
-type NavItem = {
-  href: string;
-  label: string;
-  icon: "search" | "document" | "template" | "flow" | "mail" | "contacts" | "sign" | "settings";
-};
-
-type NavGroup = {
-  title: string;
-  items: NavItem[];
-};
+import { listSearchMemory, renameSearchMemory, SearchMemoryEntry } from "@/lib/rag-memory";
 
 const SHOW_DOCFLOW = process.env.NEXT_PUBLIC_FEATURE_DOCFLOW === "true";
 const SHOW_EMAIL = process.env.NEXT_PUBLIC_FEATURE_EMAIL_V2 === "true";
 
-function NavIcon({
+function Icon({
   kind
 }: {
   kind: "search" | "document" | "template" | "flow" | "mail" | "contacts" | "sign" | "settings";
@@ -91,50 +81,39 @@ function NavIcon({
   );
 }
 
+type DockMenu = "production" | "communication" | null;
+
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hoverExpanded, setHoverExpanded] = useState(false);
+  const [searchEntries, setSearchEntries] = useState<SearchMemoryEntry[]>([]);
+  const [dockMenu, setDockMenu] = useState<DockMenu>(null);
 
-  const groups: NavGroup[] = [
-    {
-      title: "Recherche",
-      items: [{ href: "/app/rag", label: "RAG juridique", icon: "search" }]
-    },
-    {
-      title: "Production",
-      items: [
-        { href: "/app/documents", label: "Documents", icon: "document" },
-        { href: "/app/templates", label: "Modèles Word", icon: "template" },
-        ...(SHOW_DOCFLOW ? [{ href: "/app/docflow", label: "DocFlow IA", icon: "flow" as const }] : [])
-      ]
-    },
-    {
-      title: "Communication",
-      items: [
-        ...(SHOW_EMAIL ? [{ href: "/app/email", label: "Emails", icon: "mail" as const }] : []),
-        { href: "/app/contacts", label: "Contacts", icon: "contacts" },
-        { href: "/app/signatures", label: "Signatures", icon: "sign" }
-      ]
-    },
-    {
-      title: "Administration",
-      items: [{ href: "/app/settings", label: "Paramètres", icon: "settings" }]
-    }
-  ];
-
-  const handleLogout = async () => {
-    const supabase = createBrowserSupabase();
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
+  const effectiveCollapsed = collapsed && !hoverExpanded;
+  const productionItems = useMemo(
+    () => [
+      { href: "/app/documents", label: "Générer un document", icon: "document" as const },
+      { href: "/app/templates", label: "Modèles Word", icon: "template" as const },
+      ...(SHOW_DOCFLOW ? [{ href: "/app/docflow", label: "DocFlow IA", icon: "flow" as const }] : [])
+    ],
+    []
+  );
+  const communicationItems = useMemo(
+    () => [
+      ...(SHOW_EMAIL ? [{ href: "/app/email", label: "Emails", icon: "mail" as const }] : []),
+      { href: "/app/contacts", label: "Contacts", icon: "contacts" as const },
+      { href: "/app/signatures", label: "Signatures", icon: "sign" as const }
+    ],
+    []
+  );
 
   useEffect(() => {
     const stored = window.localStorage.getItem("app_shell_collapsed");
-    if (stored === "1") {
-      setCollapsed(true);
-    }
+    if (stored === "1") setCollapsed(true);
+    setSearchEntries(listSearchMemory().slice(0, 12));
   }, []);
 
   useEffect(() => {
@@ -143,53 +122,113 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMobileOpen(false);
+    setDockMenu(null);
+    setSearchEntries(listSearchMemory().slice(0, 12));
   }, [pathname]);
 
+  const handleLogout = async () => {
+    const supabase = createBrowserSupabase();
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
   return (
-    <div className={collapsed ? "app-shell is-collapsed" : "app-shell"}>
-      <aside className={mobileOpen ? "app-shell-sidebar is-open" : "app-shell-sidebar"}>
-        <Link href="/app" className="app-shell-brand">
-          <span className="app-shell-brand-mark">LA</span>
-          <span className="app-shell-brand-text">Espace cabinet</span>
-        </Link>
+    <div className={effectiveCollapsed ? "app-shell is-collapsed" : "app-shell"}>
+      <aside
+        className={mobileOpen ? "app-shell-sidebar is-open" : "app-shell-sidebar"}
+        onMouseEnter={() => setHoverExpanded(true)}
+        onMouseLeave={() => setHoverExpanded(false)}
+      >
         <button
           type="button"
-          className="ghost app-shell-collapse"
+          className="app-shell-brand app-shell-brand-trigger"
           onClick={() => setCollapsed((prev) => !prev)}
-          aria-label={collapsed ? "Étendre la barre latérale" : "Replier la barre latérale"}
+          aria-label={effectiveCollapsed ? "Déplier le bandeau" : "Replier le bandeau"}
         >
-          {collapsed ? "Déplier" : "Replier"}
+          <span className="app-shell-brand-mark">LA</span>
+          <span className="app-shell-brand-text">Espace cabinet</span>
         </button>
+
         <nav className="app-shell-nav" aria-label="Navigation principale">
-          {groups.map((group) => (
-            <section key={group.title} className="app-shell-group">
-              <h2>{group.title}</h2>
-              <div className="app-shell-links">
-                {group.items.map((item) => {
-                  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      title={collapsed ? item.label : undefined}
-                      aria-current={active ? "page" : undefined}
-                      className={active ? "app-shell-link active" : "app-shell-link"}
-                    >
-                      <span className="app-shell-link-icon">
-                        <NavIcon kind={item.icon} />
-                      </span>
-                      <span className="app-shell-link-label">{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
+          <Link
+            href="/app/rag"
+            className={pathname.startsWith("/app/rag") ? "app-shell-link active" : "app-shell-link"}
+          >
+            <span className="app-shell-link-icon"><Icon kind="search" /></span>
+            <span className="app-shell-link-label">Recherche</span>
+          </Link>
+          <Link
+            href="/app/knowledge"
+            className={pathname.startsWith("/app/knowledge") ? "app-shell-link active" : "app-shell-link"}
+          >
+            <span className="app-shell-link-icon"><Icon kind="template" /></span>
+            <span className="app-shell-link-label">Knowledge Base</span>
+          </Link>
+
+          {!effectiveCollapsed && (
+            <section className="app-shell-memory">
+              <h2>Recherches mémorisées</h2>
+              {searchEntries.length === 0 && <p className="muted">Aucune recherche enregistrée.</p>}
+              {searchEntries.map((entry) => (
+                <div key={entry.id} className="app-shell-memory-item">
+                  <Link href={`/app/rag?entry=${entry.id}`}>{entry.title}</Link>
+                  <button
+                    type="button"
+                    className="app-shell-mini"
+                    onClick={() => {
+                      const next = window.prompt("Modifier le titre", entry.title);
+                      if (!next) return;
+                      renameSearchMemory(entry.id, next);
+                      setSearchEntries(listSearchMemory().slice(0, 12));
+                    }}
+                  >
+                    ✎
+                  </button>
+                </div>
+              ))}
             </section>
-          ))}
+          )}
         </nav>
-        <button type="button" className="ghost app-shell-logout" onClick={handleLogout}>
-          Déconnexion
-        </button>
+
+        <div className="app-shell-dock">
+          <button
+            type="button"
+            className="app-shell-dock-btn"
+            onMouseEnter={() => setDockMenu("production")}
+            onClick={() => setDockMenu((prev) => (prev === "production" ? null : "production"))}
+            aria-label="Production"
+          >
+            <Icon kind="document" />
+          </button>
+          <button
+            type="button"
+            className="app-shell-dock-btn"
+            onMouseEnter={() => setDockMenu("communication")}
+            onClick={() => setDockMenu((prev) => (prev === "communication" ? null : "communication"))}
+            aria-label="Communication"
+          >
+            <Icon kind="mail" />
+          </button>
+          <Link href="/app/settings" className="app-shell-dock-btn" aria-label="Réglages">
+            <Icon kind="settings" />
+          </Link>
+          <button type="button" className="app-shell-dock-btn" onClick={handleLogout} aria-label="Déconnexion">
+            ×
+          </button>
+
+          {dockMenu && (
+            <div className="app-shell-flyout" onMouseLeave={() => setDockMenu(null)}>
+              {(dockMenu === "production" ? productionItems : communicationItems).map((item) => (
+                <Link key={item.href} href={item.href} className="app-shell-flyout-link">
+                  <span className="app-shell-link-icon"><Icon kind={item.icon} /></span>
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </aside>
+
       <section className="app-shell-content">
         <header className="app-shell-topbar">
           <div className="app-shell-topbar-left">

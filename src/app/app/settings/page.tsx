@@ -41,6 +41,7 @@ export default function SettingsPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [settingsMessage, setSettingsMessage] = useState<string | null>(null);
   const [testMessage, setTestMessage] = useState<string | null>(null);
+  const [settingsMenu, setSettingsMenu] = useState<"general" | "chat" | "embeddings" | "admin">("general");
 
   useEffect(() => {
     const supabase = createBrowserSupabase();
@@ -292,6 +293,21 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      <section className="module-card">
+        <label>
+          Rubrique
+          <select
+            value={settingsMenu}
+            onChange={(event) => setSettingsMenu(event.target.value as "general" | "chat" | "embeddings" | "admin")}
+          >
+            <option value="general">Général</option>
+            <option value="chat">Chat</option>
+            <option value="embeddings">Embeddings</option>
+            <option value="admin">Administration</option>
+          </select>
+        </label>
+      </section>
+
       <section className="module-grid">
         <div className="module-list">
           <div className="module-card settings-config-card">
@@ -337,47 +353,53 @@ export default function SettingsPage() {
               </select>
             </label>
 
-            {providerSelection !== "__default__" && (
+            {providerSelection !== "__default__" && settingsMenu !== "admin" && (
               <>
-                <div className="module-note">Presets rapides</div>
-                <div className="form-row">
-                  <button
-                    type="button"
-                    className="ghost"
-                    onClick={() => {
-                      setChatProvider("groq");
-                      setChatAuthMode("api_key");
-                      setChatBaseUrl("https://api.groq.com/openai/v1");
-                      setChatModel("llama-3.3-70b-versatile");
-                      setEmbeddingProvider("cohere");
-                      setEmbeddingAuthMode("api_key");
-                      setEmbeddingBaseUrl("https://api.cohere.com");
-                      setEmbeddingModel("embed-multilingual-v3.0");
-                      setSettingsMessage(null);
-                    }}
-                  >
-                    RAG premium (Groq + Cohere)
-                  </button>
-                  <button
-                    type="button"
-                    className="ghost"
-                    onClick={() => {
-                      setChatProvider("gemini");
-                      setChatAuthMode("api_key");
-                      setChatBaseUrl("https://generativelanguage.googleapis.com/v1beta");
-                      setChatModel("gemini-2.5-pro");
-                      setEmbeddingProvider("mistral");
-                      setEmbeddingAuthMode("server");
-                      setEmbeddingBaseUrl("");
-                      setEmbeddingModel("");
-                      setSettingsMessage(null);
-                    }}
-                  >
-                    RAG stable (Gemini + Mistral)
-                  </button>
-                </div>
+                {settingsMenu === "general" && (
+                  <>
+                    <div className="module-note">Presets rapides</div>
+                    <div className="form-row">
+                      <button
+                        type="button"
+                        className="ghost"
+                        onClick={() => {
+                          setChatProvider("groq");
+                          setChatAuthMode("api_key");
+                          setChatBaseUrl("https://api.groq.com/openai/v1");
+                          setChatModel("llama-3.3-70b-versatile");
+                          setEmbeddingProvider("cohere");
+                          setEmbeddingAuthMode("api_key");
+                          setEmbeddingBaseUrl("https://api.cohere.com");
+                          setEmbeddingModel("embed-multilingual-v3.0");
+                          setSettingsMessage(null);
+                        }}
+                      >
+                        RAG premium (Groq + Cohere)
+                      </button>
+                      <button
+                        type="button"
+                        className="ghost"
+                        onClick={() => {
+                          setChatProvider("gemini");
+                          setChatAuthMode("api_key");
+                          setChatBaseUrl("https://generativelanguage.googleapis.com/v1beta");
+                          setChatModel("gemini-2.5-pro");
+                          setEmbeddingProvider("mistral");
+                          setEmbeddingAuthMode("server");
+                          setEmbeddingBaseUrl("");
+                          setEmbeddingModel("");
+                          setSettingsMessage(null);
+                        }}
+                      >
+                        RAG stable (Gemini + Mistral)
+                      </button>
+                    </div>
+                  </>
+                )}
 
-                <div className="module-note">2. Chat</div>
+                {(settingsMenu === "general" || settingsMenu === "chat") && (
+                  <>
+                    <div className="module-note">2. Chat</div>
                 <label>
                   Fournisseur chat
                   <select
@@ -506,8 +528,12 @@ export default function SettingsPage() {
                 >
                   Tester le chat
                 </button>
+                  </>
+                )}
 
-                <div className="module-note">3. Embeddings</div>
+                {(settingsMenu === "general" || settingsMenu === "embeddings") && (
+                  <>
+                    <div className="module-note">3. Embeddings</div>
                 <label>
                   Fournisseur embeddings
                   <select
@@ -636,6 +662,8 @@ export default function SettingsPage() {
                 >
                   Tester les embeddings
                 </button>
+                  </>
+                )}
               </>
             )}
 
@@ -646,24 +674,24 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          <div className="module-card">
+          {settingsMenu === "admin" && <div className="module-card">
             <h2>Accès & rôles</h2>
             <p className="muted">Gérez les collaborateurs et leurs permissions.</p>
             <button className="ghost" type="button" onClick={() => router.push("/app/settings/roles")}>
               Ouvrir
             </button>
-          </div>
+          </div>}
 
-          <div className="module-card">
+          {settingsMenu === "admin" && <div className="module-card">
             <h2>Sécurité</h2>
             <p className="muted">Journalisation, contrôles et bonnes pratiques.</p>
             <button className="ghost" type="button" onClick={() => router.push("/app/settings/security")}>
               Ouvrir
             </button>
-          </div>
+          </div>}
         </div>
 
-        <aside className="module-panel">
+        {settingsMenu === "admin" && <aside className="module-panel">
           <h2>Actions admin</h2>
           <ul>
             <li>Configurer SMTP pour l&apos;envoi.</li>
@@ -679,7 +707,7 @@ export default function SettingsPage() {
           <button className="ghost" onClick={() => router.push("/app/settings/stats")}>
             Statistiques
           </button>
-        </aside>
+        </aside>}
       </section>
     </main>
   );
