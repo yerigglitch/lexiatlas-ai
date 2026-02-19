@@ -7,7 +7,8 @@ type PageHeaderProps = {
 export default function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
   return (
     <header className="ui-page-header">
-      <div>
+      <div className="ui-page-title-wrap">
+        <span className="ui-page-kicker">LexiAtlas Workspace</span>
         <h1>{title}</h1>
         {subtitle ? <p>{subtitle}</p> : null}
       </div>

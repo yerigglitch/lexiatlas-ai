@@ -167,12 +167,6 @@ export default function DocumentsPage() {
 
         <aside className="module-list">
           <article className="module-card">
-            <h3>Exemple de variables</h3>
-            <p>{"{{client}}"} → Jean Dupont</p>
-            <p>{"{{date}}"} → 05/02/2026</p>
-            <p>{"{{dossier}}"} → 24-AC-190</p>
-          </article>
-          <article className="module-card">
             <h3>Documents récents</h3>
             {documents.length === 0 && (
               <EmptyState

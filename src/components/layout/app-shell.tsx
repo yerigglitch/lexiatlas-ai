@@ -200,13 +200,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="app-shell-dock">
-          <Link href={productionHref} className="app-shell-dock-btn" aria-label="Production">
+          <Link href={productionHref} className="app-shell-dock-btn production" aria-label="Production">
             <Icon kind="document" />
           </Link>
-          <Link href={communicationHref} className="app-shell-dock-btn" aria-label="Communication">
+          <Link href={communicationHref} className="app-shell-dock-btn communication" aria-label="Communication">
             <Icon kind="mail" />
           </Link>
-          <Link href="/app/settings" className="app-shell-dock-btn" aria-label="Réglages">
+          <Link href="/app/settings" className="app-shell-dock-btn settings" aria-label="Réglages">
             <Icon kind="settings" />
           </Link>
         </div>
@@ -225,9 +225,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <p>LexiAtlas</p>
           </div>
           <div className="app-shell-topbar-right">
-            <span>Assistant juridique opérationnel</span>
+            <span className="app-shell-topbar-tag">Recherche augmentée et production documentaire</span>
             <button type="button" className="ghost app-shell-logout-btn" onClick={handleLogout}>
-              Déconnexion
+              Se déconnecter
             </button>
           </div>
         </header>

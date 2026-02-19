@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Manrope:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600&display=swap");
 
 :root {
   --bg: #f6efe8;
@@ -2344,5 +2344,516 @@ button:hover,
   .reveal {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ---------- App Rebuild: Editorial Utility ---------- */
+:root {
+  --app-paper: #f3efe7;
+  --app-paper-2: #ede5d9;
+  --app-ink: #121417;
+  --app-ink-soft: #3b424d;
+  --app-line: #c7bcad;
+  --app-panel: #f8f5ee;
+  --app-panel-strong: #fffdf7;
+  --app-accent: #b53a2c;
+  --app-accent-soft: #e6b8ae;
+  --app-shadow: 0 18px 44px rgba(12, 16, 22, 0.14);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(18, 20, 23, 0.12) 0.45px, transparent 0.45px);
+  background-size: 3px 3px;
+  mix-blend-mode: multiply;
+  opacity: 0.08;
+  z-index: 1;
+}
+
+.app-shell {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  grid-template-columns: 306px minmax(0, 1fr);
+  background:
+    linear-gradient(172deg, rgba(234, 224, 210, 0.8) 0%, rgba(243, 239, 231, 0.96) 32%, rgba(239, 235, 227, 0.95) 100%);
+}
+
+.app-shell.is-collapsed {
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+
+.app-shell-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 20px 14px 14px;
+  border-right: 1px solid var(--app-line);
+  background:
+    linear-gradient(180deg, #161a1f 0%, #13161b 100%);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+.app-shell-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 42px);
+  pointer-events: none;
+}
+
+.app-shell-sidebar-top,
+.app-shell-nav,
+.app-shell-dock {
+  position: relative;
+  z-index: 1;
+}
+
+.app-shell-brand {
+  color: #f2ecde;
+}
+
+.app-shell-brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 2px;
+  background: linear-gradient(145deg, #b53a2c, #87291f);
+  letter-spacing: 0.12em;
+}
+
+.app-shell-brand-text {
+  font-family: "Fraunces", serif;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+.app-shell-collapse-btn {
+  border-radius: 2px;
+  border-color: rgba(255, 255, 255, 0.26);
+  color: #f2ecde;
+  background: rgba(17, 20, 25, 0.45);
+}
+
+.app-shell-nav {
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.app-shell-link {
+  border-radius: 2px;
+  color: #d5d0c4;
+  border: 1px solid transparent;
+  font-weight: 500;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.app-shell-link:hover {
+  border-color: rgba(213, 208, 196, 0.32);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(3px);
+}
+
+.app-shell-link.active {
+  border-color: rgba(229, 208, 183, 0.35);
+  color: #fff8ea;
+  background: linear-gradient(120deg, rgba(181, 58, 44, 0.42), rgba(181, 58, 44, 0.08));
+}
+
+.app-shell-memory h2 {
+  color: rgba(245, 237, 220, 0.75);
+  font-family: "IBM Plex Mono", monospace;
+  letter-spacing: 0.12em;
+}
+
+.app-shell-memory-item a {
+  color: #c2bcaf;
+}
+
+.app-shell-memory-item a:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #f5efdf;
+}
+
+.app-shell-mini {
+  border-radius: 2px;
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ddd4c2;
+}
+
+.app-shell-dock {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  padding-top: 10px;
+  gap: 10px;
+}
+
+.app-shell-dock-btn {
+  min-height: 42px;
+  border-radius: 2px;
+  border-color: rgba(238, 230, 217, 0.35);
+  color: #f4ecdc;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.app-shell-dock-btn:hover {
+  border-color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.app-shell-dock-btn.production {
+  color: #ffd7be;
+}
+
+.app-shell-dock-btn.communication {
+  color: #c8d8ff;
+}
+
+.app-shell-dock-btn.settings {
+  color: #d6e6c2;
+}
+
+.app-shell-content {
+  padding: 20px 28px 28px;
+  background:
+    radial-gradient(circle at 8% 4%, rgba(181, 58, 44, 0.13), transparent 34%),
+    radial-gradient(circle at 88% 2%, rgba(12, 26, 54, 0.1), transparent 40%),
+    linear-gradient(180deg, rgba(248, 245, 238, 0.94) 0%, rgba(240, 235, 227, 0.9) 100%);
+}
+
+.app-shell-topbar {
+  border-bottom: 1px solid var(--app-line);
+  background: rgba(245, 241, 233, 0.82);
+  backdrop-filter: blur(4px);
+}
+
+.app-shell-topbar p {
+  color: #64584b;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.app-shell-topbar-tag {
+  color: var(--app-ink-soft);
+  font-size: 0.78rem;
+  padding: 6px 8px;
+  border: 1px dashed #b5a896;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.app-shell-logout-btn {
+  border-radius: 2px;
+  border-color: #1a1d23 !important;
+  background: #1a1d23 !important;
+  color: #f2ecdf !important;
+}
+
+.app-shell-page > main {
+  animation: app-fade-rise 0.46s ease both;
+}
+
+.ui-page-header {
+  border-radius: 2px;
+  padding: 16px 16px 14px;
+  border: 1px solid var(--app-line);
+  background: linear-gradient(135deg, rgba(255, 252, 245, 0.8), rgba(249, 245, 236, 0.94));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.56);
+}
+
+.ui-page-title-wrap {
+  display: grid;
+  gap: 4px;
+}
+
+.ui-page-kicker {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.67rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #7c6c5d;
+}
+
+.ui-page-header h1 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: clamp(1.52rem, 0.8vw + 1.2rem, 2.1rem);
+  letter-spacing: -0.01em;
+  color: #171a20;
+}
+
+.ui-page-header p {
+  margin: 0;
+  color: #534b40;
+  max-width: 72ch;
+  font-size: 0.95rem;
+}
+
+.ui-page-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.app-shell .cta,
+.app-shell .ghost,
+.app-shell-page .mini-btn,
+.app-shell-page .mode-btn,
+.app-shell-page .icon-btn {
+  border-radius: 2px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.app-shell .cta {
+  background: linear-gradient(135deg, #b53a2c, #892a20);
+  border-color: rgba(102, 27, 20, 0.84);
+  box-shadow: 0 10px 20px rgba(130, 36, 27, 0.26);
+}
+
+.app-shell .ghost {
+  background: #faf6ef;
+  border-color: #b7aa98;
+  color: #1d222a;
+}
+
+.app-shell-page input,
+.app-shell-page select,
+.app-shell-page textarea {
+  border-radius: 2px;
+  border: 1px solid #b8ac9b;
+  background: #fffdf8;
+  color: #111318;
+}
+
+.app-shell-page input:focus,
+.app-shell-page select:focus,
+.app-shell-page textarea:focus {
+  border-color: #944033;
+  box-shadow: 0 0 0 3px rgba(181, 58, 44, 0.12);
+  outline: none;
+}
+
+.dashboard,
+.module,
+.email-workspace,
+.email-templates-page,
+.rag {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.dashboard-overview-grid,
+.module-grid,
+.email-grid,
+.rag-v2-grid {
+  gap: 12px;
+}
+
+.dash-card,
+.module-card,
+.module-panel,
+.email-panel,
+.rag-v2-card,
+.settings-summary-card,
+.ui-empty-state,
+.history-card,
+.modal,
+.citation-modal {
+  border-radius: 2px;
+  border: 1px solid var(--app-line);
+  background: linear-gradient(170deg, var(--app-panel-strong), var(--app-panel));
+  box-shadow: var(--app-shadow);
+}
+
+.dash-card h2,
+.module-card h2,
+.module-card h3,
+.module-panel h2,
+.email-panel h2,
+.rag-v2-card h2 {
+  font-family: "Fraunces", serif;
+  letter-spacing: -0.01em;
+}
+
+.module-note,
+.status-chip,
+.app-shell-page .muted,
+.app-shell-page .success,
+.app-shell-page .error {
+  border-radius: 2px;
+}
+
+.module-note {
+  border: 1px dashed #baa894;
+  background: #f8f1e5;
+  color: #453d33;
+}
+
+.status-chip.sent {
+  background: #e0efe2;
+  color: #1f5f40;
+}
+
+.status-chip.failed {
+  background: #f8dfdc;
+  color: #822c22;
+}
+
+.status-chip.draft {
+  background: #ece7df;
+  color: #46413b;
+}
+
+.app-shell-page .chip {
+  border-radius: 2px;
+  border-color: #bcae9d;
+  background: #fbf8f1;
+}
+
+.app-shell-page .chip-active {
+  background: #1c1f25;
+  border-color: #1c1f25;
+  color: #f3edde;
+}
+
+.rag-query {
+  border: 1px solid var(--app-line);
+  border-radius: 2px;
+  background: rgba(251, 248, 241, 0.98);
+  box-shadow: 0 20px 38px rgba(17, 24, 34, 0.16);
+}
+
+.query-bar {
+  background: #fffdf8;
+  border-radius: 2px;
+  border: 1px solid #c2b6a5;
+}
+
+.query-bar input {
+  border: 0;
+  background: transparent;
+}
+
+.query-mode {
+  border-bottom: 1px dashed #bcae9d;
+  padding-bottom: 8px;
+}
+
+.citation-list .cite-card {
+  border-radius: 2px;
+  border: 1px solid #c3b8a8;
+  background: #fcf8f1;
+}
+
+.citation-list .cite-card:hover {
+  background: #f5ece0;
+  border-color: #a1907d;
+}
+
+.email-grid,
+.module-grid {
+  align-items: start;
+}
+
+.dashboard-overview-grid > *,
+.module-grid > *,
+.email-grid > *,
+.module-list > * {
+  animation: app-fade-rise 0.5s ease both;
+}
+
+.dashboard-overview-grid > *:nth-child(2),
+.module-grid > *:nth-child(2),
+.email-grid > *:nth-child(2),
+.module-list > *:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.dashboard-overview-grid > *:nth-child(3),
+.module-grid > *:nth-child(3),
+.email-grid > *:nth-child(3),
+.module-list > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.ui-inline-alert {
+  border-radius: 2px;
+  border: 1px solid;
+  padding: 8px 10px;
+}
+
+.ui-inline-alert.error {
+  border-color: #b46a5f;
+  background: #f8e8e6;
+}
+
+.ui-inline-alert.success {
+  border-color: #7b9a82;
+  background: #e9f4ea;
+}
+
+.ui-empty-state {
+  padding: 20px;
+}
+
+.ui-empty-state h2 {
+  font-family: "Fraunces", serif;
+}
+
+@keyframes app-fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1120px) {
+  .app-shell {
+    grid-template-columns: 266px minmax(0, 1fr);
+  }
+
+  .app-shell.is-collapsed {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .app-shell-topbar-tag {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .app-shell-sidebar {
+    background: linear-gradient(180deg, #171b21, #12161b);
+  }
+
+  .app-shell-content {
+    padding: 14px 12px 18px;
+  }
+
+  .ui-page-header,
+  .dash-card,
+  .module-card,
+  .module-panel,
+  .email-panel,
+  .rag-v2-card,
+  .settings-summary-card {
+    box-shadow: 0 12px 24px rgba(17, 24, 34, 0.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell-page > main,
+  .dashboard-overview-grid > *,
+  .module-grid > *,
+  .email-grid > *,
+  .module-list > * {
+    animation: none !important;
   }
 }
