@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase-server";
-import { extractTextFromBuffer, chunkText } from "@/lib/text-extract";
+import { extractTextFromBuffer, chunkText, normalizeToMarkdown } from "@/lib/text-extract";
 import { extractTextWithOcr } from "@/lib/ocr";
 import { Provider } from "@/lib/llm";
 import { getAuthContext } from "@/lib/auth-server";
@@ -129,7 +129,8 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const chunks = chunkText(text, { maxChars: 1200, overlapChars: 200 });
+  const markdownText = normalizeToMarkdown(text);
+  const chunks = chunkText(markdownText || text, { maxChars: 1200, overlapChars: 200 });
   if (!chunks.length) {
     await supabase.from("sources").update({ status: "empty" }).eq("id", sourceInsert.data.id);
     return NextResponse.json({ error: "Document vide ou illisible (OCR requis)." }, { status: 400 });

@@ -8,7 +8,7 @@ import { getUserOauthToken } from "@/lib/oauth-tokens";
 import { mapProviderError } from "@/lib/ai-errors";
 import { embedTextsBatched } from "@/lib/embed-batch";
 import { createSimplePdf } from "@/lib/pdf";
-import { chunkText } from "@/lib/text-extract";
+import { chunkText, normalizeToMarkdown } from "@/lib/text-extract";
 
 export const runtime = "nodejs";
 
@@ -16,8 +16,12 @@ function stripHtml(html: string) {
   return html
     .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<\/(p|div|li|h1|h2|h3|h4|h5|h6|section|article|tr)>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "\n- ")
     .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
@@ -134,7 +138,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const chunks = chunkText(text, { maxChars: 1200, overlapChars: 200 });
+  const markdownText = normalizeToMarkdown(text);
+  const chunks = chunkText(markdownText || text, { maxChars: 1200, overlapChars: 200 });
   let embeddings: number[][] = [];
   try {
     const batchSize = provider === "cohere" ? 96 : provider === "mistral" ? 24 : 128;

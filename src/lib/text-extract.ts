@@ -75,11 +75,75 @@ type ChunkOptions = {
   overlapChars?: number;
 };
 
+const LEGAL_HEADING_RE =
+  /^(article|chapitre|section|titre|partie|annexe|sommaire|visa|expose|dispositif)\b/i;
+
 function sliceWithWordBoundary(text: string, maxChars: number) {
   if (text.length <= maxChars) return text;
   const slice = text.slice(0, maxChars);
   const lastSpace = slice.lastIndexOf(" ");
   return lastSpace > 0 ? slice.slice(0, lastSpace) : slice;
+}
+
+function isHeadingLike(line: string) {
+  const cleaned = line.trim();
+  if (!cleaned || cleaned.length > 110) return false;
+  if (/^[-*•]\s+/.test(cleaned)) return false;
+  if (/^\d+[.)]\s+/.test(cleaned)) return false;
+  if (LEGAL_HEADING_RE.test(cleaned)) return true;
+  if (/^[A-Z0-9À-ÖØ-Þ\s'’"()\-.:]{4,}$/.test(cleaned) && cleaned.split(" ").length <= 12) {
+    return true;
+  }
+  if (/:$/.test(cleaned) && cleaned.split(" ").length <= 12) {
+    return true;
+  }
+  return false;
+}
+
+export function normalizeToMarkdown(text: string) {
+  const normalized = text
+    .replace(/\r\n/g, "\n")
+    .replace(/\u00A0/g, " ")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  if (!normalized) return "";
+
+  const lines = normalized.split("\n");
+  const out: string[] = [];
+  let blankStreak = 0;
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) {
+      blankStreak += 1;
+      if (blankStreak <= 1) out.push("");
+      continue;
+    }
+    blankStreak = 0;
+
+    if (/^[-*•·▪◦]\s+/.test(line)) {
+      out.push(`- ${line.replace(/^[-*•·▪◦]\s+/, "").trim()}`);
+      continue;
+    }
+
+    if (/^\(?\d{1,3}[.)]\s+/.test(line)) {
+      const next = line.replace(/^\(?(\d{1,3})[.)]\s+/, "$1. ").trim();
+      out.push(next);
+      continue;
+    }
+
+    if (isHeadingLike(line)) {
+      const heading = line.replace(/:+$/, "").replace(/\s{2,}/g, " ").trim();
+      out.push(`## ${heading}`);
+      continue;
+    }
+
+    out.push(line);
+  }
+
+  return out.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 export function chunkText(text: string, options: ChunkOptions = {}) {
