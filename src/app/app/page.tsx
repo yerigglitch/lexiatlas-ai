@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import PageHeader from "@/components/ui/page-header";
 
 export default function AppPage() {
   const router = useRouter();
@@ -34,95 +35,99 @@ export default function AppPage() {
     return () => subscription.subscription.unsubscribe();
   }, [router]);
 
-  const handleLogout = async () => {
-    const supabase = createBrowserSupabase();
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
-
   if (loading) {
     return <main className="auth"><p>Chargement...</p></main>;
   }
 
   return (
     <main className="dashboard">
-      <header className="dashboard-header">
-        <div>
-          <h1>Espace cabinet</h1>
-          <p>Bienvenue {email}. Voici votre tableau de bord quotidien.</p>
-        </div>
-        <div className="dashboard-actions">
-          <a className="ghost" href="/app/rag">
-            Ouvrir le RAG
-          </a>
-          <a className="cta" href="/app/settings">
-            Réglages
-          </a>
-        </div>
-      </header>
+      <PageHeader
+        title="Espace cabinet"
+        subtitle={`Bienvenue ${email}. Voici votre tableau de bord quotidien.`}
+        actions={
+          <>
+            <a className="ghost" href="/app/settings">
+              Réglages
+            </a>
+            <a className="cta" href="/app/rag">
+              Ouvrir le RAG
+            </a>
+          </>
+        }
+      />
 
-      <section className="dashboard-grid">
-        <aside className="dash-rail">
-          <a className="rail-btn" href="/app/rag">Recherche RAG</a>
-          <a className="rail-btn" href="/app/templates">Modèles Word</a>
-          {featureDocflow && <a className="rail-btn" href="/app/docflow">DocFlow IA</a>}
-          <a className="rail-btn" href="/app/documents">Générer un document</a>
-          {featureEmailV2 && <a className="rail-btn" href="/app/email">Emails</a>}
-          <a className="rail-btn" href="/app/contacts">Contacts</a>
-          <a className="rail-btn" href="/app/signatures">Signature qualifiée</a>
-          <a className="rail-btn" href="/app/settings/email">SMTP</a>
-          <a className="rail-btn" href="/app/settings/yousign">Yousign</a>
-          <a className="rail-btn" href="/app/settings/stats">Statistiques</a>
-        </aside>
-
-        <div className="dash-main">
-          <div className="dash-card">
-            <h2>À faire aujourd&apos;hui</h2>
-            <ul>
-              <li>Importer vos premières sources (codes, jurisprudence, notes).</li>
-              <li>Ajouter un modèle Word (ex: courrier de relance).</li>
-              <li>Configurer l&apos;envoi email du cabinet.</li>
-            </ul>
+      <section className="dashboard-overview-grid">
+        <article className="dash-card">
+          <h2>Démarrer une tâche</h2>
+          <div className="quick-actions">
+            <a className="ghost" href="/app/rag">
+              Recherche RAG
+            </a>
+            <a className="ghost" href="/app/documents">
+              Générer un document
+            </a>
+            {featureDocflow && (
+              <a className="ghost" href="/app/docflow">
+                DocFlow IA
+              </a>
+            )}
+            {featureEmailV2 && (
+              <a className="ghost" href="/app/email">
+                Ouvrir les emails
+              </a>
+            )}
           </div>
-          <div className="dash-card">
-            <h2>Vue d&apos;ensemble</h2>
-            <div className="dash-stats">
-              <div>
-                <strong>—</strong>
-                <span>Sources</span>
-              </div>
-              <div>
-                <strong>—</strong>
-                <span>Documents</span>
-              </div>
-              <div>
-                <strong>—</strong>
-                <span>Emails envoyés</span>
-              </div>
+        </article>
+
+        <article className="dash-card">
+          <h2>Actions recommandees</h2>
+          <ul>
+            <li>Importer vos premières sources (codes, jurisprudence, notes).</li>
+            <li>Ajouter un modèle Word (ex: courrier de relance).</li>
+            <li>Vérifier SMTP avant votre premier envoi client.</li>
+          </ul>
+        </article>
+
+        <article className="dash-card">
+          <h2>Vue d&apos;ensemble</h2>
+          <div className="dash-stats">
+            <div>
+              <strong>—</strong>
+              <span>Sources</span>
             </div>
-            <p className="muted">
-              Les statistiques détaillées sont disponibles dans l&apos;onglet Statistiques.
-            </p>
+            <div>
+              <strong>—</strong>
+              <span>Documents</span>
+            </div>
+            <div>
+              <strong>—</strong>
+              <span>Emails</span>
+            </div>
           </div>
-          <div className="dash-card">
-            <h2>Conseils d&apos;usage</h2>
-            <p>
-              Pour des réponses fiables, sélectionnez toujours les sources pertinentes
-              et privilégiez la recherche “par source” lorsque vous comparez plusieurs
-              documents.
-            </p>
-          </div>
-        </div>
+          <p className="muted">Les statistiques détaillées sont disponibles dans Paramètres.</p>
+        </article>
       </section>
 
-      <div className="floating-actions">
-        <a className="icon-btn" href="/app/settings" title="Réglages">
-          <span className="icon-glyph" aria-hidden>⚙</span>
-        </a>
-        <button className="icon-btn" type="button" onClick={handleLogout} title="Se déconnecter">
-          <span className="icon-glyph" aria-hidden>⏻</span>
-        </button>
-      </div>
+      <section className="dash-card">
+        <h2>Raccourcis utiles</h2>
+        <div className="dashboard-actions">
+          <a className="ghost" href="/app/rag">
+            Recherche
+          </a>
+          <a className="ghost" href="/app/templates">
+            Modèles Word
+          </a>
+          <a className="ghost" href="/app/contacts">
+            Contacts
+          </a>
+          <a className="ghost" href="/app/signatures">
+            Signatures
+          </a>
+          <a className="ghost" href="/app/settings">
+            Paramètres
+          </a>
+        </div>
+      </section>
     </main>
   );
 }

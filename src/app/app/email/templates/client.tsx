@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import EmptyState from "@/components/ui/empty-state";
+import InlineAlert from "@/components/ui/inline-alert";
+import PageHeader from "@/components/ui/page-header";
 
 type TemplateVariable = {
   key: string;
@@ -195,32 +198,38 @@ export default function EmailTemplatesPage() {
 
   return (
     <main className="email-templates-page">
-      <header className="module-header">
-        <div>
-          <h1>Templates email</h1>
-          <p>Créez, testez, et archivez vos modèles d&apos;emails.</p>
-        </div>
-        <div className="module-actions">
-          <button className="ghost" onClick={() => router.push("/app/email")}>Retour</button>
-          <button
-            className="ghost"
-            onClick={() => {
-              setSelectedId(null);
-              setName("");
-              setDescription("");
-              setSubjectTemplate("Bonjour {{client_name}}");
-              setBodyTemplate("<p>Bonjour {{client_name}},</p>\n<p>...</p>");
-            }}
-          >
-            Nouveau
-          </button>
-          <button className="cta" onClick={saveTemplate}>Enregistrer</button>
-        </div>
-      </header>
+      <PageHeader
+        title="Templates email"
+        subtitle="Créez, testez et archivez vos modèles d'emails."
+        actions={
+          <>
+            <button className="ghost" onClick={() => router.push("/app/email")}>Retour</button>
+            <button
+              className="ghost"
+              onClick={() => {
+                setSelectedId(null);
+                setName("");
+                setDescription("");
+                setSubjectTemplate("Bonjour {{client_name}}");
+                setBodyTemplate("<p>Bonjour {{client_name}},</p>\n<p>...</p>");
+              }}
+            >
+              Nouveau
+            </button>
+            <button className="cta" onClick={saveTemplate}>Enregistrer</button>
+          </>
+        }
+      />
 
       <section className="email-grid">
         <aside className="email-panel drafts-panel">
           <h2>Bibliothèque</h2>
+          {templates.length === 0 && (
+            <EmptyState
+              title="Aucun template"
+              description="Créez votre premier modèle pour accélérer la rédaction."
+            />
+          )}
           {templates.map((template) => (
             <button
               key={template.id}
@@ -260,8 +269,8 @@ export default function EmailTemplatesPage() {
               Archiver ce template
             </button>
           )}
-          {error && <p className="error">{error}</p>}
-          {success && <p className="success">{success}</p>}
+          {error && <InlineAlert tone="error">{error}</InlineAlert>}
+          {success && <InlineAlert tone="success">{success}</InlineAlert>}
         </section>
 
         <aside className="email-panel preview-panel">

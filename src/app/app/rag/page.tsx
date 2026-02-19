@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import EmptyState from "@/components/ui/empty-state";
+import InlineAlert from "@/components/ui/inline-alert";
+import PageHeader from "@/components/ui/page-header";
 
 type Citation = {
   id: string;
@@ -81,6 +84,7 @@ export default function RagPage() {
   const [chatBaseUrl, setChatBaseUrl] = useState("");
   const [embeddingBaseUrl, setEmbeddingBaseUrl] = useState("");
   const [embeddingModel, setEmbeddingModel] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [sourceMode, setSourceMode] = useState<"internal" | "legifrance" | "mix">(
     "internal"
   );
@@ -388,25 +392,35 @@ export default function RagPage() {
   }
 
   return (
-    <main className="rag">
-      <header className="rag-header">
-        <div>
-          <h1>Recherche RAG</h1>
-          <p>Interrogez vos sources internes avec traçabilité.</p>
-        </div>
-        <button className="ghost" onClick={() => router.push("/app")}>Retour</button>
-      </header>
-
-      <section className="rag-top">
-        <div className="rag-sources">
-          <div className="rag-sources-header">
-            <h2>Sources</h2>
-            <button className="ghost" type="button" onClick={() => setShowUpload(true)}>
+    <main className="rag rag-v2">
+      <PageHeader
+        title="Recherche RAG"
+        subtitle="Interrogez vos sources internes et Légifrance avec traçabilité."
+        actions={
+          <>
+            <button className="ghost" type="button" onClick={() => router.push("/app/settings")}>
+              Réglages IA
+            </button>
+            <button className="cta" type="button" onClick={() => setShowUpload(true)}>
               Ajouter une source
             </button>
+          </>
+        }
+      />
+
+      <section className="rag-v2-grid">
+        <article className="rag-v2-card">
+          <div className="rag-sources-header">
+            <h2>1. Sources</h2>
           </div>
+          <p className="muted">Sélectionnez les sources à inclure dans la réponse.</p>
           <div className="chip-list">
-            {sources.length === 0 && <span className="muted">Aucune source importée.</span>}
+            {sources.length === 0 && (
+              <EmptyState
+                title="Aucune source interne"
+                description="Importez PDF, DOCX, texte ou URL pour commencer."
+              />
+            )}
             {sources.map((source) => {
               const selected = selectedSources.includes(source.id);
               return (
@@ -460,9 +474,7 @@ export default function RagPage() {
                       className="chip-icon"
                       onClick={async (e) => {
                         e.stopPropagation();
-                        const ok = window.confirm(
-                          `Supprimer la source "${source.title}" ?`
-                        );
+                        const ok = window.confirm(`Supprimer la source "${source.title}" ?`);
                         if (!ok) return;
                         const supabase = createBrowserSupabase();
                         const { data } = await supabase.auth.getSession();
@@ -485,40 +497,34 @@ export default function RagPage() {
               );
             })}
           </div>
-        </div>
-        <div className="rag-sources rag-external">
-          <div className="rag-sources-header">
-            <h2>Sources externes</h2>
-          </div>
+
           <div className="source-mode">
-            <span className="mode-label">Mode</span>
+            <span className="mode-label">Sources externes</span>
             <div className="mode-toggle">
               <button
                 type="button"
                 className={`mode-btn ${sourceMode === "internal" ? "active" : ""}`}
                 onClick={() => setSourceMode("internal")}
               >
-                Sources internes
+                Internes
               </button>
               <button
                 type="button"
                 className={`mode-btn ${sourceMode === "mix" ? "active" : ""}`}
                 onClick={() => setSourceMode("mix")}
               >
-                Mix interne + Légifrance
+                Mix
               </button>
               <button
                 type="button"
                 className={`mode-btn ${sourceMode === "legifrance" ? "active" : ""}`}
                 onClick={() => setSourceMode("legifrance")}
               >
-                Légifrance uniquement
+                Légifrance
               </button>
             </div>
           </div>
-          <p className="muted">
-            Légifrance passe par l&apos;API PISTE. Sélectionnez les fonds à interroger.
-          </p>
+
           <div className="chip-list">
             {LEGIFRANCE_FONDS.map((fond) => {
               const selected = legifranceFonds.includes(fond.id);
@@ -543,198 +549,291 @@ export default function RagPage() {
               );
             })}
           </div>
-          <div className="rag-external-fields">
-            <label>
-              Nom du code (optionnel)
-              <input
-                value={legifranceCodeName}
-                onChange={(e) => setLegifranceCodeName(e.target.value)}
-                placeholder="Ex: Code du travail"
-                disabled={sourceMode === "internal"}
-              />
-            </label>
-            <label>
-              Version à la date (optionnel)
-              <input
-                type="date"
-                value={legifranceVersionDate}
-                onChange={(e) => setLegifranceVersionDate(e.target.value)}
-                disabled={sourceMode === "internal"}
-              />
-            </label>
-            <label>
-              Résultats par fond
-              <input
-                type="number"
-                min={1}
-                max={10}
-                value={legifranceMaxResults}
-                onChange={(e) => setLegifranceMaxResults(Number(e.target.value || 1))}
-                disabled={sourceMode === "internal"}
-              />
-            </label>
-          </div>
-        </div>
-      </section>
+        </article>
 
-      <section className="rag-body">
-        <div className="rag-response">
-          <div className="rag-response-header">
-            <h3>Réponses</h3>
-            <div className="rag-response-actions">
-              <button
-                type="button"
-                className="mini-btn"
-                onClick={() => {
-                  if (!answer) return;
-                  const entry: AnswerEntry = {
-                    id: `${Date.now()}`,
-                    question,
-                    answer,
-                    citations,
-                    createdAt: new Date().toISOString()
-                  };
-                  setSaved((prev) => [entry, ...prev]);
-                }}
-              >
-                Sauvegarder
+        <article className="rag-v2-card">
+          <h2>2. Question</h2>
+          <form className="rag-v2-form" onSubmit={handleQuery}>
+            <div className="query-mode">
+              <span className="mode-label">Mode de réponse</span>
+              <div className="mode-toggle">
+                <button
+                  type="button"
+                  className={`mode-btn ${responseMode === "per-source" ? "active" : ""}`}
+                  onClick={() => setResponseMode("per-source")}
+                >
+                  Par source
+                </button>
+                <button
+                  type="button"
+                  className={`mode-btn ${responseMode === "synthesis" ? "active" : ""}`}
+                  onClick={() => setResponseMode("synthesis")}
+                >
+                  Synthèse
+                </button>
+              </div>
+            </div>
+
+            <div className="query-bar">
+              <input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Tapez votre question ici"
+              />
+              <button className="cta" type="submit" disabled={querying}>
+                {querying ? "Recherche..." : "Envoyer"}
               </button>
             </div>
-          </div>
-          {answer ? (
-            <div className="rag-answer">
-              <article className="history-card answer-card">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{responseMarkdown}</ReactMarkdown>
-              </article>
-              {citations.length > 0 && (
-                <div className="citation-list">
-                  {citations.map((citation, index) => {
-                    const preview =
-                      citation.snippet.length > 160
-                        ? `${citation.snippet.slice(0, 160)}…`
-                        : citation.snippet;
-                    return (
-                      <button
-                        key={citation.id}
-                        type="button"
-                        className="cite-card"
-                        onClick={() => setActiveCitation(citation)}
-                      >
-                        <strong>
-                          {citation.source_title || "Source"} #{index + 1}
-                        </strong>
-                        <span>{preview}</span>
-                      </button>
-                    );
-                  })}
+            {queryError && <InlineAlert tone="error">{queryError}</InlineAlert>}
+
+            <button
+              type="button"
+              className="ghost rag-advanced-toggle"
+              onClick={() => setShowAdvanced((prev) => !prev)}
+            >
+              {showAdvanced ? "Masquer les options avancées" : "Afficher les options avancées"}
+            </button>
+
+            {showAdvanced && (
+              <div className="rag-v2-advanced">
+                <div className="form-row">
+                  <label>
+                    Fournisseur chat
+                    <select value={chatProvider} onChange={(e) => setChatProvider(e.target.value)}>
+                      <option value="mistral">Mistral</option>
+                      <option value="openai">OpenAI</option>
+                      <option value="cohere">Cohere</option>
+                      <option value="groq">Groq</option>
+                      <option value="anthropic">Anthropic</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </label>
+                  <label>
+                    Authentification chat
+                    <select value={chatAuthMode} onChange={(e) => setChatAuthMode(e.target.value)}>
+                      <option value="api_key">Clé API</option>
+                      <option value="oauth">OAuth</option>
+                      <option value="server">Clé serveur</option>
+                    </select>
+                  </label>
                 </div>
-              )}
-            </div>
-          ) : (
-            <p className="muted">Aucune réponse pour l&apos;instant.</p>
-          )}
-        </div>
+                <div className="form-row">
+                  <label>
+                    Fournisseur embeddings
+                    <select
+                      value={embeddingProvider}
+                      onChange={(e) => setEmbeddingProvider(e.target.value)}
+                    >
+                      <option value="mistral">Mistral</option>
+                      <option value="openai">OpenAI</option>
+                      <option value="cohere">Cohere</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </label>
+                  <label>
+                    Authentification embeddings
+                    <select
+                      value={embeddingAuthMode}
+                      onChange={(e) => setEmbeddingAuthMode(e.target.value)}
+                    >
+                      <option value="api_key">Clé API</option>
+                      <option value="oauth">OAuth</option>
+                      <option value="server">Clé serveur</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="form-row">
+                  <label>
+                    Modèle chat
+                    <input value={chatModel} onChange={(e) => setChatModel(e.target.value)} />
+                  </label>
+                  <label>
+                    Modèle embeddings
+                    <input
+                      value={embeddingModel}
+                      onChange={(e) => setEmbeddingModel(e.target.value)}
+                    />
+                  </label>
+                </div>
+                <div className="form-row">
+                  <label>
+                    Base URL chat
+                    <input value={chatBaseUrl} onChange={(e) => setChatBaseUrl(e.target.value)} />
+                  </label>
+                  <label>
+                    Base URL embeddings
+                    <input
+                      value={embeddingBaseUrl}
+                      onChange={(e) => setEmbeddingBaseUrl(e.target.value)}
+                    />
+                  </label>
+                </div>
+                <div className="form-row">
+                  <label>
+                    Nom du code Légifrance (optionnel)
+                    <input
+                      value={legifranceCodeName}
+                      onChange={(e) => setLegifranceCodeName(e.target.value)}
+                      placeholder="Ex: Code du travail"
+                      disabled={sourceMode === "internal"}
+                    />
+                  </label>
+                  <label>
+                    Version à la date
+                    <input
+                      type="date"
+                      value={legifranceVersionDate}
+                      onChange={(e) => setLegifranceVersionDate(e.target.value)}
+                      disabled={sourceMode === "internal"}
+                    />
+                  </label>
+                </div>
+                <label>
+                  Résultats Légifrance par fond
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={legifranceMaxResults}
+                    onChange={(e) => setLegifranceMaxResults(Number(e.target.value || 1))}
+                    disabled={sourceMode === "internal"}
+                  />
+                </label>
+              </div>
+            )}
+          </form>
+        </article>
       </section>
 
-      <form className="rag-query" onSubmit={handleQuery}>
-        <div className="query-mode">
-          <span className="mode-label">Mode</span>
-          <div className="mode-toggle">
+      <section className="rag-v2-card rag-v2-answer">
+        <div className="rag-response-header">
+          <h2>3. Réponse</h2>
+          <div className="rag-response-actions">
             <button
               type="button"
-              className={`mode-btn ${responseMode === "per-source" ? "active" : ""}`}
-              onClick={() => setResponseMode("per-source")}
+              className="mini-btn"
+              onClick={() => {
+                if (!answer) return;
+                const entry: AnswerEntry = {
+                  id: `${Date.now()}`,
+                  question,
+                  answer,
+                  citations,
+                  createdAt: new Date().toISOString()
+                };
+                setSaved((prev) => [entry, ...prev]);
+              }}
             >
-              Par source
+              Sauvegarder
             </button>
-            <button
-              type="button"
-              className={`mode-btn ${responseMode === "synthesis" ? "active" : ""}`}
-              onClick={() => setResponseMode("synthesis")}
-            >
-              Synthèse
+            <button type="button" className="mini-btn" onClick={() => setShowHistory((s) => !s)}>
+              Historique
+            </button>
+            <button type="button" className="mini-btn" onClick={() => setShowSaved((s) => !s)}>
+              Sauvegardées
             </button>
           </div>
         </div>
-        <div className="query-bar">
-          <input
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Tapez votre question ici"
+
+        {answer ? (
+          <div className="rag-answer">
+            <article className="history-card answer-card">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{responseMarkdown}</ReactMarkdown>
+            </article>
+            {citations.length > 0 && (
+              <div className="citation-list">
+                {citations.map((citation, index) => {
+                  const preview =
+                    citation.snippet.length > 160
+                      ? `${citation.snippet.slice(0, 160)}…`
+                      : citation.snippet;
+                  return (
+                    <button
+                      key={citation.id}
+                      type="button"
+                      className="cite-card"
+                      onClick={() => setActiveCitation(citation)}
+                    >
+                      <strong>
+                        {citation.source_title || "Source"} #{index + 1}
+                      </strong>
+                      <span>{preview}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : (
+          <EmptyState
+            title="Aucune réponse pour l'instant"
+            description="Posez une question pour obtenir une synthèse référencée."
           />
-          <button className="cta" type="submit" disabled={querying}>
-            {querying ? "..." : "Envoyer"}
-          </button>
-        </div>
-        {queryError && <p className="error">{queryError}</p>}
-      </form>
+        )}
+      </section>
 
-      <div className="floating-actions">
-        <button className="icon-btn" type="button" onClick={() => setShowHistory((s) => !s)} title="Historique">
-          <span className="icon-glyph" aria-hidden>⟲</span>
-        </button>
-        <button className="icon-btn" type="button" onClick={() => setShowSaved((s) => !s)} title="Réponses sauvegardées">
-          <span className="icon-glyph" aria-hidden>☆</span>
-        </button>
-        <button className="icon-btn" type="button" onClick={() => router.push("/app/settings")} title="Réglages">
-          <span className="icon-glyph" aria-hidden>⚙</span>
-        </button>
-      </div>
+      {(showSaved || showHistory) && (
+        <section className="rag-v2-grid">
+          {showSaved && (
+            <article className="rag-v2-card">
+              <div className="panel-header">
+                <strong>Réponses sauvegardées</strong>
+                <button className="ghost" onClick={() => setShowSaved(false)} type="button">
+                  Fermer
+                </button>
+              </div>
+              {saved.length === 0 && <p className="muted">Aucune réponse sauvegardée.</p>}
+              <div className="history-list">
+                {saved.map((entry) => (
+                  <article key={entry.id} className="history-card">
+                    <div className="history-card-header">
+                      <p className="muted">{entry.question}</p>
+                      <button
+                        type="button"
+                        className="mini-icon"
+                        onClick={() => navigator.clipboard.writeText(entry.answer)}
+                        title="Copier la réponse"
+                      >
+                        ⧉
+                      </button>
+                    </div>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.answer}</ReactMarkdown>
+                  </article>
+                ))}
+              </div>
+            </article>
+          )}
 
-      {showSaved && (
-        <div className="floating-panel">
-          <div className="panel-header">
-            <strong>Réponses sauvegardées</strong>
-            <button className="ghost" onClick={() => setShowSaved(false)} type="button">Fermer</button>
-          </div>
-          {saved.length === 0 && <p className="muted">Aucune réponse sauvegardée.</p>}
-          <div className="history-list">
-            {saved.map((entry) => (
-              <article key={entry.id} className="history-card">
-                <div className="history-card-header">
-                  <p className="muted">{entry.question}</p>
-                  <button
-                    type="button"
-                    className="mini-icon"
-                    onClick={() => navigator.clipboard.writeText(entry.answer)}
-                    title="Copier la réponse"
-                  >
-                    ⧉
-                  </button>
-                </div>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.answer}</ReactMarkdown>
-              </article>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {showHistory && (
-        <div className="floating-panel">
-          <div className="panel-header">
-            <strong>Historique</strong>
-            <button className="ghost" onClick={() => setShowHistory(false)} type="button">Fermer</button>
-          </div>
-          {history.length === 0 && <p className="muted">Aucune réponse enregistrée.</p>}
-          <div className="history-list">
-            {history.map((entry) => (
-              <article key={entry.id} className="history-card">
-                <div className="history-card-header">
-                  <p className="muted">{entry.question}</p>
-                  <button
-                    type="button"
-                    className="mini-icon"
-                    onClick={() => navigator.clipboard.writeText(entry.answer)}
-                    title="Copier la réponse"
-                  >
-                    ⧉
-                  </button>
-                </div>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.answer}</ReactMarkdown>
-              </article>
-            ))}
-          </div>
-        </div>
+          {showHistory && (
+            <article className="rag-v2-card">
+              <div className="panel-header">
+                <strong>Historique</strong>
+                <button className="ghost" onClick={() => setShowHistory(false)} type="button">
+                  Fermer
+                </button>
+              </div>
+              {history.length === 0 && <p className="muted">Aucune réponse enregistrée.</p>}
+              <div className="history-list">
+                {history.map((entry) => (
+                  <article key={entry.id} className="history-card">
+                    <div className="history-card-header">
+                      <p className="muted">{entry.question}</p>
+                      <button
+                        type="button"
+                        className="mini-icon"
+                        onClick={() => navigator.clipboard.writeText(entry.answer)}
+                        title="Copier la réponse"
+                      >
+                        ⧉
+                      </button>
+                    </div>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.answer}</ReactMarkdown>
+                  </article>
+                ))}
+              </div>
+            </article>
+          )}
+        </section>
       )}
 
 

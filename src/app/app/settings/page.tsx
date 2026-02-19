@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import InlineAlert from "@/components/ui/inline-alert";
+import PageHeader from "@/components/ui/page-header";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -252,28 +254,53 @@ export default function SettingsPage() {
   const embeddingOauthReady = Boolean(selectedEmbeddingProvider?.oauthConfigured);
   const chatOauthConnected = Boolean(selectedChatProvider?.oauthConnected);
   const embeddingOauthConnected = Boolean(selectedEmbeddingProvider?.oauthConnected);
+  const activeProfile =
+    providerSelection === "__default__"
+      ? "Back-office (Mistral serveur)"
+      : `${selectedChatProvider?.label || chatProvider} (chat) + ${selectedEmbeddingProvider?.label || embeddingProvider} (embeddings)`;
 
   return (
-    <main className="module">
-      <header className="module-header">
-        <div>
-          <h1>Réglages</h1>
-          <p>Clés API, sécurité, rôles et statistiques.</p>
+    <main className="module settings-v2">
+      <PageHeader
+        title="Réglages IA"
+        subtitle="Fournisseurs, authentification, tests et configuration opérationnelle."
+        actions={
+          <button className="ghost" onClick={() => router.push("/app")}>
+            Retour
+          </button>
+        }
+      />
+
+      <section className="settings-summary-card">
+        <h2>Configuration active</h2>
+        <p className="muted">{activeProfile}</p>
+        <div className="settings-summary-grid">
+          <div>
+            <strong>Chat</strong>
+            <span>{selectedChatProvider?.label || chatProvider} · {chatAuthMode}</span>
+          </div>
+          <div>
+            <strong>Embeddings</strong>
+            <span>{selectedEmbeddingProvider?.label || embeddingProvider} · {embeddingAuthMode}</span>
+          </div>
+          <div>
+            <strong>Statut OAuth</strong>
+            <span>
+              {chatOauthConnected || embeddingOauthConnected ? "Connecté" : "Non connecté"}
+            </span>
+          </div>
         </div>
-        <div className="module-actions">
-          <button className="ghost" onClick={() => router.push("/app")}>Retour</button>
-        </div>
-      </header>
+      </section>
 
       <section className="module-grid">
         <div className="module-list">
-          <div className="module-card">
-            <h2>Fournisseur IA</h2>
+          <div className="module-card settings-config-card">
+            <h2>1. Profil et fournisseurs IA</h2>
             <p className="muted">
-              Choisissez votre fournisseur et votre méthode d&apos;authentification.
+              Choisissez un profil simple ou personnalisez chat/embeddings.
             </p>
             <label>
-              Mode
+              Profil
               <select
                 value={providerSelection}
                 onChange={(e) => {
@@ -312,7 +339,7 @@ export default function SettingsPage() {
 
             {providerSelection !== "__default__" && (
               <>
-                <div className="module-note">Presets</div>
+                <div className="module-note">Presets rapides</div>
                 <div className="form-row">
                   <button
                     type="button"
@@ -350,7 +377,7 @@ export default function SettingsPage() {
                   </button>
                 </div>
 
-                <div className="module-note">Chat</div>
+                <div className="module-note">2. Chat</div>
                 <label>
                   Fournisseur chat
                   <select
@@ -418,7 +445,7 @@ export default function SettingsPage() {
                 {chatAuthMode === "api_key" && (
                   <form onSubmit={handleSaveChatApiKey}>
                     <p className="muted">
-                      {selectedChatProvider?.apiKeyStored
+                    {selectedChatProvider?.apiKeyStored
                         ? "Une clé est déjà enregistrée pour ce fournisseur."
                         : "Aucune clé enregistrée pour ce fournisseur."}
                     </p>
@@ -432,8 +459,8 @@ export default function SettingsPage() {
                         required
                       />
                     </label>
-                    {error && <p className="error">{error}</p>}
-                    {success && <p className="success">{success}</p>}
+                    {error && <InlineAlert tone="error">{error}</InlineAlert>}
+                    {success && <InlineAlert tone="success">{success}</InlineAlert>}
                     <button className="ghost" type="submit">
                       Enregistrer la clé chat
                     </button>
@@ -480,7 +507,7 @@ export default function SettingsPage() {
                   Tester le chat
                 </button>
 
-                <div className="module-note">Embeddings</div>
+                <div className="module-note">3. Embeddings</div>
                 <label>
                   Fournisseur embeddings
                   <select
@@ -548,7 +575,7 @@ export default function SettingsPage() {
                 {embeddingAuthMode === "api_key" && (
                   <form onSubmit={handleSaveEmbeddingApiKey}>
                     <p className="muted">
-                      {selectedEmbeddingProvider?.apiKeyStored
+                    {selectedEmbeddingProvider?.apiKeyStored
                         ? "Une clé est déjà enregistrée pour ce fournisseur."
                         : "Aucune clé enregistrée pour ce fournisseur."}
                     </p>
@@ -562,8 +589,8 @@ export default function SettingsPage() {
                         required
                       />
                     </label>
-                    {error && <p className="error">{error}</p>}
-                    {success && <p className="success">{success}</p>}
+                    {error && <InlineAlert tone="error">{error}</InlineAlert>}
+                    {success && <InlineAlert tone="success">{success}</InlineAlert>}
                     <button className="ghost" type="submit">
                       Enregistrer la clé embeddings
                     </button>
@@ -612,8 +639,8 @@ export default function SettingsPage() {
               </>
             )}
 
-            {settingsMessage && <p className="success">{settingsMessage}</p>}
-            {testMessage && <p className="muted">{testMessage}</p>}
+            {settingsMessage && <InlineAlert tone="success">{settingsMessage}</InlineAlert>}
+            {testMessage && <InlineAlert tone="info">{testMessage}</InlineAlert>}
             <button className="cta" type="button" onClick={handleSaveSettings}>
               Sauvegarder les réglages
             </button>
@@ -637,7 +664,7 @@ export default function SettingsPage() {
         </div>
 
         <aside className="module-panel">
-          <h2>Raccourcis</h2>
+          <h2>Actions admin</h2>
           <ul>
             <li>Configurer SMTP pour l&apos;envoi.</li>
             <li>Configurer Yousign pour signatures.</li>

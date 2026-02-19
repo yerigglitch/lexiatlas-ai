@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import EmptyState from "@/components/ui/empty-state";
+import InlineAlert from "@/components/ui/inline-alert";
+import PageHeader from "@/components/ui/page-header";
 
 type Template = {
   id: string;
@@ -112,17 +115,19 @@ export default function DocumentsPage() {
   }
 
   return (
-    <main className="contacts">
-      <header className="contacts-header">
-        <div>
-          <h1>Générer un document</h1>
-          <p>Utilisez un modèle Word et vos variables JSON.</p>
-        </div>
-        <button className="ghost" onClick={() => router.push("/app")}>Retour</button>
-      </header>
+    <main className="module">
+      <PageHeader
+        title="Générer un document"
+        subtitle="Utilisez un modèle Word et vos variables JSON."
+        actions={
+          <button className="ghost" onClick={() => router.push("/app")}>
+            Retour
+          </button>
+        }
+      />
 
-      <section className="contacts-grid">
-        <form className="contact-form" onSubmit={handleGenerate}>
+      <section className="module-grid">
+        <form className="module-card" onSubmit={handleGenerate}>
           <h2>Paramètres</h2>
           <label>
             Modèle
@@ -155,21 +160,26 @@ export default function DocumentsPage() {
             />
             Export PDF (rendu fidèle)
           </label>
-          {error && <p className="error">{error}</p>}
-          {success && <p className="success">{success}</p>}
+          {error && <InlineAlert tone="error">{error}</InlineAlert>}
+          {success && <InlineAlert tone="success">{success}</InlineAlert>}
           <button className="cta" type="submit">Générer</button>
         </form>
 
-        <div className="contact-list">
-          <article className="contact-card">
+        <aside className="module-list">
+          <article className="module-card">
             <h3>Exemple de variables</h3>
             <p>{"{{client}}"} → Jean Dupont</p>
             <p>{"{{date}}"} → 05/02/2026</p>
             <p>{"{{dossier}}"} → 24-AC-190</p>
           </article>
-          <article className="contact-card">
+          <article className="module-card">
             <h3>Documents récents</h3>
-            {documents.length === 0 && <p>Aucun document généré.</p>}
+            {documents.length === 0 && (
+              <EmptyState
+                title="Aucun document généré"
+                description="Générez un document pour l’ajouter à l’historique."
+              />
+            )}
             {documents.map((doc) => (
               <p key={doc.id}>
                 {doc.url ? (
@@ -182,7 +192,7 @@ export default function DocumentsPage() {
               </p>
             ))}
           </article>
-        </div>
+        </aside>
       </section>
     </main>
   );

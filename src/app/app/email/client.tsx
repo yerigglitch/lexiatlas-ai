@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import EmptyState from "@/components/ui/empty-state";
+import InlineAlert from "@/components/ui/inline-alert";
+import PageHeader from "@/components/ui/page-header";
 
 type Recipient = { email: string; name?: string };
 type Draft = {
@@ -233,30 +236,39 @@ export default function EmailPage() {
 
   if (!emailV2Enabled) {
     return (
-      <main className="auth">
-        <section className="auth-card">
-          <h1>Emails v2 désactivé</h1>
-          <p>Activez `EMAIL_V2_ENABLED=true` pour utiliser le nouvel espace email.</p>
-          <button className="ghost" onClick={() => router.push("/app")}>Retour</button>
-        </section>
+      <main className="module">
+        <EmptyState
+          title="Emails v2 désactivé"
+          description="Activez FEATURE_EMAIL_V2=true pour utiliser le nouvel espace email."
+          action={
+            <button className="ghost" onClick={() => router.push("/app")}>
+              Retour
+            </button>
+          }
+        />
       </main>
     );
   }
 
   return (
     <main className="email-workspace">
-      <header className="module-header">
-        <div>
-          <h1>Espace emails</h1>
-          <p>Brouillons, prévisualisation, et envoi sécurisé via SMTP.</p>
-        </div>
-        <div className="module-actions">
-          <button className="ghost" onClick={() => router.push("/app")}>Retour</button>
-          <button className="ghost" onClick={() => router.push("/app/email/logs")}>Historique</button>
-          <button className="ghost" onClick={() => router.push("/app/email/templates")}>Templates email</button>
-          <button className="cta" onClick={createDraft}>Nouveau brouillon</button>
-        </div>
-      </header>
+      <PageHeader
+        title="Espace emails"
+        subtitle="Brouillons, prévisualisation et envoi sécurisé via SMTP."
+        actions={
+          <>
+            <button className="ghost" onClick={() => router.push("/app/email/templates")}>
+              Templates email
+            </button>
+            <button className="ghost" onClick={() => router.push("/app/email/logs")}>
+              Historique
+            </button>
+            <button className="cta" onClick={createDraft}>
+              Nouveau brouillon
+            </button>
+          </>
+        }
+      />
 
       <section className="email-grid">
         <aside className="email-panel drafts-panel">
@@ -274,7 +286,17 @@ export default function EmailPage() {
                 <small className={`status-chip ${draft.status}`}>{draft.status}</small>
               </button>
             ))}
-            {drafts.length === 0 && <p>Aucun brouillon.</p>}
+            {drafts.length === 0 && (
+              <EmptyState
+                title="Aucun brouillon"
+                description="Créez un brouillon pour commencer la rédaction."
+                action={
+                  <button className="ghost" type="button" onClick={createDraft}>
+                    Créer un brouillon
+                  </button>
+                }
+              />
+            )}
           </div>
         </aside>
 
@@ -315,16 +337,14 @@ export default function EmailPage() {
               {sending ? "Envoi..." : "Envoyer"}
             </button>
           </div>
-          {error && <p className="error">{error}</p>}
-          {success && <p className="success">{success}</p>}
+          {error && <InlineAlert tone="error">{error}</InlineAlert>}
+          {success && <InlineAlert tone="success">{success}</InlineAlert>}
         </section>
 
         <aside className="email-panel preview-panel">
           <h2>Prévisualisation</h2>
           {unresolved.length > 0 && (
-            <div className="module-note">
-              Variables non résolues: {unresolved.join(", ")}
-            </div>
+            <InlineAlert tone="info">Variables non résolues: {unresolved.join(", ")}</InlineAlert>
           )}
           <div className="preview-subject">
             <strong>Objet:</strong> {subject || "(vide)"}

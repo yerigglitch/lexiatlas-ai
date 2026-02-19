@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import EmptyState from "@/components/ui/empty-state";
+import InlineAlert from "@/components/ui/inline-alert";
+import PageHeader from "@/components/ui/page-header";
 
 type Template = {
   id: string;
@@ -77,24 +80,29 @@ export default function TemplatesPage() {
 
   return (
     <main className="module">
-      <header className="module-header">
-        <div>
-          <h1>Modèles Word</h1>
-          <p>Une bibliothèque sobre et rapide pour réutiliser vos formats cabinet.</p>
-        </div>
-        <div className="module-actions">
-          <button className="ghost" onClick={() => router.push("/app")}>Retour</button>
-          <button className="cta" onClick={() => setShowUpload(true)}>Ajouter un modèle</button>
-        </div>
-      </header>
+      <PageHeader
+        title="Modèles Word"
+        subtitle="Bibliothèque des formats cabinet, prête pour génération."
+        actions={
+          <>
+            <button className="ghost" onClick={() => router.push("/app")}>Retour</button>
+            <button className="cta" onClick={() => setShowUpload(true)}>Ajouter un modèle</button>
+          </>
+        }
+      />
 
       <section className="module-grid">
         <div className="module-list">
           {templates.length === 0 && (
-            <div className="module-empty">
-              <p>Aucun modèle enregistré.</p>
-              <button className="cta" onClick={() => setShowUpload(true)}>Importer un .docx</button>
-            </div>
+            <EmptyState
+              title="Aucun modèle enregistré"
+              description="Importez un .docx pour créer votre bibliothèque."
+              action={
+                <button className="cta" onClick={() => setShowUpload(true)}>
+                  Importer un .docx
+                </button>
+              }
+            />
           )}
           {templates.map((tpl) => (
             <article key={tpl.id} className="module-card">
@@ -147,7 +155,7 @@ export default function TemplatesPage() {
                   required
                 />
               </label>
-              {error && <p className="error">{error}</p>}
+              {error && <InlineAlert tone="error">{error}</InlineAlert>}
               <button className="cta" type="button" onClick={handleUpload}>
                 Importer
               </button>

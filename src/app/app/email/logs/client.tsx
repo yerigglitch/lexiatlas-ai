@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import EmptyState from "@/components/ui/empty-state";
+import PageHeader from "@/components/ui/page-header";
 
 type EmailEvent = {
   id: string;
@@ -100,18 +102,25 @@ export default function EmailLogsPage() {
   }
 
   return (
-    <main className="contacts">
-      <header className="contacts-header">
-        <div>
-          <h1>Historique emails</h1>
-          <p>Suivez les envois avec filtres avancés.</p>
-        </div>
-        <button className="ghost" onClick={() => router.push("/app/email")}>Retour</button>
-      </header>
+    <main className="email-templates-page">
+      <PageHeader
+        title="Historique emails"
+        subtitle="Suivez les envois, filtres avancés et export CSV."
+        actions={
+          <>
+            <button className="ghost" type="button" onClick={() => router.push("/app/email")}>
+              Retour
+            </button>
+            <button type="button" className="ghost" onClick={handleExport}>
+              Export CSV (page)
+            </button>
+          </>
+        }
+      />
 
-      <section className="contacts-grid">
+      <section className="email-grid">
         <form
-          className="contact-form"
+          className="email-panel"
           onSubmit={(event) => {
             event.preventDefault();
             setPage(1);
@@ -144,13 +153,18 @@ export default function EmailLogsPage() {
             <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
           </label>
           <button className="cta" type="submit">Filtrer</button>
-          <button type="button" className="ghost" onClick={handleExport}>Export CSV (page)</button>
         </form>
 
-        <div className="contact-list">
-          {events.length === 0 && <p>Aucun événement.</p>}
+        <section className="email-panel email-logs-panel">
+          <h2>Événements</h2>
+          {events.length === 0 && (
+            <EmptyState
+              title="Aucun événement"
+              description="Aucun envoi ne correspond aux filtres actuels."
+            />
+          )}
           {events.map((event) => (
-            <article key={event.id} className="contact-card">
+            <article key={event.id} className="module-card">
               <h3>{event.recipient_email}</h3>
               <p>{event.email_drafts?.subject || "(sans objet)"}</p>
               <p>Brouillon: {event.draft_id}</p>
@@ -178,7 +192,7 @@ export default function EmailLogsPage() {
               </button>
             </div>
           )}
-        </div>
+        </section>
       </section>
     </main>
   );
