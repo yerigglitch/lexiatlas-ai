@@ -1,5 +1,4 @@
-// Import internal parser entry to avoid pdf-parse debug side effects in ESM bundling.
-import pdfParse from "pdf-parse/lib/pdf-parse.js";
+import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 
 export async function extractText(file: File) {
@@ -45,21 +44,7 @@ export async function extractTextFromBuffer(
   return buffer.toString("utf-8");
 }
 
-type ChunkOptions = {
-  maxChars?: number;
-  overlapChars?: number;
-};
-
-function sliceWithWordBoundary(text: string, maxChars: number) {
-  if (text.length <= maxChars) return text;
-  const slice = text.slice(0, maxChars);
-  const lastSpace = slice.lastIndexOf(" ");
-  return lastSpace > 0 ? slice.slice(0, lastSpace) : slice;
-}
-
-export function chunkText(text: string, options: ChunkOptions = {}) {
-  const maxChars = options.maxChars ?? 1200;
-  const overlapChars = options.overlapChars ?? 200;
+export function chunkText(text: string, maxChars = 1800) {
   const normalized = text.replace(/\r\n/g, "\n").trim();
   if (!normalized) return [];
 
@@ -70,16 +55,7 @@ export function chunkText(text: string, options: ChunkOptions = {}) {
   for (const para of paragraphs) {
     if ((current + "\n\n" + para).length > maxChars) {
       if (current.trim()) {
-        const trimmed = current.trim();
-        chunks.push(trimmed);
-        const overlap = trimmed.slice(Math.max(0, trimmed.length - overlapChars));
-        current = overlap ? `${overlap}\n\n${para}` : para;
-        if (current.length > maxChars) {
-          const slice = sliceWithWordBoundary(current, maxChars);
-          chunks.push(slice.trim());
-          current = current.slice(slice.length).trim();
-        }
-        continue;
+        chunks.push(current.trim());
       }
       current = para;
     } else {
