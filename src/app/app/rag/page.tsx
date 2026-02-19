@@ -11,6 +11,7 @@ type Citation = {
   snippet: string;
   score: number;
   source_title?: string | null;
+  source_url?: string | null;
 };
 
 type SourceItem = {
@@ -33,6 +34,17 @@ const MODELS = [
   "mistral-small-latest",
   "mistral-medium-latest",
   "mistral-large-latest"
+];
+const OPENAI_DEFAULT_CHAT_MODEL = "gpt-4o-mini";
+const OPENAI_DEFAULT_EMBED_MODEL = "text-embedding-3-small";
+const LEGIFRANCE_FONDS = [
+  { id: "CODE_ETAT", label: "Codes en vigueur" },
+  { id: "CODE_DATE", label: "Codes à date" },
+  { id: "LODA_ETAT", label: "Lois & décrets (état)" },
+  { id: "LODA_DATE", label: "Lois & décrets (date)" },
+  { id: "KALI", label: "Conventions collectives" },
+  { id: "JURI", label: "Jurisprudence" },
+  { id: "JORF", label: "Journal officiel" }
 ];
 
 export default function RagPage() {
@@ -61,16 +73,21 @@ export default function RagPage() {
   const [saved, setSaved] = useState<AnswerEntry[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-
-  const [model, setModel] = useState(MODELS[0]);
-  const [keyMode, setKeyMode] = useState("user");
-  const [provider, setProvider] = useState("mistral");
-  const [customBaseUrl, setCustomBaseUrl] = useState("");
-  const [customApiKey, setCustomApiKey] = useState("");
-  const [customChatModel, setCustomChatModel] = useState("");
-  const [customEmbeddingModel, setCustomEmbeddingModel] = useState("");
-  const [settingsMessage, setSettingsMessage] = useState<string | null>(null);
+  const [chatModel, setChatModel] = useState(MODELS[0]);
+  const [chatProvider, setChatProvider] = useState("mistral");
+  const [embeddingProvider, setEmbeddingProvider] = useState("mistral");
+  const [chatAuthMode, setChatAuthMode] = useState("api_key");
+  const [embeddingAuthMode, setEmbeddingAuthMode] = useState("api_key");
+  const [chatBaseUrl, setChatBaseUrl] = useState("");
+  const [embeddingBaseUrl, setEmbeddingBaseUrl] = useState("");
+  const [embeddingModel, setEmbeddingModel] = useState("");
+  const [sourceMode, setSourceMode] = useState<"internal" | "legifrance" | "mix">(
+    "internal"
+  );
+  const [legifranceFonds, setLegifranceFonds] = useState<string[]>(["CODE_ETAT"]);
+  const [legifranceMaxResults, setLegifranceMaxResults] = useState(6);
+  const [legifranceCodeName, setLegifranceCodeName] = useState("");
+  const [legifranceVersionDate, setLegifranceVersionDate] = useState("");
 
   useEffect(() => {
     const supabase = createBrowserSupabase();
@@ -97,18 +114,23 @@ export default function RagPage() {
       await fetchSources();
       interval = setInterval(fetchSources, 5000);
 
-      const settingsRes = await fetch("/api/settings/rag", {
+      const settingsRes = await fetch("/api/settings/ai", {
         headers: { Authorization: `Bearer ${data.session.access_token}` }
       });
       const settingsPayload = await settingsRes.json();
       if (settingsPayload?.settings && !cancelled) {
         const s = settingsPayload.settings;
-        setKeyMode(s.keyMode || "user");
-        setProvider(s.provider || "mistral");
-        setModel(s.model || MODELS[0]);
-        setCustomBaseUrl(s.customBaseUrl || "");
-        setCustomChatModel(s.customChatModel || "");
-        setCustomEmbeddingModel(s.customEmbeddingModel || "");
+        const nextChatProvider = s.chatProvider || s.provider || "mistral";
+        const nextEmbeddingProvider =
+          s.embeddingProvider || s.chatProvider || s.provider || "mistral";
+        setChatProvider(nextChatProvider);
+        setEmbeddingProvider(nextEmbeddingProvider);
+        setChatAuthMode(s.chatAuthMode || s.authMode || "api_key");
+        setEmbeddingAuthMode(s.embeddingAuthMode || s.authMode || "api_key");
+        setChatModel(s.chatModel || s.model || MODELS[0]);
+        setChatBaseUrl(s.chatBaseUrl || s.baseUrl || "");
+        setEmbeddingBaseUrl(s.embeddingBaseUrl || "");
+        setEmbeddingModel(s.embeddingModel || s.customEmbeddingModel || "");
       }
       if (!cancelled) {
         setLoading(false);
@@ -122,6 +144,20 @@ export default function RagPage() {
       if (interval) clearInterval(interval);
     };
   }, [router]);
+
+  useEffect(() => {
+    if (chatProvider === "mistral" && !MODELS.includes(chatModel)) {
+      setChatModel(MODELS[0]);
+    }
+    if (chatProvider === "openai") {
+      if (!chatModel || MODELS.includes(chatModel)) {
+        setChatModel(OPENAI_DEFAULT_CHAT_MODEL);
+      }
+    }
+    if (embeddingProvider === "openai" && !embeddingModel) {
+      setEmbeddingModel(OPENAI_DEFAULT_EMBED_MODEL);
+    }
+  }, [chatProvider, embeddingProvider, chatModel, embeddingModel]);
 
   const handleUploadFile = async () => {
     if (!file) {
@@ -145,15 +181,12 @@ export default function RagPage() {
 
     const headers: Record<string, string> = {
       Authorization: `Bearer ${data.session.access_token}`,
-      "x-provider": provider,
-      "x-key-mode": keyMode
+      "x-embedding-provider": embeddingProvider,
+      "x-embedding-auth-mode": embeddingAuthMode
     };
 
-    if (keyMode === "custom" && provider === "custom") {
-      headers["x-api-key"] = customApiKey;
-      headers["x-base-url"] = customBaseUrl;
-      headers["x-embedding-model"] = customEmbeddingModel;
-    }
+    if (embeddingBaseUrl) headers["x-embedding-base-url"] = embeddingBaseUrl;
+    if (embeddingModel) headers["x-embedding-model"] = embeddingModel;
 
     const res = await fetch("/api/ingest", {
       method: "POST",
@@ -196,15 +229,12 @@ export default function RagPage() {
 
     const headers: Record<string, string> = {
       Authorization: `Bearer ${data.session.access_token}`,
-      "x-provider": provider,
-      "x-key-mode": keyMode
+      "x-embedding-provider": embeddingProvider,
+      "x-embedding-auth-mode": embeddingAuthMode
     };
 
-    if (keyMode === "custom" && provider === "custom") {
-      headers["x-api-key"] = customApiKey;
-      headers["x-base-url"] = customBaseUrl;
-      headers["x-embedding-model"] = customEmbeddingModel;
-    }
+    if (embeddingBaseUrl) headers["x-embedding-base-url"] = embeddingBaseUrl;
+    if (embeddingModel) headers["x-embedding-model"] = embeddingModel;
 
     const res = await fetch("/api/ingest", {
       method: "POST",
@@ -244,15 +274,12 @@ export default function RagPage() {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${data.session.access_token}`,
-      "x-provider": provider,
-      "x-key-mode": keyMode
+      "x-embedding-provider": embeddingProvider,
+      "x-embedding-auth-mode": embeddingAuthMode
     };
 
-    if (keyMode === "custom" && provider === "custom") {
-      headers["x-api-key"] = customApiKey;
-      headers["x-base-url"] = customBaseUrl;
-      headers["x-embedding-model"] = customEmbeddingModel;
-    }
+    if (embeddingBaseUrl) headers["x-embedding-base-url"] = embeddingBaseUrl;
+    if (embeddingModel) headers["x-embedding-model"] = embeddingModel;
 
     const res = await fetch("/api/ingest-url", {
       method: "POST",
@@ -282,6 +309,12 @@ export default function RagPage() {
       setQueryError("Veuillez saisir une question.");
       return;
     }
+    const legifranceEnabled = sourceMode !== "internal";
+    const legifranceExclusive = sourceMode === "legifrance";
+    if (legifranceEnabled && legifranceFonds.length === 0) {
+      setQueryError("Sélectionnez au moins un fond Légifrance.");
+      return;
+    }
 
     setQuerying(true);
     const supabase = createBrowserSupabase();
@@ -294,24 +327,34 @@ export default function RagPage() {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${data.session.access_token}`,
-      "x-provider": provider,
-      "x-key-mode": keyMode
+      "x-chat-provider": chatProvider,
+      "x-chat-auth-mode": chatAuthMode,
+      "x-embedding-provider": embeddingProvider,
+      "x-embedding-auth-mode": embeddingAuthMode
     };
 
-    if (keyMode === "custom" && provider === "custom") {
-      headers["x-api-key"] = customApiKey;
-      headers["x-base-url"] = customBaseUrl;
-      headers["x-embedding-model"] = customEmbeddingModel;
-    }
+    if (chatBaseUrl) headers["x-chat-base-url"] = chatBaseUrl;
+    if (embeddingBaseUrl) headers["x-embedding-base-url"] = embeddingBaseUrl;
+    if (embeddingModel) headers["x-embedding-model"] = embeddingModel;
 
     const res = await fetch("/api/query", {
       method: "POST",
       headers,
       body: JSON.stringify({
         question,
-        model: provider === "custom" ? customChatModel : model,
+        model: chatModel,
         sourceIds: selectedSources,
-        responseMode
+        responseMode,
+        externalSources: {
+          legifrance: {
+            enabled: legifranceEnabled,
+            exclusive: legifranceExclusive,
+            fonds: legifranceFonds,
+            maxResults: legifranceMaxResults,
+            codeName: legifranceCodeName.trim(),
+            versionDate: legifranceVersionDate || null
+          }
+        }
       })
     });
 
@@ -337,44 +380,6 @@ export default function RagPage() {
     setHistory((prev) => [entry, ...prev]);
   };
 
-  const handleSaveSettings = async () => {
-    setSettingsMessage(null);
-    const supabase = createBrowserSupabase();
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
-      router.push("/login");
-      return;
-    }
-
-    const res = await fetch("/api/settings/rag", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${data.session.access_token}`
-      },
-      body: JSON.stringify({
-        settings: {
-          keyMode,
-          provider,
-          model,
-          customBaseUrl,
-          customChatModel,
-          customEmbeddingModel
-        }
-      })
-    });
-
-    if (!res.ok) {
-      setSettingsMessage("Erreur lors de la sauvegarde.");
-      return;
-    }
-
-    setSettingsMessage(
-      keyMode === "custom" && provider === "custom"
-        ? "Paramètres enregistrés (clé non stockée)."
-        : "Paramètres enregistrés."
-    );
-  };
 
   const responseMarkdown = useMemo(() => answer || "", [answer]);
 
@@ -481,6 +486,95 @@ export default function RagPage() {
             })}
           </div>
         </div>
+        <div className="rag-sources rag-external">
+          <div className="rag-sources-header">
+            <h2>Sources externes</h2>
+          </div>
+          <div className="source-mode">
+            <span className="mode-label">Mode</span>
+            <div className="mode-toggle">
+              <button
+                type="button"
+                className={`mode-btn ${sourceMode === "internal" ? "active" : ""}`}
+                onClick={() => setSourceMode("internal")}
+              >
+                Sources internes
+              </button>
+              <button
+                type="button"
+                className={`mode-btn ${sourceMode === "mix" ? "active" : ""}`}
+                onClick={() => setSourceMode("mix")}
+              >
+                Mix interne + Légifrance
+              </button>
+              <button
+                type="button"
+                className={`mode-btn ${sourceMode === "legifrance" ? "active" : ""}`}
+                onClick={() => setSourceMode("legifrance")}
+              >
+                Légifrance uniquement
+              </button>
+            </div>
+          </div>
+          <p className="muted">
+            Légifrance passe par l&apos;API PISTE. Sélectionnez les fonds à interroger.
+          </p>
+          <div className="chip-list">
+            {LEGIFRANCE_FONDS.map((fond) => {
+              const selected = legifranceFonds.includes(fond.id);
+              return (
+                <div key={fond.id} className={`chip ${selected ? "chip-active" : ""}`}>
+                  <button
+                    type="button"
+                    className="chip-label"
+                    disabled={sourceMode === "internal"}
+                    onClick={() => {
+                      if (sourceMode === "internal") return;
+                      setLegifranceFonds((prev) =>
+                        prev.includes(fond.id)
+                          ? prev.filter((id) => id !== fond.id)
+                          : [...prev, fond.id]
+                      );
+                    }}
+                  >
+                    {fond.label}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+          <div className="rag-external-fields">
+            <label>
+              Nom du code (optionnel)
+              <input
+                value={legifranceCodeName}
+                onChange={(e) => setLegifranceCodeName(e.target.value)}
+                placeholder="Ex: Code du travail"
+                disabled={sourceMode === "internal"}
+              />
+            </label>
+            <label>
+              Version à la date (optionnel)
+              <input
+                type="date"
+                value={legifranceVersionDate}
+                onChange={(e) => setLegifranceVersionDate(e.target.value)}
+                disabled={sourceMode === "internal"}
+              />
+            </label>
+            <label>
+              Résultats par fond
+              <input
+                type="number"
+                min={1}
+                max={10}
+                value={legifranceMaxResults}
+                onChange={(e) => setLegifranceMaxResults(Number(e.target.value || 1))}
+                disabled={sourceMode === "internal"}
+              />
+            </label>
+          </div>
+        </div>
       </section>
 
       <section className="rag-body">
@@ -582,7 +676,7 @@ export default function RagPage() {
         <button className="icon-btn" type="button" onClick={() => setShowSaved((s) => !s)} title="Réponses sauvegardées">
           <span className="icon-glyph" aria-hidden>☆</span>
         </button>
-        <button className="icon-btn" type="button" onClick={() => setShowSettings((s) => !s)} title="Réglages">
+        <button className="icon-btn" type="button" onClick={() => router.push("/app/settings")} title="Réglages">
           <span className="icon-glyph" aria-hidden>⚙</span>
         </button>
       </div>
@@ -643,83 +737,6 @@ export default function RagPage() {
         </div>
       )}
 
-      {showSettings && (
-        <div className="floating-panel">
-          <div className="panel-header">
-            <strong>Réglages IA</strong>
-            <button className="ghost" onClick={() => setShowSettings(false)} type="button">Fermer</button>
-          </div>
-          <div className="panel-body">
-            <label>
-              Mode clé API
-              <select value={keyMode} onChange={(e) => setKeyMode(e.target.value)}>
-                <option value="user">Clé cabinet</option>
-                <option value="server">Clé back-office</option>
-                <option value="custom">Autre fournisseur</option>
-              </select>
-            </label>
-            <label>
-              Fournisseur
-              <select value={provider} onChange={(e) => setProvider(e.target.value)}>
-                <option value="mistral">Mistral</option>
-                <option value="custom">Autre (compatible OpenAI)</option>
-              </select>
-            </label>
-            {provider !== "custom" && (
-              <label>
-                Modèle
-                <select value={model} onChange={(e) => setModel(e.target.value)}>
-                  {MODELS.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
-            {keyMode === "custom" && provider === "custom" && (
-              <>
-                <label>
-                  Base URL
-                  <input
-                    value={customBaseUrl}
-                    onChange={(e) => setCustomBaseUrl(e.target.value)}
-                    placeholder="https://api.provider.com"
-                  />
-                </label>
-                <label>
-                  Clé API
-                  <input
-                    type="password"
-                    value={customApiKey}
-                    onChange={(e) => setCustomApiKey(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Modèle chat
-                  <input
-                    value={customChatModel}
-                    onChange={(e) => setCustomChatModel(e.target.value)}
-                    placeholder="model-chat"
-                  />
-                </label>
-                <label>
-                  Modèle embeddings
-                  <input
-                    value={customEmbeddingModel}
-                    onChange={(e) => setCustomEmbeddingModel(e.target.value)}
-                    placeholder="model-embed"
-                  />
-                </label>
-              </>
-            )}
-            {settingsMessage && <p className="success">{settingsMessage}</p>}
-            <button type="button" className="cta" onClick={handleSaveSettings}>
-              Sauvegarder
-            </button>
-          </div>
-        </div>
-      )}
 
       {showUpload && (
         <div className="modal-overlay">
@@ -814,6 +831,16 @@ export default function RagPage() {
                 Fermer
               </button>
             </div>
+            {activeCitation.source_url && (
+              <a
+                className="cite-link"
+                href={activeCitation.source_url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ouvrir la source
+              </a>
+            )}
             <p className="citation-text">{activeCitation.snippet}</p>
             <div className="citation-actions">
               <button

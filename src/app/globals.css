@@ -700,6 +700,23 @@ button:hover,
   gap: 8px;
 }
 
+.rag-external .chip-label:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rag-external-fields {
+  display: grid;
+  gap: 12px;
+}
+
+.rag-external-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
 .rag-sources-header {
   display: flex;
   justify-content: space-between;
@@ -1162,6 +1179,15 @@ button:hover,
   line-height: 1.6;
 }
 
+.cite-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--rag-accent);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
 .citation-actions {
   display: flex;
   justify-content: flex-end;
@@ -1294,6 +1320,16 @@ button:hover,
   background: radial-gradient(circle at top, #fff7f5, #fff 45%);
   position: relative;
   z-index: 1;
+}
+
+.dashboard,
+.dashboard * {
+  pointer-events: auto;
+}
+
+.dashboard a,
+.dashboard button {
+  cursor: pointer;
 }
 
 .dashboard-header {
@@ -1463,6 +1499,105 @@ button:hover,
   font-size: 0.8rem;
 }
 
+.email-workspace,
+.email-templates-page {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.email-grid {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.email-panel {
+  background: #fff;
+  border: 1px solid #ead7d0;
+  border-radius: 16px;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.email-panel h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.drafts-list {
+  display: grid;
+  gap: 8px;
+}
+
+.draft-item {
+  border: 1px solid #ead7d0;
+  border-radius: 12px;
+  background: #fff9f7;
+  padding: 10px;
+  text-align: left;
+  display: grid;
+  gap: 4px;
+}
+
+.draft-item.active {
+  border-color: #4a7cff;
+  background: #f0f4ff;
+}
+
+.draft-item span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.status-chip {
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.status-chip.sent {
+  background: #e9f9f2;
+  color: #1d7e57;
+}
+
+.status-chip.failed {
+  background: #ffe9ea;
+  color: #ae3741;
+}
+
+.status-chip.draft {
+  background: #eef3ff;
+  color: #3c57a6;
+}
+
+.compose-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.preview-subject {
+  border: 1px solid #ead7d0;
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff9f7;
+}
+
+.preview-body {
+  border: 1px solid #ead7d0;
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 220px;
+  background: #fff;
+}
+
 @media (max-width: 720px) {
   .rss-controls {
     grid-template-columns: 1fr;
@@ -1483,6 +1618,10 @@ button:hover,
 
 @media (max-width: 900px) {
   .contacts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .email-grid {
     grid-template-columns: 1fr;
   }
 }

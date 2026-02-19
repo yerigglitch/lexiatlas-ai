@@ -7,32 +7,109 @@ import { createBrowserSupabase } from "@/lib/supabase-browser";
 export default function SettingsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [hasKey, setHasKey] = useState(false);
-  const [apiKey, setApiKey] = useState("");
+  const DEFAULT_BACKOFFICE_PROVIDER = "mistral";
+  const [chatApiKey, setChatApiKey] = useState("");
+  const [embeddingApiKey, setEmbeddingApiKey] = useState("");
+  const [providers, setProviders] = useState<
+    Array<{
+      id: string;
+      label: string;
+      type: string;
+      defaultBaseUrl: string;
+      defaultChatModel: string;
+      defaultEmbeddingModel: string;
+      serverKeyAvailable: boolean;
+      oauthConfigured: boolean;
+      oauthConnected: boolean;
+      apiKeyStored: boolean;
+    }>
+  >([]);
+  const [providerSelection, setProviderSelection] = useState("mistral");
+  const [chatProvider, setChatProvider] = useState("mistral");
+  const [embeddingProvider, setEmbeddingProvider] = useState("mistral");
+  const [chatAuthMode, setChatAuthMode] = useState<"api_key" | "oauth" | "server">("api_key");
+  const [embeddingAuthMode, setEmbeddingAuthMode] = useState<"api_key" | "oauth" | "server">(
+    "api_key"
+  );
+  const [chatBaseUrl, setChatBaseUrl] = useState("");
+  const [embeddingBaseUrl, setEmbeddingBaseUrl] = useState("");
+  const [chatModel, setChatModel] = useState("");
+  const [embeddingModel, setEmbeddingModel] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [settingsMessage, setSettingsMessage] = useState<string | null>(null);
+  const [testMessage, setTestMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createBrowserSupabase();
+    setLoading(true);
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) {
         router.push("/login");
         return;
       }
 
-      const res = await fetch("/api/settings/mistral-key", {
+      const res = await fetch("/api/settings/ai", {
         headers: {
           Authorization: `Bearer ${data.session.access_token}`
         }
       });
       const payload = await res.json();
-      setHasKey(Boolean(payload?.hasKey));
+      const providerList = payload?.providers || [];
+      setProviders(providerList);
+
+      const settings = payload?.settings || {};
+      const savedChatProvider =
+        settings.chatProvider || settings.provider || providerList[0]?.id || "mistral";
+      const savedEmbeddingProvider = settings.embeddingProvider || savedChatProvider;
+      const chatConfig = providerList.find((p: any) => p.id === savedChatProvider);
+      const embeddingConfig = providerList.find((p: any) => p.id === savedEmbeddingProvider);
+      const savedChatAuth =
+        settings.chatAuthMode ||
+        settings.authMode ||
+        (settings.keyMode === "server" ? "server" : "api_key");
+      const savedEmbeddingAuth =
+        settings.embeddingAuthMode ||
+        settings.authMode ||
+        (settings.keyMode === "server" ? "server" : "api_key");
+      const isDefault =
+        savedChatAuth === "server" &&
+        savedEmbeddingAuth === "server" &&
+        savedChatProvider === DEFAULT_BACKOFFICE_PROVIDER &&
+        savedEmbeddingProvider === DEFAULT_BACKOFFICE_PROVIDER;
+
+      setChatProvider(savedChatProvider);
+      setEmbeddingProvider(savedEmbeddingProvider);
+      setChatAuthMode(savedChatAuth);
+      setEmbeddingAuthMode(savedEmbeddingAuth);
+      setProviderSelection(isDefault ? "__default__" : "custom");
+      setChatBaseUrl(settings.chatBaseUrl || settings.baseUrl || chatConfig?.defaultBaseUrl || "");
+      setEmbeddingBaseUrl(settings.embeddingBaseUrl || embeddingConfig?.defaultBaseUrl || "");
+      setChatModel(settings.chatModel || settings.model || chatConfig?.defaultChatModel || "");
+      setEmbeddingModel(settings.embeddingModel || embeddingConfig?.defaultEmbeddingModel || "");
       setLoading(false);
     });
   }, [router]);
 
-  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  useEffect(() => {
+    const chat = providers.find((p) => p.id === chatProvider);
+    const embedding = providers.find((p) => p.id === embeddingProvider);
+    if (!chat || !embedding) return;
+    if (chatAuthMode === "oauth" && !chat.oauthConfigured) {
+      setChatAuthMode("api_key");
+    }
+    if (chatAuthMode === "server" && !chat.serverKeyAvailable) {
+      setChatAuthMode("api_key");
+    }
+    if (embeddingAuthMode === "oauth" && !embedding.oauthConfigured) {
+      setEmbeddingAuthMode("api_key");
+    }
+    if (embeddingAuthMode === "server" && !embedding.serverKeyAvailable) {
+      setEmbeddingAuthMode("api_key");
+    }
+  }, [providers, chatProvider, embeddingProvider, chatAuthMode, embeddingAuthMode]);
+
+  const saveApiKey = async (providerId: string, apiKeyValue: string) => {
     setError(null);
     setSuccess(null);
 
@@ -43,13 +120,13 @@ export default function SettingsPage() {
       return;
     }
 
-    const res = await fetch("/api/settings/mistral-key", {
+    const res = await fetch("/api/settings/api-key", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${data.session.access_token}`
       },
-      body: JSON.stringify({ apiKey })
+      body: JSON.stringify({ apiKey: apiKeyValue, provider: providerId })
     });
 
     if (!res.ok) {
@@ -58,14 +135,123 @@ export default function SettingsPage() {
       return;
     }
 
-    setHasKey(true);
-    setApiKey("");
-    setSuccess("Clé Mistral enregistrée.");
+    setSuccess(`Clé ${providerId} enregistrée.`);
+    setProviders((prev) =>
+      prev.map((p) => (p.id === providerId ? { ...p, apiKeyStored: true } : p))
+    );
+  };
+
+  const handleSaveChatApiKey = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await saveApiKey(chatProvider, chatApiKey);
+    setChatApiKey("");
+  };
+
+  const handleSaveEmbeddingApiKey = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await saveApiKey(embeddingProvider, embeddingApiKey);
+    setEmbeddingApiKey("");
+  };
+
+  const handleSaveSettings = async () => {
+    setSettingsMessage(null);
+    const supabase = createBrowserSupabase();
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      router.push("/login");
+      return;
+    }
+
+    const res = await fetch("/api/settings/rag", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.session.access_token}`
+      },
+      body: JSON.stringify({
+        settings: {
+          provider: chatProvider,
+          authMode: chatAuthMode,
+          keyMode: providerSelection === "__default__" ? "server" : "user",
+          model: chatModel,
+          baseUrl: chatBaseUrl,
+          chatProvider,
+          chatAuthMode,
+          chatModel,
+          chatBaseUrl,
+          embeddingProvider,
+          embeddingAuthMode,
+          embeddingModel,
+          embeddingBaseUrl
+        }
+      })
+    });
+
+    if (!res.ok) {
+      setSettingsMessage("Erreur lors de la sauvegarde.");
+      return;
+    }
+
+    setSettingsMessage("Réglages IA enregistrés.");
+  };
+
+  const runTest = async (kind: "chat" | "embedding") => {
+    setTestMessage(null);
+    const supabase = createBrowserSupabase();
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      router.push("/login");
+      return;
+    }
+
+    const payload =
+      kind === "chat"
+        ? {
+            kind,
+            provider: chatProvider,
+            authMode: chatAuthMode,
+            baseUrl: chatBaseUrl,
+            model: chatModel
+          }
+        : {
+            kind,
+            provider: embeddingProvider,
+            authMode: embeddingAuthMode,
+            baseUrl: embeddingBaseUrl,
+            model: embeddingModel
+          };
+
+    const res = await fetch("/api/settings/ai/test", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.session.access_token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const responsePayload = await res.json();
+    if (!res.ok) {
+      setTestMessage(responsePayload?.error || "Test échoué.");
+      return;
+    }
+    setTestMessage(kind === "chat" ? "Test chat OK." : "Test embeddings OK.");
   };
 
   if (loading) {
     return <main className="auth"><p>Chargement...</p></main>;
   }
+
+  const selectedChatProvider = providers.find((p) => p.id === chatProvider);
+  const selectedEmbeddingProvider = providers.find((p) => p.id === embeddingProvider);
+  const chatNeedsBaseUrl = selectedChatProvider?.type === "openai_compat";
+  const embeddingNeedsBaseUrl = selectedEmbeddingProvider?.type === "openai_compat";
+  const chatHasServerKey = Boolean(selectedChatProvider?.serverKeyAvailable);
+  const embeddingHasServerKey = Boolean(selectedEmbeddingProvider?.serverKeyAvailable);
+  const chatOauthReady = Boolean(selectedChatProvider?.oauthConfigured);
+  const embeddingOauthReady = Boolean(selectedEmbeddingProvider?.oauthConfigured);
+  const chatOauthConnected = Boolean(selectedChatProvider?.oauthConnected);
+  const embeddingOauthConnected = Boolean(selectedEmbeddingProvider?.oauthConnected);
 
   return (
     <main className="module">
@@ -81,29 +267,357 @@ export default function SettingsPage() {
 
       <section className="module-grid">
         <div className="module-list">
-          <form className="module-card" onSubmit={handleSave}>
-            <h2>Clé API Mistral</h2>
+          <div className="module-card">
+            <h2>Fournisseur IA</h2>
             <p className="muted">
-              {hasKey
-                ? "Une clé Mistral est déjà enregistrée."
-                : "Ajoutez votre clé Mistral pour activer l'IA."}
+              Choisissez votre fournisseur et votre méthode d&apos;authentification.
             </p>
             <label>
-              Clé API
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-..."
-                required
-              />
+              Mode
+              <select
+                value={providerSelection}
+                onChange={(e) => {
+                  const nextSelection = e.target.value;
+                  setProviderSelection(nextSelection);
+                  if (nextSelection === "__default__") {
+                    setChatProvider(DEFAULT_BACKOFFICE_PROVIDER);
+                    setEmbeddingProvider(DEFAULT_BACKOFFICE_PROVIDER);
+                    setChatAuthMode("server");
+                    setEmbeddingAuthMode("server");
+                    setChatBaseUrl("");
+                    setEmbeddingBaseUrl("");
+                    setChatModel("");
+                    setEmbeddingModel("");
+                    setSettingsMessage(null);
+                    setSuccess(null);
+                    setError(null);
+                    return;
+                  }
+                  setProviderSelection("custom");
+                  const nextChat = providers.find((p) => p.id === chatProvider);
+                  const nextEmbedding = providers.find((p) => p.id === embeddingProvider);
+                  setChatBaseUrl(nextChat?.defaultBaseUrl || "");
+                  setEmbeddingBaseUrl(nextEmbedding?.defaultBaseUrl || "");
+                  setChatModel(nextChat?.defaultChatModel || "");
+                  setEmbeddingModel(nextEmbedding?.defaultEmbeddingModel || "");
+                  setSettingsMessage(null);
+                  setSuccess(null);
+                  setError(null);
+                }}
+              >
+                <option value="__default__">Par défaut (back-office)</option>
+                <option value="custom">Personnaliser</option>
+              </select>
             </label>
-            {error && <p className="error">{error}</p>}
-            {success && <p className="success">{success}</p>}
-            <button className="cta" type="submit">
-              Enregistrer
+
+            {providerSelection !== "__default__" && (
+              <>
+                <div className="module-note">Presets</div>
+                <div className="form-row">
+                  <button
+                    type="button"
+                    className="ghost"
+                    onClick={() => {
+                      setChatProvider("groq");
+                      setChatAuthMode("api_key");
+                      setChatBaseUrl("https://api.groq.com/openai/v1");
+                      setChatModel("llama-3.3-70b-versatile");
+                      setEmbeddingProvider("cohere");
+                      setEmbeddingAuthMode("api_key");
+                      setEmbeddingBaseUrl("https://api.cohere.com");
+                      setEmbeddingModel("embed-multilingual-v3.0");
+                      setSettingsMessage(null);
+                    }}
+                  >
+                    RAG premium (Groq + Cohere)
+                  </button>
+                  <button
+                    type="button"
+                    className="ghost"
+                    onClick={() => {
+                      setChatProvider("gemini");
+                      setChatAuthMode("api_key");
+                      setChatBaseUrl("https://generativelanguage.googleapis.com/v1beta");
+                      setChatModel("gemini-2.5-pro");
+                      setEmbeddingProvider("mistral");
+                      setEmbeddingAuthMode("server");
+                      setEmbeddingBaseUrl("");
+                      setEmbeddingModel("");
+                      setSettingsMessage(null);
+                    }}
+                  >
+                    RAG stable (Gemini + Mistral)
+                  </button>
+                </div>
+
+                <div className="module-note">Chat</div>
+                <label>
+                  Fournisseur chat
+                  <select
+                    value={chatProvider}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setChatProvider(next);
+                      const cfg = providers.find((p) => p.id === next);
+                      if (next === "mistral") {
+                        setChatBaseUrl("");
+                        setChatModel("");
+                      } else {
+                        setChatBaseUrl(cfg?.defaultBaseUrl || "");
+                        setChatModel(cfg?.defaultChatModel || "");
+                      }
+                      setSettingsMessage(null);
+                      setSuccess(null);
+                      setError(null);
+                    }}
+                  >
+                    {providers.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Authentification chat
+                  <select
+                    value={chatAuthMode}
+                    onChange={(e) => {
+                      setChatAuthMode(e.target.value as "api_key" | "oauth" | "server");
+                      setSettingsMessage(null);
+                    }}
+                  >
+                    <option value="api_key">Clé API</option>
+                    {chatOauthReady && <option value="oauth">OAuth</option>}
+                    {chatHasServerKey && <option value="server">Clé back-office</option>}
+                  </select>
+                </label>
+                {chatNeedsBaseUrl && (
+                  <label>
+                    Base URL chat
+                    <input
+                      value={chatBaseUrl}
+                      onChange={(e) => setChatBaseUrl(e.target.value)}
+                      placeholder="https://api.provider.com"
+                    />
+                  </label>
+                )}
+                <label>
+                  Modèle chat
+                  <input
+                    value={chatModel}
+                    onChange={(e) => setChatModel(e.target.value)}
+                    placeholder={selectedChatProvider?.defaultChatModel || "model-chat"}
+                  />
+                </label>
+                {selectedChatProvider && !selectedChatProvider.defaultChatModel && (
+                  <p className="muted">
+                    Modèle chat non défini par défaut pour ce fournisseur. Renseignez-le.
+                  </p>
+                )}
+                {chatAuthMode === "api_key" && (
+                  <form onSubmit={handleSaveChatApiKey}>
+                    <p className="muted">
+                      {selectedChatProvider?.apiKeyStored
+                        ? "Une clé est déjà enregistrée pour ce fournisseur."
+                        : "Aucune clé enregistrée pour ce fournisseur."}
+                    </p>
+                    <label>
+                      Clé API chat
+                      <input
+                        type="password"
+                        value={chatApiKey}
+                        onChange={(e) => setChatApiKey(e.target.value)}
+                        placeholder="sk-..."
+                        required
+                      />
+                    </label>
+                    {error && <p className="error">{error}</p>}
+                    {success && <p className="success">{success}</p>}
+                    <button className="ghost" type="submit">
+                      Enregistrer la clé chat
+                    </button>
+                  </form>
+                )}
+                {chatAuthMode === "oauth" && (
+                  <div>
+                    <p className="muted">
+                      {chatOauthConnected
+                        ? "OAuth connecté."
+                        : chatOauthReady
+                          ? "OAuth prêt. Connectez-vous pour autoriser l'accès."
+                          : "OAuth non configuré côté serveur."}
+                    </p>
+                    <button
+                      className="ghost"
+                      type="button"
+                      disabled={!chatOauthReady}
+                      onClick={async () => {
+                        const supabase = createBrowserSupabase();
+                        const { data } = await supabase.auth.getSession();
+                        if (!data.session) {
+                          router.push("/login");
+                          return;
+                        }
+                        const res = await fetch(`/api/oauth/${chatProvider}/start?format=json&redirect=/app/settings`, {
+                          headers: { Authorization: `Bearer ${data.session.access_token}` }
+                        });
+                        const payload = await res.json();
+                        if (payload?.url) {
+                          window.location.href = payload.url;
+                        }
+                      }}
+                    >
+                      {chatOauthConnected ? "Reconnecter OAuth" : "Connecter OAuth"}
+                    </button>
+                  </div>
+                )}
+                <button
+                  className="ghost"
+                  type="button"
+                  onClick={() => runTest("chat")}
+                >
+                  Tester le chat
+                </button>
+
+                <div className="module-note">Embeddings</div>
+                <label>
+                  Fournisseur embeddings
+                  <select
+                    value={embeddingProvider}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setEmbeddingProvider(next);
+                      const cfg = providers.find((p) => p.id === next);
+                      if (next === "mistral") {
+                        setEmbeddingBaseUrl("");
+                        setEmbeddingModel("");
+                      } else {
+                        setEmbeddingBaseUrl(cfg?.defaultBaseUrl || "");
+                        setEmbeddingModel(cfg?.defaultEmbeddingModel || "");
+                      }
+                      setSettingsMessage(null);
+                      setSuccess(null);
+                      setError(null);
+                    }}
+                  >
+                    {providers.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Authentification embeddings
+                  <select
+                    value={embeddingAuthMode}
+                    onChange={(e) => {
+                      setEmbeddingAuthMode(e.target.value as "api_key" | "oauth" | "server");
+                      setSettingsMessage(null);
+                    }}
+                  >
+                    <option value="api_key">Clé API</option>
+                    {embeddingOauthReady && <option value="oauth">OAuth</option>}
+                    {embeddingHasServerKey && <option value="server">Clé back-office</option>}
+                  </select>
+                </label>
+                {embeddingNeedsBaseUrl && (
+                  <label>
+                    Base URL embeddings
+                    <input
+                      value={embeddingBaseUrl}
+                      onChange={(e) => setEmbeddingBaseUrl(e.target.value)}
+                      placeholder="https://api.provider.com"
+                    />
+                  </label>
+                )}
+                <label>
+                  Modèle embeddings
+                  <input
+                    value={embeddingModel}
+                    onChange={(e) => setEmbeddingModel(e.target.value)}
+                    placeholder={selectedEmbeddingProvider?.defaultEmbeddingModel || "model-embed"}
+                  />
+                </label>
+                {selectedEmbeddingProvider && !selectedEmbeddingProvider.defaultEmbeddingModel && (
+                  <p className="muted">
+                    Pas de modèle embeddings par défaut pour ce fournisseur. Choisissez-en un ou utilisez Mistral.
+                  </p>
+                )}
+                {embeddingAuthMode === "api_key" && (
+                  <form onSubmit={handleSaveEmbeddingApiKey}>
+                    <p className="muted">
+                      {selectedEmbeddingProvider?.apiKeyStored
+                        ? "Une clé est déjà enregistrée pour ce fournisseur."
+                        : "Aucune clé enregistrée pour ce fournisseur."}
+                    </p>
+                    <label>
+                      Clé API embeddings
+                      <input
+                        type="password"
+                        value={embeddingApiKey}
+                        onChange={(e) => setEmbeddingApiKey(e.target.value)}
+                        placeholder="sk-..."
+                        required
+                      />
+                    </label>
+                    {error && <p className="error">{error}</p>}
+                    {success && <p className="success">{success}</p>}
+                    <button className="ghost" type="submit">
+                      Enregistrer la clé embeddings
+                    </button>
+                  </form>
+                )}
+                {embeddingAuthMode === "oauth" && (
+                  <div>
+                    <p className="muted">
+                      {embeddingOauthConnected
+                        ? "OAuth connecté."
+                        : embeddingOauthReady
+                          ? "OAuth prêt. Connectez-vous pour autoriser l'accès."
+                          : "OAuth non configuré côté serveur."}
+                    </p>
+                    <button
+                      className="ghost"
+                      type="button"
+                      disabled={!embeddingOauthReady}
+                      onClick={async () => {
+                        const supabase = createBrowserSupabase();
+                        const { data } = await supabase.auth.getSession();
+                        if (!data.session) {
+                          router.push("/login");
+                          return;
+                        }
+                        const res = await fetch(`/api/oauth/${embeddingProvider}/start?format=json&redirect=/app/settings`, {
+                          headers: { Authorization: `Bearer ${data.session.access_token}` }
+                        });
+                        const payload = await res.json();
+                        if (payload?.url) {
+                          window.location.href = payload.url;
+                        }
+                      }}
+                    >
+                      {embeddingOauthConnected ? "Reconnecter OAuth" : "Connecter OAuth"}
+                    </button>
+                  </div>
+                )}
+                <button
+                  className="ghost"
+                  type="button"
+                  onClick={() => runTest("embedding")}
+                >
+                  Tester les embeddings
+                </button>
+              </>
+            )}
+
+            {settingsMessage && <p className="success">{settingsMessage}</p>}
+            {testMessage && <p className="muted">{testMessage}</p>}
+            <button className="cta" type="button" onClick={handleSaveSettings}>
+              Sauvegarder les réglages
             </button>
-          </form>
+          </div>
 
           <div className="module-card">
             <h2>Accès & rôles</h2>

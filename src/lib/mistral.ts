@@ -5,6 +5,8 @@ export type MistralMessage = {
   content: string;
 };
 
+import { ProviderError } from "@/lib/ai-errors";
+
 async function mistralRequest<T>(path: string, apiKey: string, body: unknown) {
   const response = await fetch(`${MISTRAL_API_URL}${path}`, {
     method: "POST",
@@ -17,7 +19,20 @@ async function mistralRequest<T>(path: string, apiKey: string, body: unknown) {
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`Mistral error: ${response.status} ${text}`);
+    let payload: any = null;
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      payload = null;
+    }
+    throw new ProviderError({
+      provider: "mistral",
+      status: response.status,
+      code: payload?.code || payload?.error || null,
+      type: payload?.type || null,
+      message: payload?.detail || payload?.message || text || "Mistral error",
+      raw: text
+    });
   }
 
   return (await response.json()) as T;

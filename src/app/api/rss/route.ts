@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { XMLParser } from "fast-xml-parser";
 import { env } from "@/lib/env";
+import { isFeatureRssEnabled } from "@/lib/feature-flags";
 
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
+  if (!isFeatureRssEnabled()) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   const { searchParams } = new URL(request.url);
   const url = searchParams.get("url");
 

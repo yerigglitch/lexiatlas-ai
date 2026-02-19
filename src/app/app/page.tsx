@@ -8,6 +8,8 @@ export default function AppPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
+  const featureDocflow = process.env.NEXT_PUBLIC_FEATURE_DOCFLOW === "true";
+  const featureEmailV2 = process.env.NEXT_PUBLIC_FEATURE_EMAIL_V2 === "true";
 
   useEffect(() => {
     const supabase = createBrowserSupabase();
@@ -63,8 +65,9 @@ export default function AppPage() {
         <aside className="dash-rail">
           <a className="rail-btn" href="/app/rag">Recherche RAG</a>
           <a className="rail-btn" href="/app/templates">Modèles Word</a>
+          {featureDocflow && <a className="rail-btn" href="/app/docflow">DocFlow IA</a>}
           <a className="rail-btn" href="/app/documents">Générer un document</a>
-          <a className="rail-btn" href="/app/email">Emails</a>
+          {featureEmailV2 && <a className="rail-btn" href="/app/email">Emails</a>}
           <a className="rail-btn" href="/app/contacts">Contacts</a>
           <a className="rail-btn" href="/app/signatures">Signature qualifiée</a>
           <a className="rail-btn" href="/app/settings/email">SMTP</a>

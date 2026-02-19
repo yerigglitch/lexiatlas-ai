@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase-server";
 import { encryptString } from "@/lib/crypto";
+import { isApiKeyProvider } from "@/lib/api-keys";
 
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
   try {
+    const providerParam = request.nextUrl.searchParams.get("provider") || "mistral";
+    if (!isApiKeyProvider(providerParam) || providerParam === "custom") {
+      return NextResponse.json({ error: "Invalid provider" }, { status: 400 });
+    }
     const token = request.headers.get("authorization")?.replace("Bearer ", "");
     if (!token) {
       return NextResponse.json({ error: "Missing token" }, { status: 401 });
@@ -25,6 +30,7 @@ export async function GET(request: NextRequest) {
       .from("user_api_keys")
       .select("user_id")
       .eq("user_id", userData.user.id)
+      .eq("provider", providerParam)
       .maybeSingle();
 
     if (error) {
@@ -45,7 +51,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing token" }, { status: 401 });
     }
 
-    const { apiKey } = (await request.json()) as { apiKey?: string };
+    const { apiKey, provider } = (await request.json()) as {
+      apiKey?: string;
+      provider?: string;
+    };
+    const providerParam = provider || "mistral";
+    if (!isApiKeyProvider(providerParam) || providerParam === "custom") {
+      return NextResponse.json({ error: "Invalid provider" }, { status: 400 });
+    }
     if (!apiKey) {
       return NextResponse.json({ error: "Missing apiKey" }, { status: 400 });
     }
@@ -64,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     const { error } = await supabase.from("user_api_keys").upsert({
       user_id: userData.user.id,
-      provider: "mistral",
+      provider: providerParam,
       encrypted_key: encrypted
     });
 
