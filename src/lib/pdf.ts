@@ -1,6 +1,16 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+type PdfLib = typeof import("pdf-lib");
+
+let pdfLib: PdfLib | null = null;
+
+async function getPdfLib() {
+  if (!pdfLib) {
+    pdfLib = await import("pdf-lib");
+  }
+  return pdfLib;
+}
 
 export async function createSimplePdf(title: string, text: string) {
+  const { PDFDocument, StandardFonts, rgb } = await getPdfLib();
   const pdf = await PDFDocument.create();
   const page = pdf.addPage();
   const { width, height } = page.getSize();

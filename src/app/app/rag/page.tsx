@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 import EmptyState from "@/components/ui/empty-state";
 import InlineAlert from "@/components/ui/inline-alert";
@@ -41,6 +40,7 @@ const MODELS = [
 ];
 const OPENAI_DEFAULT_CHAT_MODEL = "gpt-4o-mini";
 const OPENAI_DEFAULT_EMBED_MODEL = "text-embedding-3-small";
+const AnswerMarkdown = dynamic(() => import("@/components/rag/answer-markdown"));
 
 export default function RagPage() {
   const router = useRouter();
@@ -85,6 +85,7 @@ export default function RagPage() {
   useEffect(() => {
     const supabase = createBrowserSupabase();
     let interval: ReturnType<typeof setInterval> | null = null;
+    let onVisibilityChange: (() => void) | null = null;
     let cancelled = false;
 
     const run = async () => {
@@ -95,6 +96,7 @@ export default function RagPage() {
       }
 
       const fetchSources = async () => {
+        if (document.visibilityState !== "visible") return;
         const res = await fetch("/api/sources", {
           headers: { Authorization: `Bearer ${data.session.access_token}` }
         });
@@ -106,6 +108,12 @@ export default function RagPage() {
 
       await fetchSources();
       interval = setInterval(fetchSources, 5000);
+      onVisibilityChange = () => {
+        if (document.visibilityState === "visible") {
+          void fetchSources();
+        }
+      };
+      document.addEventListener("visibilitychange", onVisibilityChange);
 
       const settingsRes = await fetch("/api/settings/ai", {
         headers: { Authorization: `Bearer ${data.session.access_token}` }
@@ -135,6 +143,9 @@ export default function RagPage() {
     return () => {
       cancelled = true;
       if (interval) clearInterval(interval);
+      if (onVisibilityChange) {
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+      }
     };
   }, [router]);
 
@@ -527,7 +538,7 @@ export default function RagPage() {
         {answer ? (
           <div className="rag-answer">
             <article className="history-card answer-card">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{responseMarkdown}</ReactMarkdown>
+              <AnswerMarkdown content={responseMarkdown} />
             </article>
             {citations.length > 0 && (
               <div className="citation-list">

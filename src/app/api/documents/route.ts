@@ -1,11 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceSupabase } from "@/lib/supabase-server";
 import { getAuthContext } from "@/lib/auth-server";
-import PizZip from "pizzip";
-import Docxtemplater from "docxtemplater";
 import { convertDocxToPdf } from "@/lib/pdf-converter";
 
 export const runtime = "nodejs";
+
+type PizZipCtor = typeof import("pizzip")["default"];
+type DocxtemplaterCtor = typeof import("docxtemplater")["default"];
+
+let pizZipCtor: PizZipCtor | null = null;
+let docxtemplaterCtor: DocxtemplaterCtor | null = null;
+
+async function getDocxEngines() {
+  if (!pizZipCtor || !docxtemplaterCtor) {
+    const [pizZipMod, docxtemplaterMod] = await Promise.all([
+      import("pizzip"),
+      import("docxtemplater")
+    ]);
+    pizZipCtor = pizZipMod.default;
+    docxtemplaterCtor = docxtemplaterMod.default;
+  }
+  return { PizZip: pizZipCtor, Docxtemplater: docxtemplaterCtor };
+}
 
 async function signDocumentUrl(storagePath: string) {
   const supabase = createServiceSupabase();
@@ -79,6 +95,7 @@ export async function POST(request: NextRequest) {
   }
 
   const arrayBuffer = await fileData.arrayBuffer();
+  const { PizZip, Docxtemplater } = await getDocxEngines();
   const zip = new PizZip(arrayBuffer);
   const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
 

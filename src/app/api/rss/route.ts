@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { XMLParser } from "fast-xml-parser";
 import { env } from "@/lib/env";
 import { isFeatureRssEnabled } from "@/lib/feature-flags";
 
 export const runtime = "nodejs";
+
+let xmlParserCtor: (typeof import("fast-xml-parser"))["XMLParser"] | null = null;
+
+async function getXmlParserCtor() {
+  if (!xmlParserCtor) {
+    const mod = await import("fast-xml-parser");
+    xmlParserCtor = mod.XMLParser;
+  }
+  return xmlParserCtor;
+}
 
 export async function GET(request: NextRequest) {
   if (!isFeatureRssEnabled()) {
@@ -57,6 +66,7 @@ export async function GET(request: NextRequest) {
   }
 
   const xml = await response.text();
+  const XMLParser = await getXmlParserCtor();
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: ""

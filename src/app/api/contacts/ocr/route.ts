@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PDFDocument } from "pdf-lib";
 import { getAuthContext } from "@/lib/auth-server";
 import { extractTextWithOcr } from "@/lib/ocr";
 
 export const runtime = "nodejs";
+
+let pdfDocumentFactory: (typeof import("pdf-lib"))["PDFDocument"] | null = null;
+
+async function getPdfDocumentFactory() {
+  if (!pdfDocumentFactory) {
+    const mod = await import("pdf-lib");
+    pdfDocumentFactory = mod.PDFDocument;
+  }
+  return pdfDocumentFactory;
+}
 
 function parseContact(text: string) {
   const lines = text
@@ -37,6 +46,7 @@ function parseContact(text: string) {
 
 async function imageToPdf(file: File) {
   const bytes = new Uint8Array(await file.arrayBuffer());
+  const PDFDocument = await getPdfDocumentFactory();
   const pdf = await PDFDocument.create();
 
   const isPng = file.type === "image/png" || file.name.toLowerCase().endsWith(".png");

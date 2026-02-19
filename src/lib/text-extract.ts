@@ -1,12 +1,34 @@
-// Import internal parser entry to avoid pdf-parse debug side effects in ESM bundling.
-import pdfParse from "pdf-parse/lib/pdf-parse.js";
-import mammoth from "mammoth";
+type PdfParseFn = (buffer: Buffer) => Promise<{ text: string }>;
+type MammothLike = {
+  extractRawText: (input: { buffer: Buffer }) => Promise<{ value: string }>;
+};
+
+let pdfParseFn: PdfParseFn | null = null;
+let mammothLib: MammothLike | null = null;
+
+async function getPdfParse() {
+  if (!pdfParseFn) {
+    // Use internal entry to avoid debug side effects in ESM bundling.
+    const mod = await import("pdf-parse/lib/pdf-parse.js");
+    pdfParseFn = mod.default as PdfParseFn;
+  }
+  return pdfParseFn;
+}
+
+async function getMammoth() {
+  if (!mammothLib) {
+    const mod = await import("mammoth");
+    mammothLib = mod.default as MammothLike;
+  }
+  return mammothLib;
+}
 
 export async function extractText(file: File) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const mime = file.type;
 
   if (mime === "application/pdf") {
+    const pdfParse = await getPdfParse();
     const data = await pdfParse(buffer);
     return data.text;
   }
@@ -16,6 +38,7 @@ export async function extractText(file: File) {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
     file.name.toLowerCase().endsWith(".docx")
   ) {
+    const mammoth = await getMammoth();
     const result = await mammoth.extractRawText({ buffer });
     return result.value;
   }
@@ -29,6 +52,7 @@ export async function extractTextFromBuffer(
   filename: string
 ) {
   if (mime === "application/pdf") {
+    const pdfParse = await getPdfParse();
     const data = await pdfParse(buffer);
     return data.text;
   }
@@ -38,6 +62,7 @@ export async function extractTextFromBuffer(
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
     filename.toLowerCase().endsWith(".docx")
   ) {
+    const mammoth = await getMammoth();
     const result = await mammoth.extractRawText({ buffer });
     return result.value;
   }
