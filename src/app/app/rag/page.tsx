@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -44,6 +44,7 @@ const OPENAI_DEFAULT_EMBED_MODEL = "text-embedding-3-small";
 
 export default function RagPage() {
   const router = useRouter();
+  const recognitionRef = useRef<any>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [querying, setQuerying] = useState(false);
@@ -150,6 +151,18 @@ export default function RagPage() {
       setEmbeddingModel(OPENAI_DEFAULT_EMBED_MODEL);
     }
   }, [chatProvider, embeddingProvider, chatModel, embeddingModel]);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // Ignore stop errors when recognition is not active.
+        }
+      }
+    };
+  }, []);
 
   const handleUploadFile = async () => {
     if (!file) {
@@ -393,15 +406,36 @@ export default function RagPage() {
     setCitations(entry.citations);
   }, []);
 
-  const startVoiceInput = () => {
+  const startVoiceInput = async () => {
     const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition ||
+      (window as any).WebKitSpeechRecognition;
     if (!SpeechRecognition) {
       setQueryError("La dictée vocale n'est pas disponible sur ce navigateur.");
       return;
     }
+
+    if (dictating || recognitionRef.current) return;
+
+    if (!window.isSecureContext) {
+      setQueryError("La dictée vocale nécessite HTTPS ou localhost.");
+      return;
+    }
+
+    if (navigator.mediaDevices?.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach((track) => track.stop());
+      } catch {
+        setQueryError("Autorisez le microphone dans Safari pour utiliser la dictée vocale.");
+        return;
+      }
+    }
+
     setQueryError(null);
     const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
     recognition.lang = "fr-FR";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
@@ -412,14 +446,33 @@ export default function RagPage() {
         setQuestion((prev) => `${prev} ${transcript}`.trim());
       }
     };
-    recognition.onerror = () => {
-      setQueryError("Impossible de démarrer la dictée vocale.");
+    recognition.onerror = (event: any) => {
+      const code = event?.error;
+      if (code === "not-allowed" || code === "service-not-allowed") {
+        setQueryError("Microphone refusé. Autorisez l'accès micro dans Safari puis réessayez.");
+      } else if (code === "audio-capture") {
+        setQueryError("Aucun microphone détecté.");
+      } else if (code === "network") {
+        setQueryError("Erreur réseau pendant la dictée vocale.");
+      } else if (code === "no-speech") {
+        setQueryError("Aucune voix détectée. Réessayez en parlant plus près du micro.");
+      } else {
+        setQueryError("Impossible de démarrer la dictée vocale.");
+      }
+      recognitionRef.current = null;
       setDictating(false);
     };
     recognition.onend = () => {
+      recognitionRef.current = null;
       setDictating(false);
     };
-    recognition.start();
+    try {
+      recognition.start();
+    } catch {
+      recognitionRef.current = null;
+      setDictating(false);
+      setQueryError("Impossible de démarrer la dictée vocale.");
+    }
   };
 
   if (loading) {

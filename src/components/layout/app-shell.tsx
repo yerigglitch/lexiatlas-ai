@@ -12,7 +12,16 @@ const SHOW_EMAIL = process.env.NEXT_PUBLIC_FEATURE_EMAIL_V2 === "true";
 function Icon({
   kind
 }: {
-  kind: "search" | "document" | "template" | "flow" | "mail" | "contacts" | "sign" | "settings";
+  kind:
+    | "search"
+    | "document"
+    | "template"
+    | "flow"
+    | "mail"
+    | "contacts"
+    | "sign"
+    | "settings"
+    | "collapse";
 }) {
   if (kind === "search") {
     return (
@@ -73,6 +82,13 @@ function Icon({
       </svg>
     );
   }
+  if (kind === "collapse") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M8 4v16M16 8l-4 4 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
@@ -81,34 +97,20 @@ function Icon({
   );
 }
 
-type DockMenu = "production" | "communication" | null;
-
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [hoverExpanded, setHoverExpanded] = useState(false);
   const [searchEntries, setSearchEntries] = useState<SearchMemoryEntry[]>([]);
-  const [dockMenu, setDockMenu] = useState<DockMenu>(null);
-
-  const effectiveCollapsed = collapsed && !hoverExpanded;
-  const productionItems = useMemo(
-    () => [
-      { href: "/app/documents", label: "Générer un document", icon: "document" as const },
-      { href: "/app/templates", label: "Modèles Word", icon: "template" as const },
-      ...(SHOW_DOCFLOW ? [{ href: "/app/docflow", label: "DocFlow IA", icon: "flow" as const }] : [])
-    ],
-    []
-  );
-  const communicationItems = useMemo(
-    () => [
-      ...(SHOW_EMAIL ? [{ href: "/app/email", label: "Emails", icon: "mail" as const }] : []),
-      { href: "/app/contacts", label: "Contacts", icon: "contacts" as const },
-      { href: "/app/signatures", label: "Signatures", icon: "sign" as const }
-    ],
-    []
-  );
+  const productionHref = useMemo(() => {
+    if (SHOW_DOCFLOW) return "/app/docflow";
+    return "/app/documents";
+  }, []);
+  const communicationHref = useMemo(() => {
+    if (SHOW_EMAIL) return "/app/email";
+    return "/app/contacts";
+  }, []);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("app_shell_collapsed");
@@ -122,7 +124,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMobileOpen(false);
-    setDockMenu(null);
     setSearchEntries(listSearchMemory().slice(0, 12));
   }, [pathname]);
 
@@ -133,21 +134,29 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className={effectiveCollapsed ? "app-shell is-collapsed" : "app-shell"}>
+    <div className={collapsed ? "app-shell is-collapsed" : "app-shell"}>
       <aside
         className={mobileOpen ? "app-shell-sidebar is-open" : "app-shell-sidebar"}
-        onMouseEnter={() => setHoverExpanded(true)}
-        onMouseLeave={() => setHoverExpanded(false)}
       >
-        <button
-          type="button"
-          className="app-shell-brand app-shell-brand-trigger"
-          onClick={() => setCollapsed((prev) => !prev)}
-          aria-label={effectiveCollapsed ? "Déplier le bandeau" : "Replier le bandeau"}
-        >
-          <span className="app-shell-brand-mark">LA</span>
-          <span className="app-shell-brand-text">Espace cabinet</span>
-        </button>
+        <div className="app-shell-sidebar-top">
+          <button
+            type="button"
+            className="app-shell-brand app-shell-brand-trigger"
+            onClick={() => setCollapsed((prev) => !prev)}
+            aria-label={collapsed ? "Déplier le bandeau" : "Replier le bandeau"}
+          >
+            <span className="app-shell-brand-mark">LA</span>
+            <span className="app-shell-brand-text">Espace cabinet</span>
+          </button>
+          <button
+            type="button"
+            className={collapsed ? "app-shell-collapse-btn is-collapsed" : "app-shell-collapse-btn"}
+            onClick={() => setCollapsed((prev) => !prev)}
+            aria-label={collapsed ? "Déplier le bandeau" : "Replier le bandeau"}
+          >
+            <Icon kind="collapse" />
+          </button>
+        </div>
 
         <nav className="app-shell-nav" aria-label="Navigation principale">
           <Link
@@ -165,7 +174,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <span className="app-shell-link-label">Knowledge Base</span>
           </Link>
 
-          {!effectiveCollapsed && (
+          {!collapsed && (
             <section className="app-shell-memory">
               <h2>Recherches mémorisées</h2>
               {searchEntries.length === 0 && <p className="muted">Aucune recherche enregistrée.</p>}
@@ -191,41 +200,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="app-shell-dock">
-          <button
-            type="button"
-            className="app-shell-dock-btn"
-            onMouseEnter={() => setDockMenu("production")}
-            onClick={() => setDockMenu((prev) => (prev === "production" ? null : "production"))}
-            aria-label="Production"
-          >
+          <Link href={productionHref} className="app-shell-dock-btn" aria-label="Production">
             <Icon kind="document" />
-          </button>
-          <button
-            type="button"
-            className="app-shell-dock-btn"
-            onMouseEnter={() => setDockMenu("communication")}
-            onClick={() => setDockMenu((prev) => (prev === "communication" ? null : "communication"))}
-            aria-label="Communication"
-          >
+          </Link>
+          <Link href={communicationHref} className="app-shell-dock-btn" aria-label="Communication">
             <Icon kind="mail" />
-          </button>
+          </Link>
           <Link href="/app/settings" className="app-shell-dock-btn" aria-label="Réglages">
             <Icon kind="settings" />
           </Link>
-          <button type="button" className="app-shell-dock-btn" onClick={handleLogout} aria-label="Déconnexion">
-            ×
-          </button>
-
-          {dockMenu && (
-            <div className="app-shell-flyout" onMouseLeave={() => setDockMenu(null)}>
-              {(dockMenu === "production" ? productionItems : communicationItems).map((item) => (
-                <Link key={item.href} href={item.href} className="app-shell-flyout-link">
-                  <span className="app-shell-link-icon"><Icon kind={item.icon} /></span>
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </div>
-          )}
         </div>
       </aside>
 
@@ -241,7 +224,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </button>
             <p>LexiAtlas</p>
           </div>
-          <span>Assistant juridique opérationnel</span>
+          <div className="app-shell-topbar-right">
+            <span>Assistant juridique opérationnel</span>
+            <button type="button" className="ghost app-shell-logout-btn" onClick={handleLogout}>
+              Déconnexion
+            </button>
+          </div>
         </header>
         <div className="app-shell-page">{children}</div>
       </section>
