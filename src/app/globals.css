@@ -26,6 +26,19 @@ body {
   min-height: 100vh;
 }
 
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 3px solid rgba(74, 124, 255, 0.45);
+  outline-offset: 2px;
+}
+
 input {
   width: 100%;
   margin-top: 6px;
@@ -1682,6 +1695,27 @@ button:hover,
   color: var(--muted);
 }
 
+.app-loading {
+  min-height: 40vh;
+  display: grid;
+  align-content: center;
+  gap: 12px;
+  padding: 18px;
+}
+
+.ui-skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+  width: min(520px, 100%);
+  background: linear-gradient(90deg, #eadfd8 15%, #f7f3f0 45%, #eadfd8 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s linear infinite;
+}
+
+.ui-skeleton-line.short {
+  width: min(280px, 72%);
+}
+
 .app-shell {
   min-height: 100vh;
   display: grid;
@@ -1813,6 +1847,11 @@ button:hover,
   gap: 10px;
   border-bottom: 1px solid #eaded6;
   padding-bottom: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 12;
+  background: rgba(249, 244, 240, 0.7);
+  backdrop-filter: blur(8px);
 }
 
 .app-shell-topbar-left {
@@ -2135,6 +2174,36 @@ button:hover,
   }
   50% {
     transform: translateY(-8px) rotate(calc(var(--tilt) + 1deg));
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 180% 0;
+  }
+  100% {
+    background-position: -20% 0;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dash-card,
+  .module-card,
+  .email-panel,
+  .rag-v2-card,
+  .settings-summary-card,
+  .ui-page-header {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .dash-card:hover,
+  .module-card:hover,
+  .email-panel:hover,
+  .rag-v2-card:hover,
+  .settings-summary-card:hover,
+  .ui-page-header:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(31, 42, 66, 0.12);
   }
 }
 

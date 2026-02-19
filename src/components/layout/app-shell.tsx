@@ -172,6 +172,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                       key={item.href}
                       href={item.href}
                       title={collapsed ? item.label : undefined}
+                      aria-current={active ? "page" : undefined}
                       className={active ? "app-shell-link active" : "app-shell-link"}
                     >
                       <span className="app-shell-link-icon">

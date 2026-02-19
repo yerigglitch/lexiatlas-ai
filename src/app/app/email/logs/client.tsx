@@ -98,7 +98,7 @@ export default function EmailLogsPage() {
   };
 
   if (loading) {
-    return <main className="auth"><p>Chargement...</p></main>;
+    return <main className="app-loading" aria-live="polite"><div className="ui-skeleton-line" /><div className="ui-skeleton-line short" /></main>;
   }
 
   return (
