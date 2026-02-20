@@ -26,3 +26,14 @@
 - Runtime API now uses App Router routes under `src/app/api/*` only.
 - `examples/`, `templates/`, and `scripts/` are dev tooling assets.
 - `legacy-landing/` is archived legacy material (not used by runtime routes).
+
+## Linear Sync (Optional)
+- Add `LINEAR_API_TOKEN` in `.env.local`.
+- Optional filters: `LINEAR_TEAM_KEY`, `LINEAR_ASSIGNEE_EMAIL`, `LINEAR_PROJECT_ID`, `LINEAR_STATES`.
+- Run `npm run linear:sync`.
+- Output is generated in `tasks/linear.md` (configurable with `LINEAR_SYNC_OUTPUT`).
+
+### Linear Triage
+- Dry run onboarding cleanup: `npm run linear:triage`
+- Apply onboarding cleanup (`YER-1..5` to terminal state): `npm run linear:triage -- --apply`
+- Custom IDs: `npm run linear:triage -- --apply --ids=YER-1,YER-2`
