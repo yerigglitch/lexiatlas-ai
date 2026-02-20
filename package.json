@@ -11,6 +11,7 @@
     "linear:sync": "node scripts/sync-linear.mjs",
     "linear:triage": "node scripts/linear-triage.mjs",
     "linear:push-ui": "node scripts/linear-push-ui.mjs",
+    "linear:phase-cleanup": "node scripts/linear-phase-cleanup.mjs",
     "ci:check": "npm run check:structure && npm run lint && npm run build"
   },
   "dependencies": {
