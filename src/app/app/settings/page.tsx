@@ -261,10 +261,10 @@ export default function SettingsPage() {
       : `${selectedChatProvider?.label || chatProvider} (chat) + ${selectedEmbeddingProvider?.label || embeddingProvider} (embeddings)`;
 
   return (
-    <main className="module settings-v2">
+    <main className="module settings-v2 settings-v3">
       <PageHeader
-        title="Réglages IA"
-        subtitle="Fournisseurs, authentification, tests et configuration opérationnelle."
+        title="Configuration IA"
+        subtitle="Réglages techniques compacts pour chat, embeddings et accès administrateur."
         actions={
           <button className="ghost" onClick={() => router.push("/app")}>
             Retour
@@ -272,7 +272,7 @@ export default function SettingsPage() {
         }
       />
 
-      <section className="settings-summary-card">
+      <section className="settings-summary-card settings-v3-summary">
         <h2>Configuration active</h2>
         <p className="muted">{activeProfile}</p>
         <div className="settings-summary-grid">
@@ -293,7 +293,7 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section className="module-card">
+      <section className="module-card settings-v3-menu">
         <label>
           Rubrique
           <select
@@ -308,7 +308,7 @@ export default function SettingsPage() {
         </label>
       </section>
 
-      <section className="module-grid">
+      <section className="module-grid settings-v3-grid">
         <div className="module-list">
           <div className="module-card settings-config-card">
             <h2>1. Profil et fournisseurs IA</h2>

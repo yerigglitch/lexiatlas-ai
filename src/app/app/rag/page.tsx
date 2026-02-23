@@ -405,6 +405,7 @@ export default function RagPage() {
 
 
   const responseMarkdown = useMemo(() => answer || "", [answer]);
+  const recentMemories = useMemo(() => listSearchMemory().slice(0, 6), []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -491,151 +492,175 @@ export default function RagPage() {
   }
 
   return (
-    <main className="rag rag-v2">
+    <main className="rag rag-v3">
       <PageHeader
-        title="Recherche RAG"
-        subtitle="Interrogez vos sources internes et Légifrance avec traçabilité."
+        title="Assistant de recherche"
+        subtitle="Question unique, réponse sourcée, production immédiate."
         actions={
-          <button className="cta" type="button" onClick={() => setShowUpload(true)}>
+          <button className="ghost" type="button" onClick={() => setShowUpload(true)}>
             Ajouter des sources
           </button>
         }
       />
-      <section className="rag-v2-card rag-v2-answer">
-        <div className="rag-response-header">
-          <h2>3. Réponse</h2>
-          <div className="rag-response-actions">
-            <button
-              type="button"
-              className="mini-btn"
-              onClick={() => {
-                if (!answer) return;
-                const entry: AnswerEntry = {
-                  id: `${Date.now()}`,
-                  question,
-                  answer,
-                  citations,
-                  createdAt: new Date().toISOString()
-                };
-                saveKnowledge({
-                  id: entry.id,
-                  title: question.slice(0, 80),
-                  question: entry.question,
-                  answer: entry.answer,
-                  citations: entry.citations,
-                  createdAt: entry.createdAt
-                });
-              }}
-            >
-              Sauvegarder dans Knowledge Base
-            </button>
-            <button type="button" className="mini-btn" onClick={() => router.push("/app/documents")}>
-              Vers production documents
-            </button>
-          </div>
-        </div>
 
-        {answer ? (
-          <div className="rag-answer">
-            <article className="history-card answer-card">
-              <AnswerMarkdown content={responseMarkdown} />
-            </article>
-            {citations.length > 0 && (
-              <div className="citation-list">
-                {citations.map((citation, index) => {
-                  const preview =
-                    citation.snippet.length > 160
-                      ? `${citation.snippet.slice(0, 160)}…`
-                      : citation.snippet;
-                  return (
-                    <button
-                      key={citation.id}
-                      type="button"
-                      className="cite-card"
-                      onClick={() => setActiveCitation(citation)}
-                    >
-                      <strong>
-                        {citation.source_title || "Source"} #{index + 1}
-                      </strong>
-                      <span>{preview}</span>
-                    </button>
-                  );
-                })}
+      <section className="rag-v3-layout">
+        <article className="rag-v3-main">
+          {answer ? (
+            <section className="rag-v3-answer">
+              <div className="rag-v3-answer-head">
+                <h2>Réponse générée</h2>
+                <div className="rag-v3-actions">
+                  <button
+                    type="button"
+                    className="mini-btn"
+                    onClick={() => {
+                      const entry: AnswerEntry = {
+                        id: `${Date.now()}`,
+                        question,
+                        answer: answer || "",
+                        citations,
+                        createdAt: new Date().toISOString()
+                      };
+                      saveKnowledge({
+                        id: entry.id,
+                        title: question.slice(0, 80),
+                        question: entry.question,
+                        answer: entry.answer,
+                        citations: entry.citations,
+                        createdAt: entry.createdAt
+                      });
+                    }}
+                  >
+                    Enregistrer
+                  </button>
+                  <button type="button" className="mini-btn" onClick={() => router.push("/app/documents")}>
+                    Rédiger un document
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
-        ) : (
-          <EmptyState
-            title="Aucune réponse pour l'instant"
-            description="Posez une question pour obtenir une synthèse référencée."
-          />
-        )}
-      </section>
+              <article className="history-card answer-card">
+                <AnswerMarkdown content={responseMarkdown} />
+              </article>
+              {citations.length > 0 && (
+                <div className="citation-list">
+                  {citations.map((citation, index) => {
+                    const preview =
+                      citation.snippet.length > 170
+                        ? `${citation.snippet.slice(0, 170)}…`
+                        : citation.snippet;
+                    return (
+                      <button
+                        key={citation.id}
+                        type="button"
+                        className="cite-card"
+                        onClick={() => setActiveCitation(citation)}
+                      >
+                        <strong>{citation.source_title || "Source"} #{index + 1}</strong>
+                        <span>{preview}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          ) : (
+            <section className="rag-v3-empty">
+              <EmptyState
+                title="Posez une question"
+                description="Ajoutez des sources puis lancez une recherche sourcée exploitable."
+              />
+            </section>
+          )}
 
-      <form className="rag-query" onSubmit={handleQuery}>
-        <div className="query-mode">
-          <div className="mode-toggle">
-            <button
-              type="button"
-              className={`mode-btn ${sourceMode === "internal" ? "active" : ""}`}
-              onClick={() => setSourceMode("internal")}
-            >
-              Interne
-            </button>
-            <button
-              type="button"
-              className={`mode-btn ${sourceMode === "mix" ? "active" : ""}`}
-              onClick={() => setSourceMode("mix")}
-            >
-              Mix
-            </button>
-            <button
-              type="button"
-              className={`mode-btn ${sourceMode === "legifrance" ? "active" : ""}`}
-              onClick={() => setSourceMode("legifrance")}
-            >
-              Légifrance
-            </button>
-            <button type="button" className="mode-btn" onClick={() => setShowUpload(true)}>
-              + Sources
-            </button>
-            <button type="button" className="mode-btn" onClick={startVoiceInput}>
-              {dictating ? "● Dictée..." : "🎙 Dictée"}
-            </button>
-          </div>
-          <div className="chip-list">
-            {sources.slice(0, 8).map((source) => (
-              <div key={source.id} className={`chip ${selectedSources.includes(source.id) ? "chip-active" : ""}`}>
+          <form className="rag-query rag-v3-query" onSubmit={handleQuery}>
+            <div className="query-mode">
+              <div className="mode-toggle">
                 <button
                   type="button"
-                  className="chip-label"
-                  onClick={() =>
-                    setSelectedSources((prev) =>
-                      prev.includes(source.id)
-                        ? prev.filter((id) => id !== source.id)
-                        : [...prev, source.id]
-                    )
-                  }
+                  className={`mode-btn ${sourceMode === "internal" ? "active" : ""}`}
+                  onClick={() => setSourceMode("internal")}
                 >
-                  {source.title}
+                  Interne
+                </button>
+                <button
+                  type="button"
+                  className={`mode-btn ${sourceMode === "mix" ? "active" : ""}`}
+                  onClick={() => setSourceMode("mix")}
+                >
+                  Mix
+                </button>
+                <button
+                  type="button"
+                  className={`mode-btn ${sourceMode === "legifrance" ? "active" : ""}`}
+                  onClick={() => setSourceMode("legifrance")}
+                >
+                  Légifrance
+                </button>
+                <button type="button" className="mode-btn" onClick={startVoiceInput}>
+                  {dictating ? "Dictée..." : "Dictée"}
                 </button>
               </div>
-            ))}
-          </div>
-        </div>
-        <div className="query-bar">
-          <input
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Posez votre question..."
-          />
-          <button className="cta" type="submit" disabled={querying}>
-            {querying ? "Recherche..." : "Envoyer"}
-          </button>
-        </div>
-        {queryError && <InlineAlert tone="error">{queryError}</InlineAlert>}
-      </form>
+              <div className="chip-list">
+                {sources.slice(0, 8).map((source) => (
+                  <div
+                    key={source.id}
+                    className={`chip ${selectedSources.includes(source.id) ? "chip-active" : ""}`}
+                  >
+                    <button
+                      type="button"
+                      className="chip-label"
+                      onClick={() =>
+                        setSelectedSources((prev) =>
+                          prev.includes(source.id)
+                            ? prev.filter((id) => id !== source.id)
+                            : [...prev, source.id]
+                        )
+                      }
+                    >
+                      {source.title}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="query-bar">
+              <input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Ex: quelles pièces démontrent la rupture abusive et quels arguments opposables ?"
+              />
+              <button className="cta" type="submit" disabled={querying}>
+                {querying ? "Analyse..." : "Lancer"}
+              </button>
+            </div>
+            {queryError && <InlineAlert tone="error">{queryError}</InlineAlert>}
+          </form>
+        </article>
 
+        <aside className="rag-v3-side">
+          <section className="rag-v3-panel">
+            <h3>Recherches récentes</h3>
+            <div className="rag-v3-recent">
+              {recentMemories.length === 0 && <p className="muted">Aucune recherche récente.</p>}
+              {recentMemories.map((entry) => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  className="rag-v3-recent-item"
+                  onClick={() => {
+                    setQuestion(entry.question);
+                    setAnswer(entry.answer);
+                    setCitations(entry.citations);
+                  }}
+                >
+                  <strong>{entry.title}</strong>
+                  <span>{new Date(entry.createdAt).toLocaleDateString("fr-FR")}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        </aside>
+      </section>
 
       {showUpload && (
         <div className="modal-overlay">
@@ -647,25 +672,13 @@ export default function RagPage() {
               </button>
             </div>
             <div className="modal-tabs">
-              <button
-                type="button"
-                className={sourceTab === "upload" ? "tab active" : "tab"}
-                onClick={() => setSourceTab("upload")}
-              >
+              <button type="button" className={sourceTab === "upload" ? "tab active" : "tab"} onClick={() => setSourceTab("upload")}>
                 Upload
               </button>
-              <button
-                type="button"
-                className={sourceTab === "paste" ? "tab active" : "tab"}
-                onClick={() => setSourceTab("paste")}
-              >
-                Coller texte
+              <button type="button" className={sourceTab === "paste" ? "tab active" : "tab"} onClick={() => setSourceTab("paste")}>
+                Texte
               </button>
-              <button
-                type="button"
-                className={sourceTab === "url" ? "tab active" : "tab"}
-                onClick={() => setSourceTab("url")}
-              >
+              <button type="button" className={sourceTab === "url" ? "tab active" : "tab"} onClick={() => setSourceTab("url")}>
                 URL
               </button>
             </div>
@@ -674,11 +687,7 @@ export default function RagPage() {
                 <>
                   <label>
                     Fichier (PDF/DOCX)
-                    <input
-                      type="file"
-                      accept=".pdf,.docx"
-                      onChange={(e) => setFile(e.target.files?.[0] || null)}
-                    />
+                    <input type="file" accept=".pdf,.docx" onChange={(e) => setFile(e.target.files?.[0] || null)} />
                   </label>
                   <button className="cta" type="button" onClick={handleUploadFile} disabled={uploading}>
                     {uploading ? "Indexation..." : "Importer"}
@@ -689,11 +698,7 @@ export default function RagPage() {
                 <>
                   <label>
                     Texte brut
-                    <textarea
-                      rows={8}
-                      value={pasteText}
-                      onChange={(e) => setPasteText(e.target.value)}
-                    />
+                    <textarea rows={8} value={pasteText} onChange={(e) => setPasteText(e.target.value)} />
                   </label>
                   <button className="cta" type="button" onClick={handlePasteText} disabled={uploading}>
                     {uploading ? "Indexation..." : "Indexer"}
@@ -731,22 +736,13 @@ export default function RagPage() {
               </button>
             </div>
             {activeCitation.source_url && (
-              <a
-                className="cite-link"
-                href={activeCitation.source_url}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a className="cite-link" href={activeCitation.source_url} target="_blank" rel="noreferrer">
                 Ouvrir la source
               </a>
             )}
             <p className="citation-text">{activeCitation.snippet}</p>
             <div className="citation-actions">
-              <button
-                className="cta"
-                type="button"
-                onClick={() => navigator.clipboard.writeText(activeCitation.snippet)}
-              >
+              <button className="cta" type="button" onClick={() => navigator.clipboard.writeText(activeCitation.snippet)}>
                 Copier la citation
               </button>
             </div>

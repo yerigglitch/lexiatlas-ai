@@ -2857,3 +2857,184 @@ body::after {
     animation: none !important;
   }
 }
+
+/* ---------- UI v2: Enterprise Minimal (RAG / Documents / Settings) ---------- */
+.rag-v3 {
+  display: grid;
+  gap: 14px;
+}
+
+.rag-v3-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 12px;
+  align-items: start;
+}
+
+.rag-v3-main,
+.rag-v3-side {
+  display: grid;
+  gap: 12px;
+}
+
+.rag-v3-answer,
+.rag-v3-panel,
+.rag-v3-empty,
+.docs-v3-form,
+.docs-v3-card,
+.settings-v3-summary,
+.settings-v3-menu {
+  border: 1px solid #c8beaf;
+  background: #fcfaf6;
+  border-radius: 2px;
+  box-shadow: 0 8px 24px rgba(26, 30, 40, 0.08);
+}
+
+.rag-v3-answer,
+.rag-v3-panel,
+.rag-v3-empty {
+  padding: 14px;
+}
+
+.rag-v3-answer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.rag-v3-answer-head h2,
+.rag-v3-panel h3,
+.docs-v3-form h2,
+.docs-v3-card h3 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+}
+
+.rag-v3-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.rag-v3-query {
+  position: sticky;
+  bottom: 10px;
+  width: 100%;
+  left: auto;
+  transform: none;
+  margin: 0;
+}
+
+.rag-v3-recent {
+  display: grid;
+  gap: 6px;
+}
+
+.rag-v3-recent-item {
+  border: 1px solid #d2c8b8;
+  border-radius: 2px;
+  background: #fffdf8;
+  padding: 8px;
+  text-align: left;
+  display: grid;
+  gap: 4px;
+}
+
+.rag-v3-recent-item strong {
+  font-size: 0.86rem;
+  color: #1d212a;
+  font-weight: 600;
+}
+
+.rag-v3-recent-item span {
+  font-size: 0.74rem;
+  color: #6d675f;
+}
+
+.docs-v3 {
+  display: grid;
+  gap: 12px;
+}
+
+.docs-v3-grid {
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: 12px;
+}
+
+.docs-v3-form {
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.docs-v3-list {
+  display: grid;
+  gap: 10px;
+}
+
+.docs-v3-card {
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.docs-v3-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid #e2d9ca;
+  padding-top: 8px;
+  font-size: 0.88rem;
+}
+
+.docs-v3-row span {
+  color: #6b655d;
+  white-space: nowrap;
+}
+
+.settings-v3 {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-v3-summary,
+.settings-v3-menu {
+  padding: 12px;
+}
+
+.settings-v3-grid {
+  align-items: start;
+}
+
+.settings-v3 .settings-config-card {
+  border: 1px solid #c8beaf;
+  border-radius: 2px;
+  background: #fcfaf6;
+}
+
+.settings-v3 .form-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.settings-v3 .module-note {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 1120px) {
+  .rag-v3-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .rag-v3-query {
+    position: static;
+  }
+
+  .docs-v3-grid {
+    grid-template-columns: 1fr;
+  }
+}

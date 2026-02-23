@@ -115,10 +115,10 @@ export default function DocumentsPage() {
   }
 
   return (
-    <main className="module">
+    <main className="module docs-v3">
       <PageHeader
-        title="Générer un document"
-        subtitle="Utilisez un modèle Word et vos variables JSON."
+        title="Production documentaire"
+        subtitle="Générez un document prêt à envoi à partir d'un modèle Word et de données structurées."
         actions={
           <button className="ghost" onClick={() => router.push("/app")}>
             Retour
@@ -126,9 +126,9 @@ export default function DocumentsPage() {
         }
       />
 
-      <section className="module-grid">
-        <form className="module-card" onSubmit={handleGenerate}>
-          <h2>Paramètres</h2>
+      <section className="module-grid docs-v3-grid">
+        <form className="module-card docs-v3-form" onSubmit={handleGenerate}>
+          <h2>Nouveau document</h2>
           <label>
             Modèle
             <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} required>
@@ -145,9 +145,9 @@ export default function DocumentsPage() {
             <input value={title} onChange={(e) => setTitle(e.target.value)} />
           </label>
           <label>
-            Variables JSON
+            Données (JSON)
             <textarea
-              rows={8}
+              rows={14}
               value={jsonData}
               onChange={(e) => setJsonData(e.target.value)}
             />
@@ -162,12 +162,12 @@ export default function DocumentsPage() {
           </label>
           {error && <InlineAlert tone="error">{error}</InlineAlert>}
           {success && <InlineAlert tone="success">{success}</InlineAlert>}
-          <button className="cta" type="submit">Générer</button>
+          <button className="cta" type="submit">Générer le document</button>
         </form>
 
-        <aside className="module-list">
-          <article className="module-card">
-            <h3>Documents récents</h3>
+        <aside className="module-list docs-v3-list">
+          <article className="module-card docs-v3-card">
+            <h3>Sorties récentes</h3>
             {documents.length === 0 && (
               <EmptyState
                 title="Aucun document généré"
@@ -175,15 +175,18 @@ export default function DocumentsPage() {
               />
             )}
             {documents.map((doc) => (
-              <p key={doc.id}>
-                {doc.url ? (
-                  <a className="link" href={doc.url} target="_blank" rel="noreferrer">
-                    {doc.title}
-                  </a>
-                ) : (
-                  doc.title
-                )}
-              </p>
+              <div key={doc.id} className="docs-v3-row">
+                <div>
+                  {doc.url ? (
+                    <a className="link" href={doc.url} target="_blank" rel="noreferrer">
+                      {doc.title}
+                    </a>
+                  ) : (
+                    doc.title
+                  )}
+                </div>
+                <span>{new Date(doc.created_at).toLocaleDateString("fr-FR")}</span>
+              </div>
             ))}
           </article>
         </aside>
