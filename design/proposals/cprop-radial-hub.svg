@@ -1,0 +1,50 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="35%" r="75%">
+      <stop offset="0%" stop-color="#f9f5ec"/>
+      <stop offset="100%" stop-color="#ece4d6"/>
+    </radialGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#fff"/>
+      <stop offset="100%" stop-color="#f0eadf"/>
+    </radialGradient>
+  </defs>
+  <rect width="1800" height="1100" fill="url(#bg)"/>
+  <text x="64" y="72" fill="#1f2120" font-family="Avenir Next, Helvetica, sans-serif" font-size="34" font-weight="600">Cprop — Radial Hub</text>
+  <text x="64" y="108" fill="#665f52" font-family="Avenir Next, Helvetica, sans-serif" font-size="24">Architecture visuelle radicale: information autour d’un noyau de requête.</text>
+
+  <rect x="52" y="142" width="1696" height="80" rx="20" fill="#faf7f1" stroke="#d8cebc"/>
+  <text x="92" y="193" fill="#2a2d2a" font-family="Avenir Next, Helvetica, sans-serif" font-size="30">LexiAtlas Workspace · Assistant de recherche</text>
+  <rect x="1534" y="160" width="184" height="44" rx="22" fill="#efe8d9" stroke="#d8cebc"/>
+  <text x="1570" y="190" fill="#454c45" font-family="Avenir Next, Helvetica, sans-serif" font-size="21">Light / Dark</text>
+
+  <circle cx="900" cy="610" r="290" fill="url(#core)" stroke="#d8cebc" stroke-width="2"/>
+  <text x="768" y="560" fill="#7b7467" font-family="Avenir Next, Helvetica, sans-serif" font-size="38">Posez votre question</text>
+  <text x="760" y="610" fill="#2a2d2a" font-family="Avenir Next, Helvetica, sans-serif" font-size="30">@sources · Mix · Légifrance</text>
+  <rect x="748" y="650" width="304" height="60" rx="18" fill="#ece3d3"/>
+  <text x="820" y="690" fill="#2e322f" font-family="Avenir Next, Helvetica, sans-serif" font-size="26">Lancer</text>
+
+  <rect x="260" y="360" width="290" height="200" rx="22" fill="#f8f4eb" stroke="#d8cebc"/>
+  <text x="286" y="424" fill="#252826" font-family="Avenir Next, Helvetica, sans-serif" font-size="29" font-weight="600">Sources</text>
+  <text x="286" y="470" fill="#2f3330" font-family="Avenir Next, Helvetica, sans-serif" font-size="22">Fichiers · URL · Vault</text>
+
+  <rect x="1250" y="360" width="290" height="200" rx="22" fill="#f8f4eb" stroke="#d8cebc"/>
+  <text x="1276" y="424" fill="#252826" font-family="Avenir Next, Helvetica, sans-serif" font-size="29" font-weight="600">Mémoire</text>
+  <text x="1276" y="470" fill="#2f3330" font-family="Avenir Next, Helvetica, sans-serif" font-size="22">Recherches renommables</text>
+
+  <rect x="260" y="700" width="290" height="200" rx="22" fill="#f8f4eb" stroke="#d8cebc"/>
+  <text x="286" y="764" fill="#252826" font-family="Avenir Next, Helvetica, sans-serif" font-size="29" font-weight="600">Production</text>
+  <text x="286" y="810" fill="#2f3330" font-family="Avenir Next, Helvetica, sans-serif" font-size="22">Courrier · Note · Bordereau</text>
+
+  <rect x="1250" y="700" width="290" height="200" rx="22" fill="#f8f4eb" stroke="#d8cebc"/>
+  <text x="1276" y="764" fill="#252826" font-family="Avenir Next, Helvetica, sans-serif" font-size="29" font-weight="600">Réponse</text>
+  <text x="1276" y="810" fill="#2f3330" font-family="Avenir Next, Helvetica, sans-serif" font-size="22">Citations · Risques · Actions</text>
+
+  <line x1="550" y1="460" x2="676" y2="548" stroke="#b7ac98" stroke-width="2"/>
+  <line x1="1250" y1="460" x2="1124" y2="548" stroke="#b7ac98" stroke-width="2"/>
+  <line x1="550" y1="800" x2="676" y2="672" stroke="#b7ac98" stroke-width="2"/>
+  <line x1="1250" y1="800" x2="1124" y2="672" stroke="#b7ac98" stroke-width="2"/>
+
+  <rect x="52" y="960" width="1696" height="94" rx="18" fill="#1c2432"/>
+  <text x="92" y="1018" fill="#e8effa" font-family="Avenir Next, Helvetica, sans-serif" font-size="26">Dark mode applique la même topologie “hub” avec fond marine et cartes bleutées.</text>
+</svg>

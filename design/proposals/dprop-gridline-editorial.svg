@@ -1,0 +1,45 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1800" height="1100" fill="#f2efe8"/>
+  <rect x="42" y="38" width="1716" height="62" fill="#f8f6f1" stroke="#d6d0c2"/>
+  <text x="70" y="77" fill="#222" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="22" font-weight="600">LexiAtlas Workspace</text>
+  <text x="332" y="77" fill="#5f5a52" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">Assistant de recherche</text>
+  <text x="1585" y="77" fill="#4d4a44" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">LIGHT / DARK</text>
+
+  <rect x="42" y="124" width="140" height="934" fill="#f8f6f1" stroke="#d6d0c2"/>
+  <text x="72" y="182" fill="#2a2a2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">RAG</text>
+  <text x="72" y="218" fill="#2a2a2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">KB</text>
+  <text x="72" y="254" fill="#2a2a2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">DOCS</text>
+  <line x1="72" y1="284" x2="152" y2="284" stroke="#c8c1b2"/>
+  <text x="72" y="984" fill="#2a2a2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">SET</text>
+
+  <rect x="206" y="124" width="1106" height="220" fill="#f8f6f1" stroke="#d6d0c2"/>
+  <text x="240" y="184" fill="#6c665c" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="30">Question juridique ciblée sur sources</text>
+  <line x1="240" y1="206" x2="1266" y2="206" stroke="#d6d0c2"/>
+  <text x="240" y="254" fill="#2e2c29" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Mix</text>
+  <text x="304" y="254" fill="#2e2c29" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Légifrance</text>
+  <text x="410" y="254" fill="#2e2c29" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Interne</text>
+  <text x="492" y="254" fill="#2e2c29" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Micro</text>
+
+  <rect x="206" y="368" width="760" height="690" fill="#fcfbf8" stroke="#d6d0c2"/>
+  <text x="240" y="422" fill="#191919" font-family="Georgia, serif" font-size="28" font-weight="700">Réponse</text>
+  <text x="240" y="468" fill="#30302f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">• Base légale</text>
+  <text x="240" y="502" fill="#30302f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">• Jurisprudence pertinente</text>
+  <text x="240" y="536" fill="#30302f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">• Risques procéduraux</text>
+  <line x1="240" y1="566" x2="930" y2="566" stroke="#d6d0c2"/>
+  <text x="240" y="620" fill="#2f2e2b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Action rapide: vers note | vers courrier | sauvegarder KB</text>
+
+  <rect x="988" y="368" width="324" height="690" fill="#f8f6f1" stroke="#d6d0c2"/>
+  <text x="1018" y="422" fill="#1e1d1b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20" font-weight="600">Mémoire</text>
+  <line x1="1018" y1="442" x2="1282" y2="442" stroke="#d6d0c2"/>
+  <text x="1018" y="484" fill="#2f2d2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Action paulienne</text>
+  <text x="1018" y="518" fill="#2f2d2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Clause pénale</text>
+  <text x="1018" y="552" fill="#2f2d2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Prescription</text>
+
+  <rect x="1336" y="124" width="422" height="934" fill="#171e2a"/>
+  <text x="1368" y="182" fill="#e8eef8" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20" font-weight="600">Dark preview</text>
+  <line x1="1368" y1="198" x2="1728" y2="198" stroke="#394456"/>
+  <text x="1368" y="242" fill="#c8d4e8" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Même grille, contraste élevé.</text>
+  <text x="1368" y="278" fill="#c8d4e8" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Aucun gonflage typographique.</text>
+
+  <text x="42" y="1084" fill="#5f5a52" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Dprop — Gridline Editorial: ultra sobre, rigueur documentaire.</text>
+</svg>

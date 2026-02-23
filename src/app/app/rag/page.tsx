@@ -5,8 +5,6 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 import EmptyState from "@/components/ui/empty-state";
-import InlineAlert from "@/components/ui/inline-alert";
-import PageHeader from "@/components/ui/page-header";
 import { listSearchMemory, saveKnowledge, upsertSearchMemory } from "@/lib/rag-memory";
 
 type Citation = {
@@ -81,6 +79,7 @@ export default function RagPage() {
   const [legifranceCodeName, setLegifranceCodeName] = useState("");
   const [legifranceVersionDate, setLegifranceVersionDate] = useState("");
   const [dictating, setDictating] = useState(false);
+  const [toastError, setToastError] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createBrowserSupabase();
@@ -178,6 +177,7 @@ export default function RagPage() {
   const handleUploadFile = async () => {
     if (!file) {
       setUploadError("Sélectionnez un fichier PDF ou DOCX.");
+      setToastError("Sélectionnez un fichier PDF ou DOCX.");
       return;
     }
 
@@ -225,6 +225,7 @@ export default function RagPage() {
   const handlePasteText = async () => {
     if (!pasteText.trim()) {
       setUploadError("Collez un texte à indexer.");
+      setToastError("Collez un texte à indexer.");
       return;
     }
 
@@ -273,6 +274,7 @@ export default function RagPage() {
   const handleUrl = async () => {
     if (!urlValue.trim()) {
       setUploadError("Ajoutez une URL valide.");
+      setToastError("Ajoutez une URL valide.");
       return;
     }
 
@@ -408,6 +410,13 @@ export default function RagPage() {
   const recentMemories = useMemo(() => listSearchMemory().slice(0, 6), []);
 
   useEffect(() => {
+    if (!queryError) return;
+    setToastError(queryError);
+    const t = setTimeout(() => setToastError(null), 4200);
+    return () => clearTimeout(t);
+  }, [queryError]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
     const entryId = new URLSearchParams(window.location.search).get("entry");
     if (!entryId) return;
@@ -493,16 +502,6 @@ export default function RagPage() {
 
   return (
     <main className="rag rag-v3">
-      <PageHeader
-        title="Assistant de recherche"
-        subtitle="Question unique, réponse sourcée, production immédiate."
-        actions={
-          <button className="ghost" type="button" onClick={() => setShowUpload(true)}>
-            Ajouter des sources
-          </button>
-        }
-      />
-
       <section className="rag-v3-layout">
         <article className="rag-v3-main">
           {answer ? (
@@ -564,7 +563,7 @@ export default function RagPage() {
               )}
             </section>
           ) : (
-            <section className="rag-v3-empty">
+            <section className="rag-v3-empty rag-v3-empty-compact">
               <EmptyState
                 title="Posez une question"
                 description="Ajoutez des sources puis lancez une recherche sourcée exploitable."
@@ -596,10 +595,11 @@ export default function RagPage() {
                 >
                   Légifrance
                 </button>
-                <button type="button" className="mode-btn" onClick={startVoiceInput}>
-                  {dictating ? "Dictée..." : "Dictée"}
+                <button type="button" className="mode-btn" onClick={() => setShowUpload(true)}>
+                  Ajouter des sources
                 </button>
               </div>
+              <p className="muted rag-v3-select-hint">Cliquez pour sélectionner les sources:</p>
               <div className="chip-list">
                 {sources.slice(0, 8).map((source) => (
                   <div
@@ -629,11 +629,19 @@ export default function RagPage() {
                 onChange={(e) => setQuestion(e.target.value)}
                 placeholder="Ex: quelles pièces démontrent la rupture abusive et quels arguments opposables ?"
               />
+              <button
+                type="button"
+                className={dictating ? "query-mic is-live" : "query-mic"}
+                onClick={startVoiceInput}
+                title="Dictée vocale"
+                aria-label="Dictée vocale"
+              >
+                🎙
+              </button>
               <button className="cta" type="submit" disabled={querying}>
                 {querying ? "Analyse..." : "Lancer"}
               </button>
             </div>
-            {queryError && <InlineAlert tone="error">{queryError}</InlineAlert>}
           </form>
         </article>
 
@@ -720,6 +728,12 @@ export default function RagPage() {
               {uploadMessage && <p className="success">{uploadMessage}</p>}
             </div>
           </div>
+        </div>
+      )}
+
+      {toastError && (
+        <div className="rag-toast" role="status" aria-live="polite">
+          {toastError}
         </div>
       )}
 

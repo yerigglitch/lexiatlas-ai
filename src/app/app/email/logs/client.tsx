@@ -164,12 +164,16 @@ export default function EmailLogsPage() {
             />
           )}
           {events.map((event) => (
-            <article key={event.id} className="module-card">
-              <h3>{event.recipient_email}</h3>
-              <p>{event.email_drafts?.subject || "(sans objet)"}</p>
-              <p>Brouillon: {event.draft_id}</p>
-              <p>Statut: {event.status}</p>
-              <p>{new Date(event.created_at).toLocaleString("fr-FR")}</p>
+            <article key={event.id} className="email-event-row">
+              <div>
+                <h3>{event.recipient_email}</h3>
+                <p>{event.email_drafts?.subject || "(sans objet)"}</p>
+              </div>
+              <div className="email-event-meta">
+                <span>Brouillon: {event.draft_id}</span>
+                <span>Statut: {event.status}</span>
+                <span>{new Date(event.created_at).toLocaleString("fr-FR")}</span>
+              </div>
               {event.error && <p className="error">{event.error}</p>}
             </article>
           ))}

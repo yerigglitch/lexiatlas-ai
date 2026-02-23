@@ -1,0 +1,42 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f131a"/>
+      <stop offset="100%" stop-color="#161d27"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="100%" cy="0%" r="50%">
+      <stop offset="0%" stop-color="#4e6f9d" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#4e6f9d" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#glow)"/>
+  <rect x="26" y="26" width="1548" height="82" rx="20" fill="#1d2531" stroke="#2f3a4a"/>
+  <text x="72" y="78" fill="#edf2fa" font-family="Suisse Intl, Helvetica, sans-serif" font-size="30" font-weight="600">LexiAtlas Workspace</text>
+  <text x="478" y="78" fill="#9eb1ca" font-family="Suisse Intl, Helvetica, sans-serif" font-size="22">Assistant de recherche</text>
+  <text x="1410" y="78" fill="#c7d5ea" font-family="Suisse Intl, Helvetica, sans-serif" font-size="22">Se déconnecter</text>
+  <rect x="26" y="130" width="92" height="844" rx="24" fill="#1b2330" stroke="#2f3a4a"/>
+  <rect x="52" y="178" width="40" height="40" rx="12" fill="#2b3647"/>
+  <rect x="52" y="232" width="40" height="40" rx="12" fill="#2b3647"/>
+  <rect x="52" y="286" width="40" height="40" rx="12" fill="#2b3647"/>
+  <rect x="52" y="848" width="40" height="40" rx="12" fill="#34445e"/>
+  <rect x="142" y="130" width="1432" height="210" rx="30" fill="#1d2531" stroke="#2f3a4a"/>
+  <text x="200" y="210" fill="#b3c6df" font-family="Suisse Intl, Helvetica, sans-serif" font-size="42">Question juridique + sources ciblées + réponse exploitable</text>
+  <text x="200" y="275" fill="#d4e1f3" font-family="Suisse Intl, Helvetica, sans-serif" font-size="24">Sources | Mix | Légifrance | Micro</text>
+  <rect x="142" y="370" width="930" height="590" rx="28" fill="#1d2531" stroke="#2f3a4a"/>
+  <text x="194" y="434" fill="#f2f6ff" font-family="Canela Text, Georgia, serif" font-size="34">Réponse &amp; analyse</text>
+  <text x="194" y="490" fill="#c4d3e8" font-family="Suisse Intl, Helvetica, sans-serif" font-size="23">Mise en page “editorial raw”, citations en cartes, actions nettes.</text>
+  <rect x="194" y="525" width="826" height="380" rx="18" fill="#111823" stroke="#293244"/>
+  <text x="230" y="590" fill="#d7e4f8" font-family="Suisse Intl, Helvetica, sans-serif" font-size="23">• Article L. 442-1, II C. com.</text>
+  <text x="230" y="634" fill="#d7e4f8" font-family="Suisse Intl, Helvetica, sans-serif" font-size="23">• Cass. com., 6 nov. 2019, n°18-10.615</text>
+  <text x="230" y="678" fill="#d7e4f8" font-family="Suisse Intl, Helvetica, sans-serif" font-size="23">• Stratégie de preuve et contre-arguments</text>
+  <text x="230" y="742" fill="#89a9d2" font-family="Suisse Intl, Helvetica, sans-serif" font-size="22">Action: [Envoyer vers Production documentaire]</text>
+  <rect x="1098" y="370" width="476" height="590" rx="28" fill="#1d2531" stroke="#2f3a4a"/>
+  <text x="1140" y="434" fill="#f2f6ff" font-family="Suisse Intl, Helvetica, sans-serif" font-size="30" font-weight="600">Mémoire des recherches</text>
+  <line x1="1140" y1="460" x2="1542" y2="460" stroke="#2f3a4a"/>
+  <text x="1140" y="515" fill="#bfd1ea" font-family="Suisse Intl, Helvetica, sans-serif" font-size="23">Qualification de la faute lourde</text>
+  <text x="1140" y="563" fill="#bfd1ea" font-family="Suisse Intl, Helvetica, sans-serif" font-size="23">Responsabilité délictuelle dirigeant</text>
+  <text x="1140" y="611" fill="#bfd1ea" font-family="Suisse Intl, Helvetica, sans-serif" font-size="23">Clause de non-concurrence</text>
+  <text x="1140" y="659" fill="#bfd1ea" font-family="Suisse Intl, Helvetica, sans-serif" font-size="23">Délais de prescription</text>
+  <text x="142" y="985" fill="#91a8c4" font-family="Suisse Intl, Helvetica, sans-serif" font-size="20">Option C — Editorial Dark: premium cabinet, contraste fort, concentration élevée.</text>
+</svg>

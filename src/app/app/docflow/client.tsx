@@ -26,6 +26,7 @@ export default function DocFlowPage() {
   const [outputFormat, setOutputFormat] = useState<"pdf" | "docx" | null>(null);
   const [htmlPreview, setHtmlPreview] = useState<string>("");
   const [htmlCss, setHtmlCss] = useState<string>("");
+  const [htmlDirty, setHtmlDirty] = useState(false);
   const htmlEditorRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function DocFlowPage() {
       setOutputFormat(null);
       setHtmlPreview("");
       setHtmlCss("");
+      setHtmlDirty(false);
       setInfo("Format modifié. Cliquez sur “Prévisualiser” pour régénérer.");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,6 +149,7 @@ export default function DocFlowPage() {
       if (detectedFormat === "pdf") {
         setHtmlPreview("");
         setHtmlCss("");
+        setHtmlDirty(false);
         setInfo("Prévisualisation PDF prête.");
       } else {
         const htmlRes = await fetch("/api/docflow/html", {
@@ -166,9 +169,11 @@ export default function DocFlowPage() {
           setError(htmlPayload.error || "DOCX prêt, mais aperçu HTML indisponible.");
           setHtmlPreview("");
           setHtmlCss("");
+          setHtmlDirty(false);
         } else {
           setHtmlPreview(String(htmlPayload.html || ""));
           setHtmlCss(String(htmlPayload.css || ""));
+          setHtmlDirty(false);
           setInfo("Aperçu HTML prêt. Vous pouvez éditer la mise en forme.");
         }
       }
@@ -185,10 +190,62 @@ export default function DocFlowPage() {
     editor.focus();
     document.execCommand(command, false, value);
     setHtmlPreview(editor.innerHTML);
+    setHtmlDirty(true);
   }
 
-  function handleDownload() {
+  async function handleDownload() {
+    if (!preview) return;
     if (!outputUrl || !outputName) return;
+
+    if (outputFormat === "docx" && htmlPreview && htmlDirty) {
+      setLoadingGenerate(true);
+      setError(null);
+      setInfo("Application des modifications HTML puis téléchargement...");
+      try {
+        const token = await getToken();
+        if (!token) return;
+        const res = await fetch("/api/docflow/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            html: htmlPreview,
+            docType: preview.docType,
+            style: preview.style,
+            format: "docx"
+          })
+        });
+        if (!res.ok) {
+          const payload = await res.json().catch(() => ({}));
+          setError(payload.error || "Impossible de générer le DOCX modifié");
+          return;
+        }
+
+        const blob = await res.blob();
+        if (outputUrl) URL.revokeObjectURL(outputUrl);
+        const url = URL.createObjectURL(blob);
+        const name = `${preview.docType.toLowerCase()}-${Date.now()}.docx`;
+        setOutputUrl(url);
+        setOutputName(name);
+        setOutputFormat("docx");
+        setHtmlDirty(false);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = name;
+        a.click();
+        setInfo("DOCX mis à jour téléchargé.");
+        return;
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Erreur inattendue");
+        return;
+      } finally {
+        setLoadingGenerate(false);
+      }
+    }
+
     const a = document.createElement("a");
     a.href = outputUrl;
     a.download = outputName;
@@ -342,7 +399,10 @@ export default function DocFlowPage() {
             suppressContentEditableWarning
             className="module-card"
             style={{ minHeight: 520, border: "1px solid #ead7d0", borderRadius: 12, background: "#fff" }}
-            onInput={(event) => setHtmlPreview((event.target as HTMLDivElement).innerHTML)}
+            onInput={(event) => {
+              setHtmlPreview((event.target as HTMLDivElement).innerHTML);
+              setHtmlDirty(true);
+            }}
             dangerouslySetInnerHTML={{ __html: htmlPreview || "<p>(Aucun aperçu HTML)</p>" }}
           />
         </section>

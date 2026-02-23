@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
+import EmptyState from "@/components/ui/empty-state";
+import InlineAlert from "@/components/ui/inline-alert";
+import PageHeader from "@/components/ui/page-header";
 
 type Contact = {
   id: string;
@@ -102,6 +105,7 @@ export default function ContactsPage() {
       city: "",
       country: "France"
     });
+    setShowAdd(false);
     loadContacts();
   };
 
@@ -159,31 +163,34 @@ export default function ContactsPage() {
   }
 
   return (
-    <main className="module">
-      <header className="module-header">
-        <div>
-          <h1>Carnet d&apos;adresses</h1>
-          <p>Clients, confrères, juridictions, partenaires.</p>
-        </div>
-        <div className="module-actions">
-          <button className="ghost" onClick={() => router.push("/app")}>
-            Retour
-          </button>
-          <button className="cta" onClick={() => setShowAdd(true)}>
-            Ajouter un contact
-          </button>
-        </div>
-      </header>
+    <main className="module contacts-v3">
+      <PageHeader
+        title="Carnet d'adresses"
+        subtitle="Clients, confrères, juridictions et partenaires."
+        actions={
+          <>
+            <button className="ghost" onClick={() => router.push("/app")}>
+              Retour
+            </button>
+            <button className="cta" onClick={() => setShowAdd(true)}>
+              Ajouter un contact
+            </button>
+          </>
+        }
+      />
 
       <section className="module-grid">
         <div className="module-list">
           {contacts.length === 0 && (
-            <div className="module-empty">
-              <p>Aucun contact enregistré.</p>
-              <button className="cta" onClick={() => setShowAdd(true)}>
-                Ajouter le premier contact
-              </button>
-            </div>
+            <EmptyState
+              title="Aucun contact enregistré"
+              description="Créez le premier contact du cabinet."
+              action={
+                <button className="cta" onClick={() => setShowAdd(true)}>
+                  Ajouter le premier contact
+                </button>
+              }
+            />
           )}
           {contacts.map((contact) => (
             <article key={contact.id} className="module-card">
@@ -218,15 +225,6 @@ export default function ContactsPage() {
           </div>
         </aside>
       </section>
-
-      <div className="floating-actions">
-        <button className="icon-btn" type="button" onClick={() => router.push("/app/settings")} title="Réglages">
-          <span className="icon-glyph" aria-hidden>⚙</span>
-        </button>
-        <button className="icon-btn" type="button" onClick={() => setShowAdd(true)} title="Ajouter">
-          <span className="icon-glyph" aria-hidden>＋</span>
-        </button>
-      </div>
 
       {showAdd && (
         <div className="modal-overlay">
@@ -312,7 +310,7 @@ export default function ContactsPage() {
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 />
               </label>
-              {error && <p className="error">{error}</p>}
+              {error && <InlineAlert tone="error">{error}</InlineAlert>}
               <button className="cta" type="submit">
                 Enregistrer
               </button>
@@ -339,7 +337,7 @@ export default function ContactsPage() {
                   onChange={(e) => setOcrFile(e.target.files?.[0] || null)}
                 />
               </label>
-              {ocrError && <p className="error">{ocrError}</p>}
+              {ocrError && <InlineAlert tone="error">{ocrError}</InlineAlert>}
               <button className="cta" type="button" onClick={handleOcr} disabled={ocrLoading}>
                 {ocrLoading ? "Analyse..." : "Lancer l'OCR"}
               </button>

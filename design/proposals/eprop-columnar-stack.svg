@@ -1,0 +1,41 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1800" height="1100" fill="#ece8df"/>
+  <rect x="36" y="34" width="1728" height="1032" fill="#f6f3ec" stroke="#d3ccbe"/>
+
+  <rect x="70" y="68" width="1660" height="56" fill="#f9f7f2" stroke="#d3ccbe"/>
+  <text x="94" y="103" fill="#232323" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="21" font-weight="600">LexiAtlas Workspace</text>
+  <text x="332" y="103" fill="#5d584f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Assistant de recherche</text>
+  <text x="1606" y="103" fill="#4b4842" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">THEME</text>
+
+  <rect x="70" y="150" width="260" height="884" fill="#f8f6f1" stroke="#d3ccbe"/>
+  <text x="94" y="200" fill="#262626" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18" font-weight="600">Navigation</text>
+  <text x="94" y="238" fill="#313131" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Recherche</text>
+  <text x="94" y="272" fill="#313131" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Knowledge Base</text>
+  <text x="94" y="306" fill="#313131" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Production</text>
+  <line x1="94" y1="326" x2="304" y2="326" stroke="#d3ccbe"/>
+  <text x="94" y="364" fill="#313131" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Réglages</text>
+
+  <rect x="354" y="150" width="620" height="884" fill="#fcfbf8" stroke="#d3ccbe"/>
+  <text x="382" y="200" fill="#222" font-family="Georgia, serif" font-size="26" font-weight="700">Input opérateur</text>
+  <rect x="382" y="224" width="564" height="132" fill="#f0ebdf"/>
+  <text x="406" y="286" fill="#6d685d" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="24">Question + contraintes + sources</text>
+  <text x="406" y="324" fill="#3b3935" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Mix · Légifrance · Interne · Micro</text>
+  <line x1="382" y1="384" x2="946" y2="384" stroke="#d3ccbe"/>
+  <text x="382" y="430" fill="#2f2e2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Sources attachées visibles ici (liste compacte)</text>
+
+  <rect x="998" y="150" width="510" height="884" fill="#fbfaf6" stroke="#d3ccbe"/>
+  <text x="1026" y="200" fill="#222" font-family="Georgia, serif" font-size="26" font-weight="700">Réponse structurée</text>
+  <text x="1026" y="246" fill="#30302e" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Citations cliquables et résumé opératoire.</text>
+  <line x1="1026" y1="266" x2="1478" y2="266" stroke="#d3ccbe"/>
+  <text x="1026" y="308" fill="#2f2d2b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">• Faits</text>
+  <text x="1026" y="342" fill="#2f2d2b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">• Droit applicable</text>
+  <text x="1026" y="376" fill="#2f2d2b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">• Contre-arguments</text>
+  <text x="1026" y="410" fill="#2f2d2b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">• Plan de production</text>
+
+  <rect x="1532" y="150" width="198" height="884" fill="#1a2230"/>
+  <text x="1552" y="198" fill="#e9f0fa" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16" font-weight="600">Dark</text>
+  <text x="1552" y="236" fill="#c8d6ea" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">Mode miroir</text>
+  <text x="1552" y="268" fill="#c8d6ea" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">mêmes tailles</text>
+
+  <text x="70" y="1088" fill="#5f594f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Eprop — Columnar Stack: verticalité stricte, style “desk tool”.</text>
+</svg>

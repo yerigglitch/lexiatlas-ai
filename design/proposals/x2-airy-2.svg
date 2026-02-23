@@ -1,0 +1,41 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1800" height="1100" fill="#f7fbff"/>
+  <rect width="1800" height="1100" fill="url(#none)"/>
+  <text x="70" y="72" fill="#122944" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="28" font-weight="600">LexiAtlas Workspace</text>
+  <text x="390" y="72" fill="#4e719c" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Assistant de recherche</text>
+  <text x="1620" y="72" fill="#3b618f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">Se déconnecter</text>
+  <line x1="60" y1="88" x2="1740" y2="88" stroke="#cad9ef"/>
+
+  <line x1="210" y1="130" x2="210" y2="1040" stroke="#d5e1f4"/>
+  <text x="86" y="176" fill="#2b4f7d" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">RAG</text>
+  <text x="86" y="214" fill="#2b4f7d" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">KB</text>
+  <text x="86" y="252" fill="#2b4f7d" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">DOCS</text>
+  <text x="86" y="290" fill="#2b4f7d" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">SET</text>
+
+  <line x1="250" y1="230" x2="1670" y2="230" stroke="#cad9ef"/>
+  <text x="250" y="210" fill="#6a86ae" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="42">Demandez, analysez, produisez</text>
+
+  <text x="250" y="295" fill="#245496" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Mix</text>
+  <text x="304" y="295" fill="#245496" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Légifrance</text>
+  <text x="407" y="295" fill="#245496" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Interne</text>
+  <text x="479" y="295" fill="#245496" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Micro</text>
+
+  <text x="250" y="390" fill="#122944" font-family="Georgia, serif" font-size="30" font-weight="700">Réponse sourcée</text>
+  <text x="250" y="438" fill="#1f4067" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Cass. com., 6 nov. 2019, n°18-10.615</text>
+  <text x="250" y="474" fill="#1f4067" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Art. 1240 C. civ. — responsabilité</text>
+  <text x="250" y="510" fill="#1f4067" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Arguments adverses anticipés</text>
+
+  <line x1="250" y1="548" x2="1180" y2="548" stroke="#cad9ef"/>
+  <text x="250" y="592" fill="#1f4e8e" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">vers note · vers courrier · export production</text>
+
+  <text x="1260" y="390" fill="#1a3d68" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="22" font-weight="600">Knowledge Base</text>
+  <line x1="1260" y1="406" x2="1670" y2="406" stroke="#cad9ef"/>
+  <text x="1260" y="448" fill="#2d537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Rupture abusive</text>
+  <text x="1260" y="484" fill="#2d537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Clause pénale</text>
+  <text x="1260" y="520" fill="#2d537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Prescription</text>
+
+  <text x="250" y="950" fill="#5b7ba3" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">X2 Airy 2 — style NotebookLM/Grok: presque aucune carte, séparation éditoriale.</text>
+  <rect x="1450" y="920" width="220" height="120" fill="#101c2f" opacity="0.92"/>
+  <text x="1470" y="965" fill="#e9f2ff" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Dark mode</text>
+  <text x="1470" y="995" fill="#b9cceb" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="13">même structure</text>
+</svg>

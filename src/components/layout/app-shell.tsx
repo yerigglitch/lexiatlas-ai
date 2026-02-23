@@ -102,11 +102,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [searchEntries, setSearchEntries] = useState<SearchMemoryEntry[]>([]);
-  const productionHref = useMemo(() => {
-    if (SHOW_DOCFLOW) return "/app/docflow";
-    return "/app/documents";
-  }, []);
+  const productionHref = useMemo(() => "/app/documents", []);
   const communicationHref = useMemo(() => {
     if (SHOW_EMAIL) return "/app/email";
     return "/app/contacts";
@@ -115,12 +113,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const stored = window.localStorage.getItem("app_shell_collapsed");
     if (stored === "1") setCollapsed(true);
+    const storedTheme = window.localStorage.getItem("app_theme");
+    const nextTheme = storedTheme === "dark" ? "dark" : "light";
+    setTheme(nextTheme);
+    document.documentElement.setAttribute("data-theme", nextTheme);
     setSearchEntries(listSearchMemory().slice(0, 12));
   }, []);
 
   useEffect(() => {
     window.localStorage.setItem("app_shell_collapsed", collapsed ? "1" : "0");
   }, [collapsed]);
+
+  useEffect(() => {
+    window.localStorage.setItem("app_theme", theme);
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -171,12 +178,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             className={pathname.startsWith("/app/knowledge") ? "app-shell-link active" : "app-shell-link"}
           >
             <span className="app-shell-link-icon"><Icon kind="template" /></span>
-            <span className="app-shell-link-label">Knowledge Base</span>
+            <span className="app-shell-link-label">Réponses sauvegardées</span>
           </Link>
 
           {!collapsed && (
             <section className="app-shell-memory">
-              <h2>Recherches mémorisées</h2>
+              <h2>Recherches</h2>
               {searchEntries.length === 0 && <p className="muted">Aucune recherche enregistrée.</p>}
               {searchEntries.map((entry) => (
                 <div key={entry.id} className="app-shell-memory-item">
@@ -222,10 +229,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             >
               Menu
             </button>
-            <p>LexiAtlas</p>
+            <p>LexiAtlas Workspace</p>
           </div>
           <div className="app-shell-topbar-right">
-            <span className="app-shell-topbar-tag">Recherche augmentée et production documentaire</span>
+            <span className="app-shell-topbar-tag">Assistant de recherche</span>
+            <button
+              type="button"
+              className="ghost app-shell-theme-btn"
+              aria-label={theme === "light" ? "Activer le mode sombre" : "Activer le mode clair"}
+              onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
+            >
+              {theme === "light" ? "Dark" : "Light"}
+            </button>
             <button type="button" className="ghost app-shell-logout-btn" onClick={handleLogout}>
               Se déconnecter
             </button>

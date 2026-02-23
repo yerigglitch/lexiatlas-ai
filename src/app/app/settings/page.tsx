@@ -261,7 +261,7 @@ export default function SettingsPage() {
       : `${selectedChatProvider?.label || chatProvider} (chat) + ${selectedEmbeddingProvider?.label || embeddingProvider} (embeddings)`;
 
   return (
-    <main className="module settings-v2 settings-v3">
+    <main className="module settings-v3">
       <PageHeader
         title="Configuration IA"
         subtitle="Réglages techniques compacts pour chat, embeddings et accès administrateur."

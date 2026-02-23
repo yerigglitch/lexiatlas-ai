@@ -1,0 +1,45 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f2f8ff"/>
+      <stop offset="100%" stop-color="#fbfdff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1800" height="1100" fill="url(#bg)"/>
+
+  <text x="70" y="72" fill="#142c49" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="27" font-weight="600">LexiAtlas Workspace</text>
+  <text x="390" y="72" fill="#4f729f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Assistant de recherche</text>
+  <text x="1620" y="72" fill="#3e6392" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">Se déconnecter</text>
+
+  <line x1="60" y1="94" x2="1740" y2="94" stroke="#c8d8ef"/>
+  <line x1="220" y1="130" x2="220" y2="1038" stroke="#d5e3f6"/>
+
+  <text x="86" y="176" fill="#2d527f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Recherche</text>
+  <text x="86" y="214" fill="#2d527f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Réponses</text>
+  <text x="86" y="252" fill="#2d527f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Production</text>
+  <text x="86" y="290" fill="#2d527f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Réglages</text>
+
+  <text x="260" y="200" fill="#6d88ad" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="40">Question juridique et sources</text>
+  <line x1="260" y1="220" x2="1680" y2="220" stroke="#cddcf2"/>
+  <text x="260" y="274" fill="#225398" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Mix · Légifrance · Interne · Micro</text>
+
+  <text x="260" y="366" fill="#142c49" font-family="Georgia, serif" font-size="32" font-weight="700">Réponse exploitable</text>
+  <line x1="260" y1="382" x2="1260" y2="382" stroke="#cddcf2"/>
+  <text x="260" y="432" fill="#1f4168" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Qualification des faits</text>
+  <text x="260" y="468" fill="#1f4168" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Fondement juridique</text>
+  <text x="260" y="504" fill="#1f4168" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Jurisprudence utile</text>
+  <text x="260" y="540" fill="#1f4168" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Plan d’action</text>
+
+  <text x="260" y="620" fill="#1d4f92" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Transformer en courrier · Transformer en note · Sauvegarder</text>
+
+  <text x="1320" y="366" fill="#1b3f6a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="22" font-weight="600">Recherches mémorisées</text>
+  <line x1="1320" y1="382" x2="1680" y2="382" stroke="#cddcf2"/>
+  <text x="1320" y="426" fill="#2d537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Action paulienne</text>
+  <text x="1320" y="460" fill="#2d537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Clause pénale</text>
+  <text x="1320" y="494" fill="#2d537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Prescription</text>
+
+  <text x="260" y="950" fill="#5a7aa2" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">X2 Airy 3 — minimalisme premium, 80% moins de boîtes, lecture rapide.</text>
+  <rect x="1460" y="916" width="210" height="122" fill="#0f1b2e" opacity="0.92"/>
+  <text x="1480" y="962" fill="#e8f1ff" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Dark mode</text>
+  <text x="1480" y="992" fill="#b6caea" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="13">mêmes repères</text>
+</svg>

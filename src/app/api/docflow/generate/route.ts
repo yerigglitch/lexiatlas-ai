@@ -31,6 +31,21 @@ function markdownWithFrontMatter(markdown: string, docType: "NOTE" | "COURRIER",
   return `---\ntitle: "${title}"\nauthor: "${author}"\nlang: fr-FR\n---\n\n${markdown}`;
 }
 
+function buildHtmlCss(style: Record<string, unknown>) {
+  const fontSize = safeInt(style.font_size_pt, 11, 10, 13);
+  const margin = safeFloat(style.margin_cm, 2.5, 1.8, 3.2);
+  const spacing = safeFloat(style.line_spacing, 1.12, 1.0, 1.5);
+  return `body{margin:${margin.toFixed(2)}cm;font-size:${fontSize}px;line-height:${spacing.toFixed(2)};font-family:Georgia, "Times New Roman", serif;color:#1c2333;background:#fff;}h1,h2,h3{margin-top:1.2em;margin-bottom:0.5em;}p{margin:0 0 0.8em;}ul,ol{margin:0 0 1em 1.4em;}blockquote{margin:1em 0;padding-left:1em;border-left:3px solid #d8dce4;color:#4d5a6a;}`;
+}
+
+function wrapHtmlDocument(html: string, style: Record<string, unknown>) {
+  const content = html.trim();
+  if (/<!doctype html/i.test(content) || /<html[\s>]/i.test(content)) {
+    return content;
+  }
+  return `<!doctype html><html><head><meta charset="utf-8"><style>${buildHtmlCss(style)}</style></head><body>${content}</body></html>`;
+}
+
 function buildDynamicTemplate(docType: "NOTE" | "COURRIER", style: Record<string, unknown>) {
   const fontSize = safeInt(style.font_size_pt, 11, 10, 13);
   const margin = safeFloat(style.margin_cm, 2.5, 1.8, 3.2);
@@ -100,6 +115,7 @@ export async function POST(request: NextRequest) {
   const tmpPrefix = `docflow-${crypto.randomBytes(6).toString("hex")}`;
   const tmpDir = os.tmpdir();
   const mdPath = path.join(tmpDir, `${tmpPrefix}.md`);
+  const htmlPath = path.join(tmpDir, `${tmpPrefix}.html`);
   const templatePath = path.join(tmpDir, `${tmpPrefix}.latex`);
   const docxPath = path.join(tmpDir, `${tmpPrefix}.docx`);
   const pdfPath = path.join(tmpDir, `${tmpPrefix}.pdf`);
@@ -108,12 +124,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const markdown = String(body?.markdown || "").trim();
+    const html = String(body?.html || "").trim();
     const docType = String(body?.docType || "").toUpperCase() as "NOTE" | "COURRIER";
     const format = String(body?.format || "pdf").toLowerCase();
     const style = (body?.style || {}) as Record<string, unknown>;
 
-    if (!markdown) {
-      return NextResponse.json({ error: "Missing markdown" }, { status: 400 });
+    if (!markdown && !html) {
+      return NextResponse.json({ error: "Missing markdown or html" }, { status: 400 });
     }
     if (!["NOTE", "COURRIER"].includes(docType)) {
       return NextResponse.json({ error: "Invalid docType" }, { status: 400 });
@@ -122,10 +139,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid format" }, { status: 400 });
     }
 
-    await fs.writeFile(mdPath, markdownWithFrontMatter(markdown, docType, style), "utf-8");
+    if (html) {
+      await fs.writeFile(htmlPath, wrapHtmlDocument(html, style), "utf-8");
+    } else {
+      await fs.writeFile(mdPath, markdownWithFrontMatter(markdown, docType, style), "utf-8");
+    }
 
     if (format === "docx") {
-      await execFileAsync("pandoc", [mdPath, "-o", docxPath]);
+      if (html) {
+        await execFileAsync("pandoc", [htmlPath, "-f", "html", "-o", docxPath]);
+      } else {
+        await execFileAsync("pandoc", [mdPath, "-o", docxPath]);
+      }
       const docxBytes = await fs.readFile(docxPath);
       const filename = `${docType.toLowerCase()}-${Date.now()}.docx`;
       return new NextResponse(docxBytes, {
@@ -140,16 +165,20 @@ export async function POST(request: NextRequest) {
     // Preferred path: direct PDF via pandoc engine (no soffice required).
     const pdfEngine = process.env.DOCFLOW_PDF_ENGINE || "tectonic";
     try {
-      await fs.writeFile(templatePath, buildDynamicTemplate(docType, style), "utf-8");
-      await execFileAsync("pandoc", [
-        mdPath,
-        "-o",
-        pdfPath,
-        "--pdf-engine",
-        pdfEngine,
-        "--template",
-        templatePath
-      ]);
+      if (html) {
+        await execFileAsync("pandoc", [htmlPath, "-f", "html", "-o", pdfPath, "--pdf-engine", pdfEngine]);
+      } else {
+        await fs.writeFile(templatePath, buildDynamicTemplate(docType, style), "utf-8");
+        await execFileAsync("pandoc", [
+          mdPath,
+          "-o",
+          pdfPath,
+          "--pdf-engine",
+          pdfEngine,
+          "--template",
+          templatePath
+        ]);
+      }
       const directPdf = await fs.readFile(pdfPath);
       const filename = `${docType.toLowerCase()}-${Date.now()}.pdf`;
       return new NextResponse(directPdf, {
@@ -161,7 +190,11 @@ export async function POST(request: NextRequest) {
       });
     } catch (_directPdfError) {
       // Fallback path: DOCX then converter/soffice.
-      await execFileAsync("pandoc", [mdPath, "-o", docxPath]);
+      if (html) {
+        await execFileAsync("pandoc", [htmlPath, "-f", "html", "-o", docxPath]);
+      } else {
+        await execFileAsync("pandoc", [mdPath, "-o", docxPath]);
+      }
       const docxBytes = await fs.readFile(docxPath);
 
       let pdfBytes: Buffer | null = null;
@@ -201,6 +234,7 @@ export async function POST(request: NextRequest) {
   } finally {
     await Promise.allSettled([
       fs.unlink(mdPath),
+      fs.unlink(htmlPath),
       fs.unlink(templatePath),
       fs.unlink(docxPath),
       fs.unlink(pdfPath),

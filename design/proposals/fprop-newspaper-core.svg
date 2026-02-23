@@ -1,0 +1,39 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1800" height="1100" fill="#efe9dc"/>
+  <rect x="52" y="40" width="1696" height="1020" fill="#f9f6ef" stroke="#d4ccbc"/>
+
+  <text x="82" y="92" fill="#1f1f1f" font-family="Georgia, serif" font-size="36" font-weight="700">LexiAtlas</text>
+  <text x="280" y="92" fill="#5a554c" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">Workspace — assistant de recherche</text>
+  <text x="1586" y="92" fill="#4e4a43" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">LIGHT/DARK</text>
+  <line x1="82" y1="108" x2="1718" y2="108" stroke="#d4ccbc"/>
+
+  <rect x="82" y="138" width="1636" height="138" fill="#fcfbf8" stroke="#d4ccbc"/>
+  <text x="116" y="196" fill="#6b655a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="28">Question juridique rédigée clairement, sources ciblées, résultat exploitable.</text>
+  <text x="116" y="236" fill="#2f2d2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Mix · Légifrance · Interne · Micro</text>
+
+  <rect x="82" y="300" width="1032" height="730" fill="#fffefb" stroke="#d4ccbc"/>
+  <text x="116" y="356" fill="#1f1f1f" font-family="Georgia, serif" font-size="30" font-weight="700">Analyse principale</text>
+  <line x1="116" y1="372" x2="1080" y2="372" stroke="#d4ccbc"/>
+
+  <text x="116" y="422" fill="#2e2d2b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">I. Qualification</text>
+  <text x="116" y="456" fill="#2e2d2b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">II. Fondement juridique</text>
+  <text x="116" y="490" fill="#2e2d2b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">III. Jurisprudence applicable</text>
+  <text x="116" y="524" fill="#2e2d2b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">IV. Risques / stratégie</text>
+
+  <rect x="116" y="566" width="964" height="180" fill="#f2ecdf"/>
+  <text x="142" y="626" fill="#2b2a27" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Barre d’actions: vers courrier | vers note | sauvegarder KB</text>
+
+  <rect x="1136" y="300" width="582" height="730" fill="#fbf9f4" stroke="#d4ccbc"/>
+  <text x="1166" y="354" fill="#1f1f1f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="21" font-weight="600">Recherches mémorisées</text>
+  <line x1="1166" y1="372" x2="1688" y2="372" stroke="#d4ccbc"/>
+  <text x="1166" y="414" fill="#2f2d2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Clause de non-concurrence</text>
+  <text x="1166" y="448" fill="#2f2d2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Responsabilité contractuelle</text>
+  <text x="1166" y="482" fill="#2f2d2a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Prescription biennale</text>
+
+  <rect x="1166" y="534" width="522" height="210" fill="#1a2130"/>
+  <text x="1192" y="584" fill="#e8f0fb" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18" font-weight="600">Dark preview</text>
+  <text x="1192" y="622" fill="#cad6ea" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Version sombre editoriale</text>
+  <text x="1192" y="654" fill="#cad6ea" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">sans variation de layout</text>
+
+  <text x="82" y="1088" fill="#5f594f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Fprop — Newspaper Core: style éditorial sec, priorité au texte et à la vitesse.</text>
+</svg>

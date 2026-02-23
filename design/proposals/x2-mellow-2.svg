@@ -1,0 +1,55 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eef6ff"/>
+      <stop offset="100%" stop-color="#fafcff"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="82%" cy="2%" r="28%">
+      <stop offset="0%" stop-color="#8fc0ff" stop-opacity="0.36"/>
+      <stop offset="100%" stop-color="#8fc0ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1800" height="1100" fill="url(#bg)"/>
+  <rect width="1800" height="1100" fill="url(#sun)"/>
+
+  <text x="70" y="72" fill="#112a46" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="27" font-weight="600">LexiAtlas Workspace</text>
+  <text x="390" y="72" fill="#50739f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="19">Assistant de recherche</text>
+  <text x="1620" y="72" fill="#3f6694" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Se déconnecter</text>
+  <line x1="60" y1="94" x2="1740" y2="94" stroke="#c8daf1"/>
+
+  <circle cx="106" cy="174" r="8" fill="#8ab8f4"/>
+  <circle cx="106" cy="212" r="8" fill="#8ab8f4"/>
+  <circle cx="106" cy="250" r="8" fill="#8ab8f4"/>
+  <circle cx="106" cy="288" r="8" fill="#8ab8f4"/>
+  <line x1="160" y1="132" x2="160" y2="1038" stroke="#d5e4f7"/>
+  <text x="124" y="180" fill="#2e537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">R</text>
+  <text x="124" y="218" fill="#2e537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">K</text>
+  <text x="124" y="256" fill="#2e537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">P</text>
+  <text x="124" y="294" fill="#2e537f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="14">S</text>
+
+  <text x="220" y="198" fill="#6d89b0" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="38">Question juridique et sources</text>
+  <line x1="220" y1="220" x2="1680" y2="220" stroke="#cfdff3"/>
+  <text x="220" y="274" fill="#24569b" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Mix · Légifrance · Interne · Micro</text>
+
+  <text x="220" y="364" fill="#142f4c" font-family="Georgia, serif" font-size="32" font-weight="700">Réponse exploitable</text>
+  <line x1="220" y1="384" x2="1240" y2="384" stroke="#cfdff3"/>
+  <text x="220" y="436" fill="#21466f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Qualification des faits</text>
+  <text x="220" y="472" fill="#21466f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Fondement juridique</text>
+  <text x="220" y="508" fill="#21466f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Jurisprudence utile</text>
+  <text x="220" y="544" fill="#21466f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Plan d’action</text>
+
+  <line x1="220" y1="590" x2="980" y2="590" stroke="#cfdff3"/>
+  <text x="220" y="630" fill="#1d5196" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Vers courrier · Vers note · Sauvegarder KB</text>
+
+  <text x="1300" y="364" fill="#1b416e" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="22" font-weight="600">Recherches mémorisées</text>
+  <line x1="1300" y1="384" x2="1680" y2="384" stroke="#cfdff3"/>
+  <text x="1300" y="428" fill="#2f5683" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Action paulienne</text>
+  <text x="1300" y="462" fill="#2f5683" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Clause pénale</text>
+  <text x="1300" y="496" fill="#2f5683" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Prescription</text>
+
+  <rect x="1450" y="916" width="220" height="122" rx="10" fill="#111d31"/>
+  <text x="1472" y="962" fill="#ebf3ff" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Dark mode</text>
+  <text x="1472" y="992" fill="#bbceec" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="13">mêmes repères</text>
+
+  <text x="220" y="952" fill="#5e7fa8" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Mellow 2: “dot rail + airy lines”.</text>
+</svg>

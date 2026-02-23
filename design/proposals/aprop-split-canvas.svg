@@ -1,0 +1,56 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="leftBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5f3ef"/>
+      <stop offset="100%" stop-color="#ece8df"/>
+    </linearGradient>
+    <linearGradient id="rightBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#141922"/>
+      <stop offset="100%" stop-color="#1b2432"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="900" height="1100" fill="url(#leftBg)"/>
+  <rect x="900" y="0" width="900" height="1100" fill="url(#rightBg)"/>
+  <text x="60" y="70" fill="#1f2120" font-family="Avenir Next, Helvetica, sans-serif" font-size="34" font-weight="600">Aprop — Split Canvas</text>
+  <text x="980" y="70" fill="#d6deea" font-family="Avenir Next, Helvetica, sans-serif" font-size="34" font-weight="600">Light / Dark natif</text>
+
+  <rect x="50" y="110" width="800" height="90" rx="22" fill="#f9f7f3" stroke="#d8d0c2"/>
+  <text x="90" y="166" fill="#2b2c2a" font-family="Avenir Next, Helvetica, sans-serif" font-size="28">LexiAtlas Workspace · Assistant de recherche</text>
+  <rect x="740" y="132" width="86" height="46" rx="23" fill="#efe9dc" stroke="#d8d0c2"/>
+  <circle cx="768" cy="155" r="16" fill="#fff" stroke="#d3cab9"/>
+
+  <rect x="950" y="110" width="800" height="90" rx="22" fill="#1e2734" stroke="#344155"/>
+  <text x="990" y="166" fill="#e5ebf4" font-family="Avenir Next, Helvetica, sans-serif" font-size="28">LexiAtlas Workspace · Assistant de recherche</text>
+  <rect x="1640" y="132" width="86" height="46" rx="23" fill="#2b3648" stroke="#3f4e67"/>
+  <circle cx="1708" cy="155" r="16" fill="#111924" stroke="#475770"/>
+
+  <rect x="50" y="230" width="800" height="190" rx="30" fill="#faf8f4" stroke="#d8d0c2"/>
+  <text x="96" y="302" fill="#757064" font-family="Avenir Next, Helvetica, sans-serif" font-size="42">Question juridique + @sources</text>
+  <text x="96" y="356" fill="#2f302d" font-family="Avenir Next, Helvetica, sans-serif" font-size="26">Mix · Légifrance · Interne · Micro</text>
+
+  <rect x="950" y="230" width="800" height="190" rx="30" fill="#1d2633" stroke="#344155"/>
+  <text x="996" y="302" fill="#9fb2cc" font-family="Avenir Next, Helvetica, sans-serif" font-size="42">Question juridique + @sources</text>
+  <text x="996" y="356" fill="#e4ebf6" font-family="Avenir Next, Helvetica, sans-serif" font-size="26">Mix · Légifrance · Interne · Micro</text>
+
+  <rect x="50" y="450" width="520" height="580" rx="28" fill="#f9f7f3" stroke="#d8d0c2"/>
+  <text x="84" y="506" fill="#1f2120" font-family="IBM Plex Serif, Georgia, serif" font-size="33" font-weight="700">Réponse canonique</text>
+  <text x="84" y="560" fill="#3f403d" font-family="Avenir Next, Helvetica, sans-serif" font-size="24">Citations primaires, ratio decidendi, risques.</text>
+  <rect x="84" y="590" width="452" height="160" rx="16" fill="#efe9dc"/>
+  <text x="108" y="648" fill="#2e2f2c" font-family="Avenir Next, Helvetica, sans-serif" font-size="22">Action: vers courrier, note, bordereau.</text>
+
+  <rect x="590" y="450" width="260" height="580" rx="28" fill="#f7f4ef" stroke="#d8d0c2"/>
+  <text x="620" y="506" fill="#1f2120" font-family="Avenir Next, Helvetica, sans-serif" font-size="27" font-weight="600">Mémoire</text>
+  <text x="620" y="560" fill="#2f302d" font-family="Avenir Next, Helvetica, sans-serif" font-size="21">• Action paulienne</text>
+  <text x="620" y="604" fill="#2f302d" font-family="Avenir Next, Helvetica, sans-serif" font-size="21">• Clause pénale</text>
+
+  <rect x="950" y="450" width="520" height="580" rx="28" fill="#1d2633" stroke="#344155"/>
+  <text x="984" y="506" fill="#eef3fb" font-family="IBM Plex Serif, Georgia, serif" font-size="33" font-weight="700">Réponse canonique</text>
+  <text x="984" y="560" fill="#c0d1e6" font-family="Avenir Next, Helvetica, sans-serif" font-size="24">Citations primaires, ratio decidendi, risques.</text>
+  <rect x="984" y="590" width="452" height="160" rx="16" fill="#2a3749"/>
+  <text x="1008" y="648" fill="#e9f0fa" font-family="Avenir Next, Helvetica, sans-serif" font-size="22">Action: vers courrier, note, bordereau.</text>
+
+  <rect x="1490" y="450" width="260" height="580" rx="28" fill="#1b2330" stroke="#344155"/>
+  <text x="1520" y="506" fill="#eef3fb" font-family="Avenir Next, Helvetica, sans-serif" font-size="27" font-weight="600">Mémoire</text>
+  <text x="1520" y="560" fill="#d4e0f0" font-family="Avenir Next, Helvetica, sans-serif" font-size="21">• Action paulienne</text>
+  <text x="1520" y="604" fill="#d4e0f0" font-family="Avenir Next, Helvetica, sans-serif" font-size="21">• Clause pénale</text>
+</svg>

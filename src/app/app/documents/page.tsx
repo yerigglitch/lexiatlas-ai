@@ -114,6 +114,8 @@ export default function DocumentsPage() {
     return <main className="app-loading" aria-live="polite"><div className="ui-skeleton-line" /><div className="ui-skeleton-line short" /></main>;
   }
 
+  const hasTemplates = templates.length > 0;
+
   return (
     <main className="module docs-v3">
       <PageHeader
@@ -129,9 +131,20 @@ export default function DocumentsPage() {
       <section className="module-grid docs-v3-grid">
         <form className="module-card docs-v3-form" onSubmit={handleGenerate}>
           <h2>Nouveau document</h2>
+          {!hasTemplates && (
+            <EmptyState
+              title="Aucun modèle disponible"
+              description="Ajoutez d'abord un modèle Word pour pouvoir générer un document."
+              action={
+                <button type="button" className="cta" onClick={() => router.push("/app/templates")}>
+                  Ouvrir les modèles Word
+                </button>
+              }
+            />
+          )}
           <label>
             Modèle
-            <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} required>
+            <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} required disabled={!hasTemplates}>
               <option value="">Sélectionner</option>
               {templates.map((tpl) => (
                 <option key={tpl.id} value={tpl.id}>
@@ -142,7 +155,7 @@ export default function DocumentsPage() {
           </label>
           <label>
             Titre
-            <input value={title} onChange={(e) => setTitle(e.target.value)} />
+            <input value={title} onChange={(e) => setTitle(e.target.value)} disabled={!hasTemplates} />
           </label>
           <label>
             Données (JSON)
@@ -150,6 +163,7 @@ export default function DocumentsPage() {
               rows={14}
               value={jsonData}
               onChange={(e) => setJsonData(e.target.value)}
+              disabled={!hasTemplates}
             />
           </label>
           <label>
@@ -157,12 +171,13 @@ export default function DocumentsPage() {
               type="checkbox"
               checked={exportPdf}
               onChange={(e) => setExportPdf(e.target.checked)}
+              disabled={!hasTemplates}
             />
             Export PDF (rendu fidèle)
           </label>
           {error && <InlineAlert tone="error">{error}</InlineAlert>}
           {success && <InlineAlert tone="success">{success}</InlineAlert>}
-          <button className="cta" type="submit">Générer le document</button>
+          <button className="cta" type="submit" disabled={!hasTemplates}>Générer le document</button>
         </form>
 
         <aside className="module-list docs-v3-list">

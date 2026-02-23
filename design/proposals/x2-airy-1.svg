@@ -1,0 +1,53 @@
+<svg width="1800" height="1100" viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg1" cx="20%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="#edf4ff"/>
+      <stop offset="100%" stop-color="#f8fbff"/>
+    </radialGradient>
+    <radialGradient id="bg2" cx="100%" cy="0%" r="40%">
+      <stop offset="0%" stop-color="#dbe9ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#dbe9ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1800" height="1100" fill="url(#bg1)"/>
+  <rect width="1800" height="1100" fill="url(#bg2)"/>
+
+  <text x="70" y="70" fill="#112742" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="28" font-weight="600">LexiAtlas Workspace</text>
+  <text x="390" y="70" fill="#4a6d9a" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="20">Assistant de recherche</text>
+  <text x="1620" y="70" fill="#395e8f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">Se déconnecter</text>
+  <line x1="60" y1="88" x2="1740" y2="88" stroke="#c3d3ee"/>
+
+  <text x="90" y="175" fill="#2c4f7e" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Recherche</text>
+  <text x="90" y="218" fill="#2c4f7e" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Knowledge Base</text>
+  <text x="90" y="261" fill="#2c4f7e" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Production</text>
+  <text x="90" y="304" fill="#2c4f7e" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">Réglages</text>
+  <line x1="160" y1="120" x2="160" y2="1040" stroke="#d4e1f5"/>
+
+  <text x="220" y="180" fill="#6a84ac" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="44">Posez une question juridique… @sources</text>
+  <line x1="220" y1="196" x2="1680" y2="196" stroke="#d1dff4"/>
+
+  <text x="220" y="245" fill="#245496" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Mix</text>
+  <text x="282" y="245" fill="#245496" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Légifrance</text>
+  <text x="395" y="245" fill="#245496" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Interne</text>
+  <text x="474" y="245" fill="#245496" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="17">Micro</text>
+
+  <text x="220" y="330" fill="#112742" font-family="Georgia, serif" font-size="34" font-weight="700">Réponse</text>
+  <line x1="220" y1="348" x2="1220" y2="348" stroke="#d1dff4"/>
+  <text x="220" y="396" fill="#1e3f66" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="21">• Base légale</text>
+  <text x="220" y="436" fill="#1e3f66" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="21">• Jurisprudence clé</text>
+  <text x="220" y="476" fill="#1e3f66" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="21">• Risques et stratégie</text>
+
+  <text x="220" y="565" fill="#204f8f" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">Actions: vers note  ·  vers courrier  ·  sauvegarder KB</text>
+
+  <text x="1280" y="330" fill="#173964" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="24" font-weight="600">Mémoire des recherches</text>
+  <line x1="1280" y1="346" x2="1680" y2="346" stroke="#d1dff4"/>
+  <text x="1280" y="392" fill="#2a4f7d" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">Action paulienne</text>
+  <text x="1280" y="430" fill="#2a4f7d" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">Clause pénale</text>
+  <text x="1280" y="468" fill="#2a4f7d" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="18">Prescription</text>
+
+  <text x="220" y="940" fill="#5777a1" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="16">X2 Airy 1 — quasi sans rectangles, hiérarchie par espace, lignes et typographie.</text>
+
+  <rect x="1450" y="920" width="220" height="120" fill="#0d1a2c" opacity="0.95"/>
+  <text x="1470" y="965" fill="#e8f0ff" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="15">Dark mode</text>
+  <text x="1470" y="995" fill="#b7cae7" font-family="Helvetica Neue, Helvetica, sans-serif" font-size="13">même layout</text>
+</svg>

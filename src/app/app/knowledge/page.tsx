@@ -1,13 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import EmptyState from "@/components/ui/empty-state";
 import PageHeader from "@/components/ui/page-header";
 import { listKnowledge, renameKnowledge } from "@/lib/rag-memory";
 
 export default function KnowledgePage() {
-  const router = useRouter();
   const [entries, setEntries] = useState(() => listKnowledge());
   const [openId, setOpenId] = useState<string | null>(entries[0]?.id || null);
 
@@ -20,15 +18,10 @@ export default function KnowledgePage() {
   );
 
   return (
-    <main className="module">
+    <main className="module knowledge-v3">
       <PageHeader
-        title="Knowledge Base"
-        subtitle="Réponses sauvegardées, modifiables et prêtes pour la production."
-        actions={
-          <button className="cta" onClick={() => router.push("/app/documents")}>
-            Vers production documents
-          </button>
-        }
+        title="Réponses sauvegardées"
+        subtitle="Historique des réponses validées (différent des recherches mémorisées)."
       />
 
       {sorted.length === 0 && (
@@ -38,9 +31,9 @@ export default function KnowledgePage() {
         />
       )}
 
-      <section className="module-list">
+      <section className="module-list knowledge-v3-list">
         {sorted.map((entry) => (
-          <article key={entry.id} className="module-card">
+          <article key={entry.id} className="module-card knowledge-v3-item">
             <div className="history-card-header">
               <strong>{entry.title}</strong>
               <div className="module-actions">
@@ -66,7 +59,7 @@ export default function KnowledgePage() {
               </div>
             </div>
             <p className="muted">{entry.question}</p>
-            {openId === entry.id && <p>{entry.answer}</p>}
+            {openId === entry.id && <p className="knowledge-v3-answer">{entry.answer}</p>}
           </article>
         ))}
       </section>
