@@ -3143,62 +3143,59 @@ body::after {
   }
 }
 
-/* ---------- Mellow 2 System: Final Unified Layer ---------- */
+/* ---------- Mellow 2 Final Layer (single source of truth) ---------- */
 :root {
-  --mx-bg: #f4f9ff;
+  --mx-bg: #f3f9ff;
   --mx-bg-soft: #f8fbff;
-  --mx-panel: rgba(255, 255, 255, 0.72);
-  --mx-panel-strong: rgba(255, 255, 255, 0.86);
-  --mx-line: #c7d8ef;
-  --mx-ink: #122d49;
-  --mx-ink-muted: #466a96;
-  --mx-accent: #245ba8;
-  --mx-accent-strong: #173f7d;
+  --mx-panel: rgba(255, 255, 255, 0.62);
+  --mx-line: #c8d9ef;
+  --mx-ink: #142e4b;
+  --mx-ink-muted: #4c6f9b;
+  --mx-accent: #2f67b5;
+  --mx-accent-strong: #1f4f95;
   --mx-danger: #c24a40;
-  --mx-shadow-soft: 0 12px 26px rgba(25, 58, 102, 0.09);
-  --mx-shadow-pop: 0 18px 42px rgba(23, 47, 85, 0.16);
 }
 
 html[data-theme="dark"] {
   --mx-bg: #0f1b2d;
   --mx-bg-soft: #13233a;
-  --mx-panel: rgba(26, 40, 63, 0.76);
-  --mx-panel-strong: rgba(27, 43, 68, 0.9);
+  --mx-panel: rgba(26, 40, 63, 0.42);
   --mx-line: #2f4870;
   --mx-ink: #e9f2ff;
   --mx-ink-muted: #b8cceb;
-  --mx-accent: #79a9ff;
+  --mx-accent: #7cacff;
   --mx-accent-strong: #9dc0ff;
   --mx-danger: #ff9e96;
-  --mx-shadow-soft: 0 14px 34px rgba(8, 13, 24, 0.35);
-  --mx-shadow-pop: 0 24px 48px rgba(6, 11, 20, 0.46);
 }
 
-html[data-theme="dark"] body {
-  background: radial-gradient(circle at 15% -5%, #1c3052 0%, transparent 35%),
-    radial-gradient(circle at 90% 0%, #18345e 0%, transparent 35%),
+body {
+  background:
+    radial-gradient(1200px 460px at 88% -8%, rgba(132, 177, 255, 0.22), transparent 62%),
+    radial-gradient(900px 420px at -10% 100%, rgba(170, 205, 255, 0.16), transparent 65%),
     linear-gradient(180deg, var(--mx-bg-soft), var(--mx-bg));
 }
 
 .app-shell {
-  background: radial-gradient(circle at 88% 4%, rgba(134, 179, 255, 0.24), transparent 32%),
-    radial-gradient(circle at 10% 100%, rgba(142, 190, 255, 0.14), transparent 36%),
-    linear-gradient(180deg, var(--mx-bg-soft), var(--mx-bg));
-}
-
-.app-shell-content {
   background: transparent;
 }
 
 .app-shell-sidebar {
-  background: var(--mx-panel);
-  border-right-color: var(--mx-line);
-  box-shadow: none;
-  backdrop-filter: blur(8px);
+  background: transparent !important;
+  border-right: 1px solid color-mix(in srgb, var(--mx-line) 56%, transparent) !important;
+  backdrop-filter: none !important;
 }
 
-.app-shell-sidebar::before {
-  display: none;
+.app-shell-topbar {
+  background: transparent !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--mx-line) 56%, transparent) !important;
+}
+
+.app-shell-topbar p,
+.app-shell-brand-text,
+.app-shell-link-label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: "Manrope", sans-serif;
 }
 
 .app-shell-brand,
@@ -3206,120 +3203,205 @@ html[data-theme="dark"] body {
 .app-shell-memory h2,
 .app-shell-memory-item a,
 .app-shell-topbar p,
-.app-shell-topbar span {
+.app-shell-topbar span,
+.app-shell-page h1,
+.app-shell-page h2,
+.app-shell-page h3 {
   color: var(--mx-ink);
+}
+
+.app-shell-page p,
+.app-shell-page li,
+.app-shell-page span,
+.muted,
+.contact-meta,
+.contact-role,
+.contact-notes {
+  color: var(--mx-ink-muted);
 }
 
 .app-shell-brand-mark {
   border-radius: 10px;
-  background: linear-gradient(145deg, #2f67b5, #1f4f95);
+  background: linear-gradient(145deg, var(--mx-accent), var(--mx-accent-strong));
 }
 
-.app-shell-collapse-btn,
+.app-shell-link,
 .app-shell-dock-btn,
+.app-shell-collapse-btn,
 .app-shell-mini {
-  border-color: var(--mx-line);
-  background: var(--mx-panel-strong);
-  color: var(--mx-ink);
-  border-radius: 10px;
-  box-shadow: none;
-}
-
-.app-shell-link {
+  border: 0 !important;
+  background: transparent !important;
   border-radius: 10px;
 }
 
-.app-shell-link:hover {
-  background: var(--mx-panel-strong);
-  border-color: var(--mx-line);
-  transform: none;
+.app-shell-link:hover,
+.app-shell-dock-btn:hover,
+.app-shell-mini:hover {
+  background: color-mix(in srgb, var(--mx-panel) 64%, transparent) !important;
 }
 
 .app-shell-link.active {
-  background: color-mix(in srgb, var(--mx-accent) 18%, transparent);
-  border-color: color-mix(in srgb, var(--mx-accent) 48%, var(--mx-line));
+  background: color-mix(in srgb, var(--mx-accent) 16%, transparent) !important;
   color: var(--mx-accent-strong);
 }
 
-.app-shell-dock {
-  border-top-color: var(--mx-line);
-}
-
-.app-shell-topbar {
-  border-bottom-color: var(--mx-line);
-  background: color-mix(in srgb, var(--mx-bg-soft) 72%, transparent);
-  backdrop-filter: blur(7px);
-}
-
-.app-shell-topbar-tag {
-  border: 1px solid var(--mx-line);
-  background: var(--mx-panel-strong);
-  color: var(--mx-ink-muted);
-  border-radius: 999px;
-  padding: 6px 11px;
-}
-
-.app-shell-theme-btn {
-  min-width: 70px;
+.app-shell-memory {
+  border-top: 1px solid color-mix(in srgb, var(--mx-line) 44%, transparent);
+  padding-top: 10px;
 }
 
 .app-shell .cta,
 .app-shell .ghost,
 .app-shell-page .mini-btn,
 .app-shell-page .mode-btn,
-.app-shell-page .icon-btn {
-  border-radius: 12px;
-  font-weight: 600;
-  box-shadow: none;
-}
-
-.app-shell .cta {
-  background: linear-gradient(140deg, #2f67b5, #1f4f95);
-  border: 1px solid #1f4f95;
-  color: #eef5ff;
+.app-shell-page .icon-btn,
+.tab,
+.chip-label {
+  border-radius: 10px !important;
+  box-shadow: none !important;
 }
 
 .app-shell .ghost {
-  background: var(--mx-panel-strong);
-  border: 1px solid var(--mx-line);
+  border: 1px solid color-mix(in srgb, var(--mx-line) 66%, transparent) !important;
+  background: color-mix(in srgb, var(--mx-panel) 72%, transparent) !important;
   color: var(--mx-ink);
 }
 
-.app-shell .cta:hover,
-.app-shell .ghost:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--mx-shadow-soft);
+.app-shell .cta {
+  border: 0 !important;
+  background: linear-gradient(140deg, var(--mx-accent), var(--mx-accent-strong)) !important;
+  color: #f3f8ff !important;
+}
+
+html[data-theme="dark"] .app-shell .cta {
+  color: #0b1322 !important;
 }
 
 .app-shell-logout-btn {
-  background: var(--mx-panel-strong) !important;
+  border-color: color-mix(in srgb, var(--mx-line) 66%, transparent) !important;
+  background: color-mix(in srgb, var(--mx-panel) 72%, transparent) !important;
   color: var(--mx-ink) !important;
-  border: 1px solid var(--mx-line) !important;
+}
+
+.app-shell-topbar-tag {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  color: var(--mx-ink-muted) !important;
+}
+
+/* No heavy panel fills */
+.ui-page-header,
+.module-header,
+.module-card,
+.module-panel,
+.email-panel,
+.docs-v3-form,
+.docs-v3-card,
+.settings-v3-summary,
+.settings-v3-menu,
+.history-card,
+.ui-empty-state,
+.email-event-row,
+.preview-body,
+.preview-subject,
+.rag-query,
+.query-bar,
+.query-mode,
+.rag-v3-recent-item,
+.draft-item,
+.cite-card,
+.citation-text {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  backdrop-filter: none !important;
+}
+
+.module-grid,
+.email-grid,
+.rag-v3-layout,
+.docs-v3-grid,
+.settings-v3-grid {
+  gap: 18px;
+}
+
+.module-card,
+.module-panel,
+.email-panel,
+.docs-v3-form,
+.docs-v3-card,
+.settings-v3-summary,
+.settings-v3-menu,
+.history-card,
+.email-event-row {
+  padding: 4px 0;
+}
+
+.module-card + .module-card,
+.module-panel + .module-panel,
+.email-panel + .email-panel,
+.docs-v3-row,
+.pager,
+.email-event-row,
+.knowledge-v3-item,
+.rag-v3-recent-item,
+.cite-card,
+.citation-text,
+.rag-v3-answer,
+.rag-v3-panel,
+.rag-v3-empty,
+.history-card {
+  border-top: 1px solid color-mix(in srgb, var(--mx-line) 46%, transparent) !important;
+  padding-top: 10px;
+}
+
+.mode-toggle {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0;
+  gap: 6px;
+}
+
+.mode-btn.active,
+.tab.active {
+  border: 1px solid color-mix(in srgb, var(--mx-accent) 34%, transparent) !important;
+  background: color-mix(in srgb, var(--mx-accent) 18%, transparent) !important;
+  color: var(--mx-accent-strong) !important;
 }
 
 .app-shell-page input,
 .app-shell-page select,
-.app-shell-page textarea {
-  border-radius: 12px;
-  border: 1px solid var(--mx-line);
-  background: var(--mx-panel-strong);
+.app-shell-page textarea,
+.query-bar,
+.preview-body,
+.preview-subject,
+.citation-text {
+  border: 1px solid color-mix(in srgb, var(--mx-line) 64%, transparent) !important;
+  background: color-mix(in srgb, var(--mx-panel) 74%, transparent) !important;
+  border-radius: 14px !important;
   color: var(--mx-ink);
 }
 
 .app-shell-page input::placeholder,
 .app-shell-page textarea::placeholder {
-  color: color-mix(in srgb, var(--mx-ink-muted) 75%, transparent);
+  color: color-mix(in srgb, var(--mx-ink-muted) 78%, transparent);
 }
 
 .app-shell-page input:focus,
 .app-shell-page select:focus,
 .app-shell-page textarea:focus {
-  border-color: color-mix(in srgb, var(--mx-accent) 72%, var(--mx-line));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mx-accent) 20%, transparent);
+  border-color: color-mix(in srgb, var(--mx-accent) 62%, var(--mx-line)) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mx-accent) 20%, transparent) !important;
   outline: none;
 }
 
-/* Dropdowns and menu fields */
+.query-bar input {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 .app-shell-page select,
 .module select,
 .email-panel select {
@@ -3336,544 +3418,30 @@ html[data-theme="dark"] body {
   padding-right: 34px;
 }
 
-/* Cards and windows */
-.dash-card,
-.module-card,
-.module-panel,
-.email-panel,
-.rag-v2-card,
-.settings-summary-card,
-.ui-empty-state,
-.history-card,
-.docs-v3-form,
-.docs-v3-card,
-.settings-v3-summary,
-.settings-v3-menu {
-  border-radius: 14px;
-  border: 1px solid var(--mx-line);
-  background: var(--mx-panel);
-  box-shadow: none;
-  backdrop-filter: blur(6px);
-}
-
-.module-card h2,
-.module-card h3,
-.module-panel h2,
-.email-panel h2,
-.rag-v2-card h2,
-.docs-v3-form h2,
-.docs-v3-card h3 {
-  color: var(--mx-ink);
-}
-
-/* Popups / modals / overlays */
-.modal-overlay,
-.citation-overlay {
-  background: color-mix(in srgb, #0a1220 42%, transparent);
-  backdrop-filter: blur(6px);
-}
-
-.modal,
-.citation-modal {
-  border-radius: 16px;
-  border: 1px solid var(--mx-line);
-  background: var(--mx-panel-strong);
-  color: var(--mx-ink);
-  box-shadow: var(--mx-shadow-pop);
-}
-
-.modal-header {
-  border-bottom: 1px solid var(--mx-line);
-}
-
-.modal-tabs {
-  border-bottom: 1px solid var(--mx-line);
-}
-
-.modal-tabs button {
-  border-radius: 10px;
-}
-
-/* Toasts */
-.rag-toast {
-  border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--mx-danger) 44%, var(--mx-line));
-  background: color-mix(in srgb, var(--mx-danger) 20%, var(--mx-panel-strong));
-  color: var(--mx-ink);
-  box-shadow: var(--mx-shadow-pop);
-}
-
-/* Query area refinement */
-.rag-query {
-  border-radius: 14px;
-  border-color: var(--mx-line);
-  background: var(--mx-panel-strong);
-  box-shadow: none;
-}
-
-.query-bar {
-  border-radius: 12px;
-  border-color: var(--mx-line);
-  background: color-mix(in srgb, var(--mx-panel-strong) 88%, white);
-}
-
-.query-mic {
-  border-radius: 10px;
-  border-color: var(--mx-line);
-  background: var(--mx-panel-strong);
-  color: var(--mx-ink);
-}
-
-.query-mic.is-live {
-  border-color: color-mix(in srgb, var(--mx-danger) 60%, var(--mx-line));
-  color: var(--mx-danger);
-  background: color-mix(in srgb, var(--mx-danger) 12%, var(--mx-panel-strong));
-}
-
-/* Keep the UI airy: less boxed feeling in lists */
-.app-shell-memory-item a,
-.draft-item,
-.rag-v3-recent-item {
-  background: transparent;
-  border-color: color-mix(in srgb, var(--mx-line) 70%, transparent);
-}
-
-html[data-theme="dark"] .app-shell-brand-mark {
-  background: linear-gradient(145deg, #79a9ff, #4f81d8);
-  color: #091021;
-}
-
-/* ---------- Final Page Pass (RAG/KB/Documents/Contacts/Settings/Email) ---------- */
-.module-header {
-  border: 1px solid var(--mx-line);
-  border-radius: 14px;
-  background: var(--mx-panel);
-  box-shadow: none;
-}
-
-.mode-toggle {
-  background: color-mix(in srgb, var(--mx-panel-strong) 90%, transparent);
-  border: 1px solid var(--mx-line);
-  border-radius: 12px;
-  padding: 4px;
-}
-
-.mode-btn {
-  border-radius: 10px;
-  color: var(--mx-ink-muted);
-}
-
-.mode-btn.active {
-  background: color-mix(in srgb, var(--mx-accent) 18%, transparent);
-  color: var(--mx-accent-strong);
-}
-
-.tab {
-  border-radius: 10px;
-  border-color: var(--mx-line);
-  background: var(--mx-panel-strong);
-  color: var(--mx-ink-muted);
-}
-
-.tab.active {
-  background: linear-gradient(140deg, #2f67b5, #1f4f95);
-  border-color: #1f4f95;
-  color: #eef5ff;
-}
-
-.history-card.answer-card {
-  border-radius: 14px;
-}
-
-.cite-card {
-  border-radius: 12px;
-  border-color: var(--mx-line);
-  background: var(--mx-panel-strong);
-}
-
-.cite-card strong,
-.cite-card span {
-  color: var(--mx-ink);
-}
-
-.citation-text {
-  border-radius: 12px;
-  border-color: var(--mx-line);
-  background: color-mix(in srgb, var(--mx-panel-strong) 88%, transparent);
-  color: var(--mx-ink);
-}
-
-.knowledge-v3-item {
-  display: grid;
-  gap: 10px;
-}
-
-.knowledge-v3-answer {
-  border-top: 1px solid var(--mx-line);
-  padding-top: 10px;
-  white-space: pre-wrap;
-}
-
-.contacts-v3 .contact-meta,
-.contacts-v3 .contact-role,
-.contacts-v3 .contact-notes {
-  color: var(--mx-ink-muted);
-}
-
-.email-event-row {
-  border: 1px solid var(--mx-line);
-  border-radius: 12px;
-  background: var(--mx-panel-strong);
-  padding: 12px;
-  display: grid;
-  gap: 6px;
-}
-
-.email-event-row h3 {
-  margin: 0;
-  color: var(--mx-ink);
-}
-
-.email-event-row p {
-  margin: 0;
-  color: var(--mx-ink-muted);
-}
-
-.email-event-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  font-size: 0.86rem;
-  color: var(--mx-ink-muted);
-}
-
-.pager {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding-top: 6px;
-  border-top: 1px solid var(--mx-line);
-}
-
-.settings-v3 .module-card,
-.settings-v3 .module-panel {
-  border-radius: 14px;
-}
-
-@media (max-width: 980px) {
-  .email-event-meta {
-    flex-direction: column;
-    gap: 4px;
-  }
-}
-
-/* ---------- Mellow 2 Strict: remove heavy boxing ---------- */
-.app-shell-sidebar,
-.app-shell-topbar,
-.ui-page-header,
-.module-header,
-.module-card,
-.module-panel,
-.email-panel,
-.docs-v3-form,
-.docs-v3-card,
-.settings-v3-summary,
-.settings-v3-menu,
-.history-card,
-.ui-empty-state,
-.modal,
-.citation-modal,
-.email-event-row {
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-.app-shell-sidebar {
+.status-chip {
   background: transparent !important;
-  backdrop-filter: none !important;
+  border: 1px solid color-mix(in srgb, var(--mx-line) 58%, transparent);
+  border-radius: 999px;
+  padding: 2px 8px;
 }
 
-.app-shell-content {
-  background: transparent !important;
-}
-
-.app-shell-topbar {
-  background: transparent !important;
-}
-
-.app-shell-topbar-tag {
-  border: 0 !important;
-  background: transparent !important;
-  padding: 0 !important;
-  color: var(--mx-ink-muted) !important;
-}
-
-.app-shell .ghost,
-.app-shell .cta,
-.app-shell-page .mini-btn,
-.app-shell-page .mode-btn,
-.app-shell-page .icon-btn {
-  box-shadow: none !important;
-}
-
-.app-shell .ghost {
-  border-color: color-mix(in srgb, var(--mx-line) 48%, transparent) !important;
-  background: color-mix(in srgb, var(--mx-panel-strong) 56%, transparent) !important;
-}
-
-.app-shell .cta {
-  background: linear-gradient(140deg, #3b75c7, #2a5ba6) !important;
-  border-color: transparent !important;
-}
-
-.mode-toggle,
-.tab,
-.query-mode,
-.rag-query,
-.query-bar,
-.preview-subject,
-.preview-body,
-.module-note,
-.docs-v3-row,
-.pager,
-.citation-text,
-.cite-card,
-.draft-item,
-.rag-v3-recent-item,
-.app-shell-dock,
-.app-shell-dock-btn,
-.app-shell-link,
-.app-shell-collapse-btn,
-.app-shell-mini {
-  border-color: color-mix(in srgb, var(--mx-line) 34%, transparent) !important;
-}
-
-.query-mode {
-  border-bottom: 0 !important;
-}
-
-.mode-toggle,
-.tab,
-.query-bar,
-.rag-query {
-  background: color-mix(in srgb, var(--mx-panel-strong) 62%, transparent) !important;
-}
-
-.tab.active,
-.mode-btn.active {
-  box-shadow: none !important;
-}
-
-.module-note {
-  border-style: solid !important;
-  background: color-mix(in srgb, var(--mx-panel-strong) 76%, transparent) !important;
-}
-
-.docs-v3-row,
-.pager {
-  border-top-style: solid !important;
-}
-
-.citation-overlay,
-.modal-overlay {
-  background: color-mix(in srgb, #0b1525 30%, transparent) !important;
-}
-
-.rag-toast {
-  border: 0 !important;
-  background: color-mix(in srgb, var(--mx-panel-strong) 84%, #274f8b 16%) !important;
-}
-
-/* ---------- Mellow 2 Authoritative Reset ---------- */
-.app-shell {
-  background:
-    radial-gradient(1200px 480px at 88% -8%, rgba(132, 177, 255, 0.20), transparent 60%),
-    radial-gradient(900px 420px at -10% 100%, rgba(170, 205, 255, 0.14), transparent 65%),
-    linear-gradient(180deg, var(--mx-bg-soft), var(--mx-bg)) !important;
-}
-
-.app-shell-sidebar {
-  width: 100%;
-  background: transparent !important;
-  border-right: 1px solid color-mix(in srgb, var(--mx-line) 55%, transparent) !important;
-  padding-top: 18px;
-}
-
-.app-shell-topbar {
-  border-bottom: 1px solid color-mix(in srgb, var(--mx-line) 55%, transparent) !important;
-  padding-bottom: 10px;
-}
-
-.app-shell-brand-text,
-.app-shell-link-label,
-.app-shell-topbar p {
-  letter-spacing: 0;
-  text-transform: none;
-  font-family: "Manrope", sans-serif;
-}
-
-.app-shell-link,
-.app-shell-dock-btn,
-.app-shell-collapse-btn,
-.app-shell-mini {
-  border: 0 !important;
-  background: transparent !important;
-  border-radius: 10px;
-}
-
-.app-shell-link.active {
-  background: color-mix(in srgb, var(--mx-accent) 15%, transparent) !important;
-}
-
-.app-shell-link:hover,
-.app-shell-dock-btn:hover {
-  background: color-mix(in srgb, var(--mx-panel-strong) 58%, transparent) !important;
-}
-
-.app-shell-memory {
-  border-top: 1px solid color-mix(in srgb, var(--mx-line) 44%, transparent);
-  padding-top: 10px;
-}
-
-.app-shell-memory-item a {
-  padding: 4px 2px;
-}
-
-.ui-page-header,
-.module-header,
-.module-card,
-.module-panel,
-.email-panel,
-.docs-v3-form,
-.docs-v3-card,
-.settings-v3-summary,
-.settings-v3-menu,
-.history-card,
-.ui-empty-state,
-.email-event-row {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-
-.module-grid,
-.email-grid,
-.rag-v3-layout,
-.docs-v3-grid,
-.settings-v3-grid {
-  gap: 18px;
-}
-
-.module-card,
-.module-panel,
-.email-panel,
-.docs-v3-form,
-.docs-v3-card {
-  padding: 4px 0;
-}
-
-.module-card + .module-card,
-.module-panel + .module-panel,
-.email-panel + .email-panel {
-  border-top: 1px solid color-mix(in srgb, var(--mx-line) 42%, transparent);
-  padding-top: 14px;
-}
-
-.app-shell-page h1,
-.app-shell-page h2,
-.app-shell-page h3 {
-  color: var(--mx-ink);
-}
-
-.app-shell-page p,
-.app-shell-page li,
-.app-shell-page span,
-.muted {
-  color: var(--mx-ink-muted);
-}
-
-.app-shell .ghost,
-.app-shell .cta,
-.app-shell-page .mini-btn,
-.app-shell-page .mode-btn,
-.app-shell-page .icon-btn,
-.tab {
-  border-radius: 10px !important;
-  padding: 9px 14px;
-}
-
-.app-shell .ghost {
-  border: 1px solid color-mix(in srgb, var(--mx-line) 66%, transparent) !important;
-  background: color-mix(in srgb, var(--mx-panel-strong) 58%, transparent) !important;
-}
-
-.app-shell .cta {
-  background: linear-gradient(140deg, #3f78c8, #2d5ea8) !important;
-  color: #f3f8ff !important;
-}
-
-.mode-toggle {
-  border: 0 !important;
-  background: transparent !important;
-  padding: 0;
-  gap: 6px;
-}
-
-.mode-btn.active,
-.tab.active {
-  background: color-mix(in srgb, var(--mx-accent) 18%, transparent) !important;
-  color: var(--mx-accent-strong) !important;
-  border: 1px solid color-mix(in srgb, var(--mx-accent) 34%, transparent) !important;
-}
-
-.app-shell-page input,
-.app-shell-page select,
-.app-shell-page textarea,
-.query-bar,
-.preview-body,
-.preview-subject,
-.citation-text {
-  border: 1px solid color-mix(in srgb, var(--mx-line) 65%, transparent) !important;
-  background: color-mix(in srgb, var(--mx-panel-strong) 62%, transparent) !important;
-  border-radius: 14px !important;
-}
-
-.query-bar input {
-  border: 0 !important;
-  background: transparent !important;
-}
-
-.draft-item,
-.rag-v3-recent-item,
-.cite-card,
-.docs-v3-row,
-.pager {
-  border: 0 !important;
-  background: transparent !important;
-}
-
-.docs-v3-row,
-.pager,
-.email-event-row,
-.knowledge-v3-item,
-.rag-v3-recent-item {
-  border-top: 1px solid color-mix(in srgb, var(--mx-line) 46%, transparent) !important;
+.compose-footer {
+  border-top: 1px solid color-mix(in srgb, var(--mx-line) 46%, transparent);
   padding-top: 10px;
 }
 
 .modal-overlay,
 .citation-overlay {
   background: color-mix(in srgb, #0a1527 24%, transparent) !important;
+  backdrop-filter: blur(6px);
 }
 
 .modal,
 .citation-modal {
-  background: color-mix(in srgb, var(--mx-panel-strong) 86%, transparent) !important;
+  background: color-mix(in srgb, var(--mx-panel) 88%, transparent) !important;
   border: 1px solid color-mix(in srgb, var(--mx-line) 62%, transparent) !important;
   border-radius: 18px !important;
-  box-shadow: var(--mx-shadow-pop) !important;
+  box-shadow: 0 20px 45px rgba(13, 28, 49, 0.22) !important;
 }
 
 .modal-header,
@@ -3881,126 +3449,11 @@ html[data-theme="dark"] .app-shell-brand-mark {
   border-bottom: 1px solid color-mix(in srgb, var(--mx-line) 58%, transparent) !important;
 }
 
-html[data-theme="dark"] .app-shell .cta {
-  background: linear-gradient(140deg, #7cacff, #5f90e7) !important;
-  color: #0b1322 !important;
-}
-
-/* ---------- RAG Ultra Light (no heavy boxes) ---------- */
-.rag-v3 .rag-v3-answer,
-.rag-v3 .rag-v3-panel,
-.rag-v3 .rag-v3-empty,
-.rag-v3 .history-card,
-.rag-v3 .history-card.answer-card,
-.rag-v3 .rag-v3-recent-item,
-.rag-v3 .cite-card,
-.rag-v3 .rag-query,
-.rag-v3 .query-bar,
-.rag-v3 .query-mode,
-.rag-v3 .chip,
-.rag-v3 .citation-text {
-  background: transparent !important;
+.rag-toast {
   border: 0 !important;
-  box-shadow: none !important;
-}
-
-.rag-v3 .rag-v3-answer,
-.rag-v3 .rag-v3-panel,
-.rag-v3 .rag-v3-empty,
-.rag-v3 .history-card,
-.rag-v3 .rag-v3-recent-item,
-.rag-v3 .cite-card {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-.rag-v3 .rag-v3-answer,
-.rag-v3 .rag-v3-panel,
-.rag-v3 .rag-v3-empty,
-.rag-v3 .history-card,
-.rag-v3 .rag-v3-recent-item,
-.rag-v3 .cite-card,
-.rag-v3 .citation-text {
-  border-top: 1px solid color-mix(in srgb, var(--mx-line) 42%, transparent) !important;
-  padding-top: 10px !important;
-}
-
-.rag-v3 .query-bar {
-  border-top: 1px solid color-mix(in srgb, var(--mx-line) 50%, transparent) !important;
-  border-radius: 0 !important;
-  padding-top: 10px;
-}
-
-.rag-v3 .query-bar input {
-  border: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.rag-v3 .mode-toggle {
-  gap: 6px;
-}
-
-.rag-v3 .mode-btn,
-.rag-v3 .chip-label {
-  border-radius: 10px !important;
-}
-
-/* ---------- Ultra Minimal: no panel fills ---------- */
-.module-card,
-.module-panel,
-.email-panel,
-.docs-v3-form,
-.docs-v3-card,
-.settings-v3-summary,
-.settings-v3-menu,
-.history-card,
-.ui-empty-state,
-.preview-body,
-.preview-subject,
-.citation-text,
-.modal,
-.citation-modal,
-.email-event-row,
-.rag-v3-recent-item,
-.draft-item,
-.rag-query,
-.query-bar {
-  background: transparent !important;
-}
-
-.module-card,
-.module-panel,
-.email-panel,
-.docs-v3-form,
-.docs-v3-card,
-.settings-v3-summary,
-.settings-v3-menu,
-.history-card,
-.ui-empty-state,
-.email-event-row {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-.module-card,
-.module-panel,
-.email-panel,
-.docs-v3-form,
-.docs-v3-card,
-.settings-v3-summary,
-.settings-v3-menu,
-.history-card,
-.ui-empty-state,
-.email-event-row,
-.preview-body,
-.preview-subject,
-.citation-text,
-.rag-v3-recent-item,
-.draft-item,
-.rag-query,
-.query-bar {
-  border-color: color-mix(in srgb, var(--mx-line) 36%, transparent) !important;
+  background: color-mix(in srgb, var(--mx-panel) 84%, #274f8b 16%) !important;
+  color: var(--mx-ink);
+  border-radius: 12px;
 }
 
 .contacts-search-card h3 {
@@ -4024,6 +3477,65 @@ html[data-theme="dark"] .app-shell .cta {
   background: color-mix(in srgb, var(--mx-bg-soft) 82%, transparent);
   padding-top: 8px;
   border-top: 1px solid color-mix(in srgb, var(--mx-line) 42%, transparent);
+}
+
+.docs-v3-grid,
+.email-grid,
+.settings-v3-grid {
+  gap: 22px;
+}
+
+.email-grid {
+  grid-template-columns: 250px minmax(0, 1fr) minmax(0, 0.95fr);
+}
+
+.docs-v3-form h2,
+.docs-v3-card h3,
+.email-panel h2,
+.settings-v3 h2 {
+  margin-bottom: 6px;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+}
+
+.docs-v3-form label,
+.email-panel label,
+.settings-v3 label {
+  display: grid;
+  gap: 6px;
+}
+
+.docs-v3-form input,
+.docs-v3-form select,
+.docs-v3-form textarea,
+.email-panel input,
+.email-panel select,
+.email-panel textarea,
+.settings-v3 input,
+.settings-v3 select,
+.settings-v3 textarea {
+  padding: 10px 12px;
+}
+
+.settings-v3 .module-note {
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--mx-ink-muted);
+  padding: 2px 0;
+}
+
+.settings-v3 .form-row {
+  gap: 10px;
+}
+
+.settings-v3 .module-card + .module-card {
+  margin-top: 8px;
+}
+
+@media (max-width: 1200px) {
+  .email-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 900px) {
