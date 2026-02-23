@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
 import EmptyState from "@/components/ui/empty-state";
@@ -43,6 +43,11 @@ export default function ContactsPage() {
   const [ocrFile, setOcrFile] = useState<File | null>(null);
   const [ocrError, setOcrError] = useState<string | null>(null);
   const [ocrLoading, setOcrLoading] = useState(false);
+  const [searchName, setSearchName] = useState("");
+  const [searchOrg, setSearchOrg] = useState("");
+  const [searchCity, setSearchCity] = useState("");
+  const [searchEmail, setSearchEmail] = useState("");
+  const [searchPhone, setSearchPhone] = useState("");
 
   const loadContacts = useCallback(async () => {
     const supabase = createBrowserSupabase();
@@ -158,6 +163,32 @@ export default function ContactsPage() {
     setOcrLoading(false);
   };
 
+  const filteredContacts = useMemo(() => {
+    const qName = searchName.trim().toLowerCase();
+    const qOrg = searchOrg.trim().toLowerCase();
+    const qCity = searchCity.trim().toLowerCase();
+    const qEmail = searchEmail.trim().toLowerCase();
+    const qPhone = searchPhone.trim().toLowerCase();
+
+    return contacts.filter((contact) => {
+      const name = (contact.name || "").toLowerCase();
+      const organization = (contact.organization || "").toLowerCase();
+      const city = (contact.city || "").toLowerCase();
+      const email = (contact.email || "").toLowerCase();
+      const phone = (contact.phone || "").toLowerCase();
+      const role = (contact.role || "").toLowerCase();
+      const country = (contact.country || "").toLowerCase();
+      const notes = (contact.notes || "").toLowerCase();
+
+      if (qName && !name.includes(qName)) return false;
+      if (qOrg && !(organization.includes(qOrg) || role.includes(qOrg) || notes.includes(qOrg))) return false;
+      if (qCity && !(city.includes(qCity) || country.includes(qCity))) return false;
+      if (qEmail && !email.includes(qEmail)) return false;
+      if (qPhone && !phone.includes(qPhone)) return false;
+      return true;
+    });
+  }, [contacts, searchName, searchOrg, searchCity, searchEmail, searchPhone]);
+
   if (loading) {
     return <main className="app-loading" aria-live="polite"><div className="ui-skeleton-line" /><div className="ui-skeleton-line short" /></main>;
   }
@@ -181,6 +212,32 @@ export default function ContactsPage() {
 
       <section className="module-grid">
         <div className="module-list">
+          <article className="module-card contacts-search-card">
+            <h3>Recherche contacts</h3>
+            <div className="contacts-search-grid">
+              <label>
+                Nom
+                <input value={searchName} onChange={(e) => setSearchName(e.target.value)} placeholder="Ex: Dupont" />
+              </label>
+              <label>
+                Société / institution
+                <input value={searchOrg} onChange={(e) => setSearchOrg(e.target.value)} placeholder="Ex: Tribunal, ACME" />
+              </label>
+              <label>
+                Ville / pays
+                <input value={searchCity} onChange={(e) => setSearchCity(e.target.value)} placeholder="Ex: Paris" />
+              </label>
+              <label>
+                Email
+                <input value={searchEmail} onChange={(e) => setSearchEmail(e.target.value)} placeholder="Ex: @cabinet.fr" />
+              </label>
+              <label>
+                Téléphone
+                <input value={searchPhone} onChange={(e) => setSearchPhone(e.target.value)} placeholder="Ex: 06" />
+              </label>
+            </div>
+          </article>
+
           {contacts.length === 0 && (
             <EmptyState
               title="Aucun contact enregistré"
@@ -192,7 +249,14 @@ export default function ContactsPage() {
               }
             />
           )}
-          {contacts.map((contact) => (
+          {contacts.length > 0 && filteredContacts.length === 0 && (
+            <EmptyState
+              title="Aucun contact ne correspond aux filtres"
+              description="Ajustez vos critères de recherche."
+            />
+          )}
+
+          {filteredContacts.map((contact) => (
             <article key={contact.id} className="module-card">
               <h3>{contact.name}</h3>
               <p>{contact.organization || "Cabinet / Organisation"}</p>
@@ -235,7 +299,7 @@ export default function ContactsPage() {
                 Fermer
               </button>
             </div>
-            <form className="modal-body" onSubmit={handleSubmit}>
+            <form className="modal-body contacts-modal-form" onSubmit={handleSubmit}>
               <label>
                 Nom
                 <input
@@ -310,10 +374,12 @@ export default function ContactsPage() {
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 />
               </label>
-              {error && <InlineAlert tone="error">{error}</InlineAlert>}
-              <button className="cta" type="submit">
-                Enregistrer
-              </button>
+              <div className="modal-footer">
+                {error && <InlineAlert tone="error">{error}</InlineAlert>}
+                <button className="cta" type="submit">
+                  Enregistrer
+                </button>
+              </div>
             </form>
           </div>
         </div>

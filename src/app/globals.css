@@ -3567,3 +3567,467 @@ html[data-theme="dark"] .app-shell-brand-mark {
     gap: 4px;
   }
 }
+
+/* ---------- Mellow 2 Strict: remove heavy boxing ---------- */
+.app-shell-sidebar,
+.app-shell-topbar,
+.ui-page-header,
+.module-header,
+.module-card,
+.module-panel,
+.email-panel,
+.docs-v3-form,
+.docs-v3-card,
+.settings-v3-summary,
+.settings-v3-menu,
+.history-card,
+.ui-empty-state,
+.modal,
+.citation-modal,
+.email-event-row {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-shell-sidebar {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+.app-shell-content {
+  background: transparent !important;
+}
+
+.app-shell-topbar {
+  background: transparent !important;
+}
+
+.app-shell-topbar-tag {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  color: var(--mx-ink-muted) !important;
+}
+
+.app-shell .ghost,
+.app-shell .cta,
+.app-shell-page .mini-btn,
+.app-shell-page .mode-btn,
+.app-shell-page .icon-btn {
+  box-shadow: none !important;
+}
+
+.app-shell .ghost {
+  border-color: color-mix(in srgb, var(--mx-line) 48%, transparent) !important;
+  background: color-mix(in srgb, var(--mx-panel-strong) 56%, transparent) !important;
+}
+
+.app-shell .cta {
+  background: linear-gradient(140deg, #3b75c7, #2a5ba6) !important;
+  border-color: transparent !important;
+}
+
+.mode-toggle,
+.tab,
+.query-mode,
+.rag-query,
+.query-bar,
+.preview-subject,
+.preview-body,
+.module-note,
+.docs-v3-row,
+.pager,
+.citation-text,
+.cite-card,
+.draft-item,
+.rag-v3-recent-item,
+.app-shell-dock,
+.app-shell-dock-btn,
+.app-shell-link,
+.app-shell-collapse-btn,
+.app-shell-mini {
+  border-color: color-mix(in srgb, var(--mx-line) 34%, transparent) !important;
+}
+
+.query-mode {
+  border-bottom: 0 !important;
+}
+
+.mode-toggle,
+.tab,
+.query-bar,
+.rag-query {
+  background: color-mix(in srgb, var(--mx-panel-strong) 62%, transparent) !important;
+}
+
+.tab.active,
+.mode-btn.active {
+  box-shadow: none !important;
+}
+
+.module-note {
+  border-style: solid !important;
+  background: color-mix(in srgb, var(--mx-panel-strong) 76%, transparent) !important;
+}
+
+.docs-v3-row,
+.pager {
+  border-top-style: solid !important;
+}
+
+.citation-overlay,
+.modal-overlay {
+  background: color-mix(in srgb, #0b1525 30%, transparent) !important;
+}
+
+.rag-toast {
+  border: 0 !important;
+  background: color-mix(in srgb, var(--mx-panel-strong) 84%, #274f8b 16%) !important;
+}
+
+/* ---------- Mellow 2 Authoritative Reset ---------- */
+.app-shell {
+  background:
+    radial-gradient(1200px 480px at 88% -8%, rgba(132, 177, 255, 0.20), transparent 60%),
+    radial-gradient(900px 420px at -10% 100%, rgba(170, 205, 255, 0.14), transparent 65%),
+    linear-gradient(180deg, var(--mx-bg-soft), var(--mx-bg)) !important;
+}
+
+.app-shell-sidebar {
+  width: 100%;
+  background: transparent !important;
+  border-right: 1px solid color-mix(in srgb, var(--mx-line) 55%, transparent) !important;
+  padding-top: 18px;
+}
+
+.app-shell-topbar {
+  border-bottom: 1px solid color-mix(in srgb, var(--mx-line) 55%, transparent) !important;
+  padding-bottom: 10px;
+}
+
+.app-shell-brand-text,
+.app-shell-link-label,
+.app-shell-topbar p {
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: "Manrope", sans-serif;
+}
+
+.app-shell-link,
+.app-shell-dock-btn,
+.app-shell-collapse-btn,
+.app-shell-mini {
+  border: 0 !important;
+  background: transparent !important;
+  border-radius: 10px;
+}
+
+.app-shell-link.active {
+  background: color-mix(in srgb, var(--mx-accent) 15%, transparent) !important;
+}
+
+.app-shell-link:hover,
+.app-shell-dock-btn:hover {
+  background: color-mix(in srgb, var(--mx-panel-strong) 58%, transparent) !important;
+}
+
+.app-shell-memory {
+  border-top: 1px solid color-mix(in srgb, var(--mx-line) 44%, transparent);
+  padding-top: 10px;
+}
+
+.app-shell-memory-item a {
+  padding: 4px 2px;
+}
+
+.ui-page-header,
+.module-header,
+.module-card,
+.module-panel,
+.email-panel,
+.docs-v3-form,
+.docs-v3-card,
+.settings-v3-summary,
+.settings-v3-menu,
+.history-card,
+.ui-empty-state,
+.email-event-row {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.module-grid,
+.email-grid,
+.rag-v3-layout,
+.docs-v3-grid,
+.settings-v3-grid {
+  gap: 18px;
+}
+
+.module-card,
+.module-panel,
+.email-panel,
+.docs-v3-form,
+.docs-v3-card {
+  padding: 4px 0;
+}
+
+.module-card + .module-card,
+.module-panel + .module-panel,
+.email-panel + .email-panel {
+  border-top: 1px solid color-mix(in srgb, var(--mx-line) 42%, transparent);
+  padding-top: 14px;
+}
+
+.app-shell-page h1,
+.app-shell-page h2,
+.app-shell-page h3 {
+  color: var(--mx-ink);
+}
+
+.app-shell-page p,
+.app-shell-page li,
+.app-shell-page span,
+.muted {
+  color: var(--mx-ink-muted);
+}
+
+.app-shell .ghost,
+.app-shell .cta,
+.app-shell-page .mini-btn,
+.app-shell-page .mode-btn,
+.app-shell-page .icon-btn,
+.tab {
+  border-radius: 10px !important;
+  padding: 9px 14px;
+}
+
+.app-shell .ghost {
+  border: 1px solid color-mix(in srgb, var(--mx-line) 66%, transparent) !important;
+  background: color-mix(in srgb, var(--mx-panel-strong) 58%, transparent) !important;
+}
+
+.app-shell .cta {
+  background: linear-gradient(140deg, #3f78c8, #2d5ea8) !important;
+  color: #f3f8ff !important;
+}
+
+.mode-toggle {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0;
+  gap: 6px;
+}
+
+.mode-btn.active,
+.tab.active {
+  background: color-mix(in srgb, var(--mx-accent) 18%, transparent) !important;
+  color: var(--mx-accent-strong) !important;
+  border: 1px solid color-mix(in srgb, var(--mx-accent) 34%, transparent) !important;
+}
+
+.app-shell-page input,
+.app-shell-page select,
+.app-shell-page textarea,
+.query-bar,
+.preview-body,
+.preview-subject,
+.citation-text {
+  border: 1px solid color-mix(in srgb, var(--mx-line) 65%, transparent) !important;
+  background: color-mix(in srgb, var(--mx-panel-strong) 62%, transparent) !important;
+  border-radius: 14px !important;
+}
+
+.query-bar input {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.draft-item,
+.rag-v3-recent-item,
+.cite-card,
+.docs-v3-row,
+.pager {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.docs-v3-row,
+.pager,
+.email-event-row,
+.knowledge-v3-item,
+.rag-v3-recent-item {
+  border-top: 1px solid color-mix(in srgb, var(--mx-line) 46%, transparent) !important;
+  padding-top: 10px;
+}
+
+.modal-overlay,
+.citation-overlay {
+  background: color-mix(in srgb, #0a1527 24%, transparent) !important;
+}
+
+.modal,
+.citation-modal {
+  background: color-mix(in srgb, var(--mx-panel-strong) 86%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--mx-line) 62%, transparent) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--mx-shadow-pop) !important;
+}
+
+.modal-header,
+.modal-tabs {
+  border-bottom: 1px solid color-mix(in srgb, var(--mx-line) 58%, transparent) !important;
+}
+
+html[data-theme="dark"] .app-shell .cta {
+  background: linear-gradient(140deg, #7cacff, #5f90e7) !important;
+  color: #0b1322 !important;
+}
+
+/* ---------- RAG Ultra Light (no heavy boxes) ---------- */
+.rag-v3 .rag-v3-answer,
+.rag-v3 .rag-v3-panel,
+.rag-v3 .rag-v3-empty,
+.rag-v3 .history-card,
+.rag-v3 .history-card.answer-card,
+.rag-v3 .rag-v3-recent-item,
+.rag-v3 .cite-card,
+.rag-v3 .rag-query,
+.rag-v3 .query-bar,
+.rag-v3 .query-mode,
+.rag-v3 .chip,
+.rag-v3 .citation-text {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.rag-v3 .rag-v3-answer,
+.rag-v3 .rag-v3-panel,
+.rag-v3 .rag-v3-empty,
+.rag-v3 .history-card,
+.rag-v3 .rag-v3-recent-item,
+.rag-v3 .cite-card {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.rag-v3 .rag-v3-answer,
+.rag-v3 .rag-v3-panel,
+.rag-v3 .rag-v3-empty,
+.rag-v3 .history-card,
+.rag-v3 .rag-v3-recent-item,
+.rag-v3 .cite-card,
+.rag-v3 .citation-text {
+  border-top: 1px solid color-mix(in srgb, var(--mx-line) 42%, transparent) !important;
+  padding-top: 10px !important;
+}
+
+.rag-v3 .query-bar {
+  border-top: 1px solid color-mix(in srgb, var(--mx-line) 50%, transparent) !important;
+  border-radius: 0 !important;
+  padding-top: 10px;
+}
+
+.rag-v3 .query-bar input {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.rag-v3 .mode-toggle {
+  gap: 6px;
+}
+
+.rag-v3 .mode-btn,
+.rag-v3 .chip-label {
+  border-radius: 10px !important;
+}
+
+/* ---------- Ultra Minimal: no panel fills ---------- */
+.module-card,
+.module-panel,
+.email-panel,
+.docs-v3-form,
+.docs-v3-card,
+.settings-v3-summary,
+.settings-v3-menu,
+.history-card,
+.ui-empty-state,
+.preview-body,
+.preview-subject,
+.citation-text,
+.modal,
+.citation-modal,
+.email-event-row,
+.rag-v3-recent-item,
+.draft-item,
+.rag-query,
+.query-bar {
+  background: transparent !important;
+}
+
+.module-card,
+.module-panel,
+.email-panel,
+.docs-v3-form,
+.docs-v3-card,
+.settings-v3-summary,
+.settings-v3-menu,
+.history-card,
+.ui-empty-state,
+.email-event-row {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.module-card,
+.module-panel,
+.email-panel,
+.docs-v3-form,
+.docs-v3-card,
+.settings-v3-summary,
+.settings-v3-menu,
+.history-card,
+.ui-empty-state,
+.email-event-row,
+.preview-body,
+.preview-subject,
+.citation-text,
+.rag-v3-recent-item,
+.draft-item,
+.rag-query,
+.query-bar {
+  border-color: color-mix(in srgb, var(--mx-line) 36%, transparent) !important;
+}
+
+.contacts-search-card h3 {
+  margin: 0 0 8px;
+}
+
+.contacts-search-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.contacts-modal-form {
+  display: grid;
+  gap: 10px;
+}
+
+.contacts-modal-form .modal-footer {
+  position: sticky;
+  bottom: -6px;
+  background: color-mix(in srgb, var(--mx-bg-soft) 82%, transparent);
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--mx-line) 42%, transparent);
+}
+
+@media (max-width: 900px) {
+  .contacts-search-grid {
+    grid-template-columns: 1fr;
+  }
+}
